@@ -22,7 +22,6 @@
     border: 5px solid black;
     border-radius: 20px;
     background: rgb(200,200,200,.5);
-    transition: top .1s;
 }
 
 .carLine{
@@ -32,5 +31,4 @@
     width: 30px;
     height: 2px;
     background: rgb(50,50,50);
-    transition: top .1s;
 }

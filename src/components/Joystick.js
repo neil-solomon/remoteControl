@@ -14,13 +14,18 @@ export default class Joystick extends React.Component{
             stickTop_prev: this.props.baseSize * (1 - this.props.stickToBaseRatio) / 2,
             stickLeft_prev: this.props.baseSize * (1 - this.props.stickToBaseRatio) / 2,
             stickTop: this.props.baseSize * (1 - this.props.stickToBaseRatio) / 2,
-            stickLeft: this.props.baseSize * (1 - this.props.stickToBaseRatio) / 2
+            stickLeft: this.props.baseSize * (1 - this.props.stickToBaseRatio) / 2,
         };
     }
 
     componentDidMount = () => {
         this.baseElement = document.getElementById("Joystick_base");
         this.stickElement = document.getElementById("Joystick_stick");
+
+        this.stickElement.addEventListener("touchstart", (event) => this.stick_touchstart(event));
+        this.stickElement.addEventListener("touchmove", (event) => this.stick_touchmove(event));
+        this.stickElement.addEventListener("touchend", (event) => this.stick_touchend(event));
+        this.stickElement.addEventListener("touchcancel", (event) => this.stick_touchend(event));
     }
 
     componentWillUnmount = () => {
@@ -32,6 +37,61 @@ export default class Joystick extends React.Component{
         }
     }
 
+    componentDidUpdate = (prevProps, prevState) => {
+        if (prevState.stickTop !== this.state.stickTop || prevState.stickLeft !== this.state.stickLeft) {
+            this.props.updateJoystickVals(
+                (this.props.baseSize/2 - this.state.stickTop - (this.props.baseSize*this.props.stickToBaseRatio)/2) / (this.props.baseSize*this.props.validRadiusToBaseRatio),
+                -1 * (this.props.baseSize/2 - this.state.stickLeft - (this.props.baseSize*this.props.stickToBaseRatio)/2) / (this.props.baseSize*this.props.validRadiusToBaseRatio)
+            )
+        }
+
+        if (prevProps.baseSize !== this.props.baseSize) {
+            this.setState({
+                stickTop_prev: this.props.baseSize * (1 - this.props.stickToBaseRatio) / 2,
+                stickLeft_prev: this.props.baseSize * (1 - this.props.stickToBaseRatio) / 2,
+                stickTop: this.props.baseSize * (1 - this.props.stickToBaseRatio) / 2,
+                stickLeft: this.props.baseSize * (1 - this.props.stickToBaseRatio) / 2
+            })
+        }
+    }
+
+    stick_touchstart = (event) => {
+        event.preventDefault();
+
+        var mouseToStickOffsetTop;
+        var mouseToStickOffsetLeft;
+
+        for (const touch of event.touches) {
+            if (touch.target.id === this.stickElement.id) {
+                mouseToStickOffsetTop = touch.clientY - this.stickElement.offsetTop;
+                mouseToStickOffsetLeft = touch.clientX - this.stickElement.offsetLeft;
+            }
+        }
+
+        this.setState({
+            stickMotionEnabled: true,
+            mouseToStickOffsetTop,
+            mouseToStickOffsetLeft
+        });
+    }
+    
+    stick_touchmove = (event) => {
+        event.preventDefault();
+
+        if (!this.state.stickMotionEnabled) return;
+
+        this.moveStick(event);
+    }
+    
+    stick_touchend = (event) => {
+        event.preventDefault();
+
+        this.stickToCenter();
+
+        this.setState({ stickMotionEnabled: false });
+    }
+    
+
     enableStickMotion = (event) => {
         window.addEventListener("mousemove", (event) => this.moveStick(event));
         window.addEventListener("mouseup", () => this.disableStickMotion());
@@ -42,7 +102,7 @@ export default class Joystick extends React.Component{
             mouseToStickOffsetLeft: event.screenX - this.stickElement.offsetLeft
         });
     }
-    
+
     disableStickMotion = () => {
         if (!this.state.stickMotionEnabled) return;
         
@@ -56,21 +116,42 @@ export default class Joystick extends React.Component{
         const distX = this.props.baseSize * (1 - this.props.stickToBaseRatio) / 2 - this.state.stickLeft;
         const distY = this.props.baseSize * (1 - this.props.stickToBaseRatio) / 2 - this.state.stickTop;
         
-        for (let i = 0; i < this.stickToCenterTimeouts.length; i++) {
-            this.stickToCenterTimeouts[i] = setTimeout( () => {
+        for (let i = 1; i < this.stickToCenterTimeouts.length; i++) {
+            this.stickToCenterTimeouts[i-1] = setTimeout( () => {
                 this.setState({
                     stickTop: this.state.stickTop_prev + distY * i/this.stickToCenterTimeouts.length,
                     stickLeft: this.state.stickLeft_prev + distX * i/this.stickToCenterTimeouts.length,
                 })
             }, i*10);
         }
+        
+        this.stickToCenterTimeouts[this.stickToCenterTimeouts.length - 1] = setTimeout( () => {
+            this.setState({
+                stickTop: this.props.baseSize * (1 - this.props.stickToBaseRatio) / 2,
+                stickLeft: this.props.baseSize * (1 - this.props.stickToBaseRatio) / 2,
+            })
+        }, this.stickToCenterTimeouts.length*10);
     }
 
     moveStick = (event) => {
         if (!this.state.stickMotionEnabled) return;
         
-        var newStickTop = event.screenY + window.innerHeight - this.state.mouseToStickOffsetTop;
-        var newStickLeft = event.screenX - this.state.mouseToStickOffsetLeft;
+        var newStickTop;
+        var newStickLeft;
+
+        if (event.type === "touchmove") {
+            for (const touch of event.touches) {
+                if (touch.target.id === this.stickElement.id) {
+                    newStickTop = touch.clientY - this.state.mouseToStickOffsetTop;
+                    newStickLeft = touch.clientX - this.state.mouseToStickOffsetLeft;
+                }
+            }           
+        }
+        else {
+            newStickTop = event.screenY + window.innerHeight - this.state.mouseToStickOffsetTop;
+            newStickLeft = event.screenX - this.state.mouseToStickOffsetLeft;
+        }
+
         const dist_stickCenter_baseCenter = Math.sqrt(
             Math.pow(
                 (newStickTop + this.props.baseSize * this.props.stickToBaseRatio / 2) - 
@@ -164,7 +245,7 @@ export default class Joystick extends React.Component{
 
     render(){
         return(
-            <div className={style.container}>
+            <div className={style.container} style={{height: this.props.baseSize + 10, width: this.props.baseSize + 10}}>
                 <div
                     className={style.base}
                     id="Joystick_base"
