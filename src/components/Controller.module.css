@@ -1,0 +1,27 @@
+.container{
+    padding-top: 10vh;
+}
+
+.controlsContainer{
+    display: flex;
+    justify-content: space-evenly;
+    flex-wrap: wrap;
+}
+
+.sliderContainer{
+    /* display: inline-block; */
+    /* vertical-align: top; */
+    margin-left: 5vw;
+}
+
+.consoleContainer{
+    /* display: inline-block; */
+    /* vertical-align: top; */
+    margin-left: 5vw;
+}
+
+.joystickContainer{
+    /* display: inline-block; */
+    /* vertical-align: top; */
+    /* margin-left: calc(35vw - 50vh); */
+}

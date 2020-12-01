@@ -1,27 +1,24 @@
 .container{
-    padding-top: 10vh;
+    width: 100vw;
+    height: 100vh;
+    background-color: rgb(207, 216, 220);
+    animation: fadeIn .25s forwards;
 }
 
-.controlsContainer{
-    display: flex;
-    justify-content: space-evenly;
-    flex-wrap: wrap;
+.fadeIn{
+    animation: fadeIn .25s forwards;
 }
 
-.sliderContainer{
-    /* display: inline-block; */
-    /* vertical-align: top; */
-    margin-left: 5vw;
+@keyframes fadeIn{
+    from {opacity: 0;}
+    to {opacity: 1;}
 }
 
-.consoleContainer{
-    /* display: inline-block; */
-    /* vertical-align: top; */
-    margin-left: 5vw;
+.fadeOut{
+    animation: fadeOut .25s forwards;
 }
 
-.joystickContainer{
-    /* display: inline-block; */
-    /* vertical-align: top; */
-    /* margin-left: calc(35vw - 50vh); */
+@keyframes fadeOut{
+    from {opacity: 1;}
+    to {opacity: 0;}
 }

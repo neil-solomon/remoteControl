@@ -1,0 +1,41 @@
+.container{
+    position: sticky;
+    top: 0px;
+    left: 0px;
+    height: 50px;
+    width: 100vw;
+    box-shadow: 0px 5px 10px rgb(0,0,0,.5);
+    background-color: #FFFFFF;
+}
+
+.title{
+    color: rgb(76, 175, 80);
+    display: inline-block;
+    vertical-align: top;
+    font-weight: bold;
+    font-size: 1em;
+    padding-top: 7px;
+    padding-left: 20px;
+    cursor: pointer;
+}
+
+.menuIcons {
+    display: inline-block;
+    margin-top: 10px;
+    margin-left: calc(100vw - 325px);
+}
+
+.icon{
+    width: 30px;
+    height: 30px;
+    display: inline-block;
+    vertical-align: top;
+    margin-left: 25px;
+    cursor: pointer;
+    display: inline-block;
+    fill: black;
+    transition: fill .25s;
+}
+.icon:hover{
+    fill: rgb(76, 175, 80);
+}

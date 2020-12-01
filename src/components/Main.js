@@ -1,91 +1,59 @@
 import React from "react";
 import style from "./Main.module.css";
-import Joystick from "./Joystick";
-import Slider from "./Slider";
-import Console from "./Console";
+import Menu from "./Menu";
+import Home from "./Home";
+import Controller from "./Controller";
+import Help from "./Help";
 
 export default class Main extends React.Component{
     constructor(props){
         super(props);
-        
+
         this.state = {
-            xVel: 0,
-            yVel: 0,
-            rotVel: 0,
-            size: Math.min(.75 * window.innerHeight, 300)
+            pageView: [true, false, false], // home, controller, help
+            contentContainerClassName: style.fadeIn
+        };
+    }
+
+    changeMenu = (menu) => {
+        var pageView = JSON.parse(JSON.stringify(this.state.pageView));
+
+        for (let i = 0; i < pageView.length; i++) {
+            if (i === menu) {
+                pageView[i] = true;
+            }
+            else {
+                pageView[i] = false;
+            }
         }
-    }
 
-    componentWillUnmount = () => {
-        window.removeEventListener("resize", () => {
-            this.setState({ size: Math.min(.75 * window.innerHeight, 300) });
-        })
-    }
+        this.setState({ contentContainerClassName: style.fadeOut });
 
-    componentDidMount = () => {
-        window.addEventListener("resize", () => {
-            this.setState({ size: Math.min(.75 * window.innerHeight, 300) });
-        })
-    }
-
-    connect = () => {
-        const options = {
-            filters: [
-                {name: "HM10"}
-            ]
-        }
-        
-        navigator.bluetooth.requestDevice(options)
-            .then((bluetoothDevice)=> {
-                console.log(bluetoothDevice)
+        this.changeContent_timeout = setTimeout(() => {
+            this.setState({
+                contentContainerClassName: style.fadeIn,
+                pageView
             })
-            .catch((error)=>{
-                console.log(error)
-            })
-    }
-
-    updateJoystickVals = (yVel, xVel) => {
-        this.setState({
-            xVel: (100 * xVel).toFixed(), 
-            yVel: (100 * yVel).toFixed()
-        });
-    }
-
-    updateSliderValue = (value) => {
-        this.setState({
-            rotVel: (100 * value).toFixed()
-        });
+        }, 250)
     }
 
     render(){
         return(
             <div className={style.container}>
-                {/* Web Bluetooth
-                <button onClick={this.connect}>Connect</button> */}
-                <div className={style.controlsContainer}>
-                    <div className={style.sliderContainer}>
-                        <Slider
-                            height={this.state.size}
-                            updateSliderValue={this.updateSliderValue}
-                        />
-                    </div>
-                    <div className={style.consoleContainer}>
-                        <Console
-                            xVel={this.state.xVel}
-                            yVel={this.state.yVel}
-                            rotVel={this.state.rotVel}
-                        />
-                    </div>  
-                    <div className={style.joystickContainer}>
-                        <Joystick
-                            baseSize={this.state.size}
-                            stickToBaseRatio={3/4}
-                            validRadiusToBaseRatio={1/4}
-                            updateJoystickVals={this.updateJoystickVals}
-                        />
-                    </div>
+                <Menu
+                    changeMenu={this.changeMenu}
+                />
+                <div className={this.state.contentContainerClassName}>
+                    {this.state.pageView[0] &&
+                        <Home/>
+                    }
+                    {this.state.pageView[1] &&
+                        <Controller/>
+                    }
+                    {this.state.pageView[2] &&
+                        <Help/>
+                    }
                 </div>
-                
             </div>
         );
     }
