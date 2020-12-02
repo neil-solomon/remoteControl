@@ -1,8 +1,13 @@
 .container{
+    color: rgb(33, 33, 33);
     width: 100vw;
     height: 100vh;
     background-color: rgb(207, 216, 220);
     animation: fadeIn .25s forwards;
+}
+
+.contentContainer{
+    padding-top: 50px;
 }
 
 .fadeIn{
@@ -21,4 +26,21 @@
 @keyframes fadeOut{
     from {opacity: 1;}
     to {opacity: 0;}
+}
+
+a:link{
+    color: rgb(76, 175, 80);
+    text-decoration: none;
+}
+a:visited{
+    color: rgb(76, 175, 80);
+    text-decoration: none;
+}
+a:hover{
+    color: rgb(76, 175, 80);
+    text-decoration: underline;
+}
+a:active{
+    color: rgb(76, 175, 80);
+    text-decoration: underline;
 }

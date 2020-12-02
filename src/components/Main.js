@@ -43,7 +43,7 @@ export default class Main extends React.Component{
                 <Menu
                     changeMenu={this.changeMenu}
                 />
-                <div className={this.state.contentContainerClassName}>
+                <div className={style.contentContainer + " " + this.state.contentContainerClassName}>
                     {this.state.pageView[0] &&
                         <Home/>
                     }

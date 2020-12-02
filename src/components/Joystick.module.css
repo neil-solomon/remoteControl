@@ -7,7 +7,7 @@
 .base{
     position: absolute;
     border-radius: 100%;
-    border: 5px solid black;
+    border: 5px solid rgb(33, 33, 33);
     user-select: none;
 }
 
@@ -17,7 +17,7 @@
     z-index: 2;
     background: radial-gradient(rgb(0,0,0,.5), rgb(0,200,0), rgb(0,0,0));
     border-radius: 100%;
-    border: 5px solid black;
+    border: 5px solid rgb(33, 33, 33);
     user-select: none;
 }
 
@@ -25,7 +25,7 @@
     display: none;
     position: absolute;
     z-index: 3;
-    background: black;
+    background: rgb(33, 33, 33);
     /* background: linear-gradient(rgb(0,0,0), rgb(0,255,0), rgb(0,0,0)); */
     width: 3px;
 }
@@ -34,7 +34,7 @@
     display: none;
     position: absolute;
     z-index: 3;
-    background: black;
+    background: rgb(33, 33, 33);
     /* background: linear-gradient(rgb(0,0,0), rgb(0,255,0), rgb(0,0,0)); */
     height: 3px;
 }

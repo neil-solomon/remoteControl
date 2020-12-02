@@ -20,9 +20,9 @@ export default class Help extends React.Component{
                         title="Freepik"
                         target="blank"
                     >
-                        Freepik{" "}
+                        Freepik
                     </a>
-                    from{" "}
+                    {" "}from{" "}
                     <a
                         href="https://www.flaticon.com/"
                         title="Flaticon"
@@ -39,6 +39,16 @@ export default class Help extends React.Component{
                         target="blank"
                     >
                         create-react-app
+                    </a>
+                </div>
+                <div>
+                    Color style from{" "}
+                    <a 
+                        href="https://www.materialpalette.com/"
+                        title="MaterialPalette"
+                        target="blank"
+                    >
+                    Material Palette
                     </a>
                 </div>
             </div>

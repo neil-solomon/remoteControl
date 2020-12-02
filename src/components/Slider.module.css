@@ -8,7 +8,7 @@
     left: 18px;
     z-index: 1;
     width: 25px;
-    border: 5px solid black;
+    border: 5px solid rgb(33, 33, 33);
     border-radius: 20px;
     background: linear-gradient(rgb(0,255,0), rgb(0,0,0), rgb(0,255,0));
 }
@@ -19,7 +19,7 @@
     z-index: 2;
     width: 60px;
     height: 25px;
-    border: 5px solid black;
+    border: 5px solid rgb(33, 33, 33);
     border-radius: 20px;
     background: rgb(200,200,200,.5);
 }
@@ -30,5 +30,5 @@
     left: 21px;
     width: 30px;
     height: 2px;
-    background: rgb(50,50,50);
+    background:rgb(33, 33, 33);
 }

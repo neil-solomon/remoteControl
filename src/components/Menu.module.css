@@ -4,7 +4,7 @@
     left: 0px;
     height: 50px;
     width: 100vw;
-    box-shadow: 0px 5px 10px rgb(0,0,0,.5);
+    box-shadow: 0px 5px 10px rgb(69, 90, 100,.5);
     background-color: #FFFFFF;
 }
 
@@ -15,25 +15,25 @@
     font-weight: bold;
     font-size: 1em;
     padding-top: 7px;
-    padding-left: 20px;
+    padding-left: 25px;
     cursor: pointer;
 }
 
 .menuIcons {
     display: inline-block;
-    margin-top: 10px;
-    margin-left: calc(100vw - 325px);
+    margin-top: 7px;
+    margin-left: calc(100vw - 350px);
 }
 
 .icon{
-    width: 30px;
-    height: 30px;
+    width: 35px;
+    height: 35px;
     display: inline-block;
     vertical-align: top;
     margin-left: 25px;
     cursor: pointer;
     display: inline-block;
-    fill: black;
+    fill: rgb(69, 90, 100);
     transition: fill .25s;
 }
 .icon:hover{

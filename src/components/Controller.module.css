@@ -1,5 +1,10 @@
 .container{
-    padding-top: 10vh;
+    /* padding-top: 10vh; */
+}
+
+.bluetoothButtonContainer{
+    text-align: center;
+    margin-bottom: 50px;
 }
 
 .controlsContainer{

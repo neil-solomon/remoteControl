@@ -3,6 +3,8 @@ import style from "./Controller.module.css";
 import Joystick from "./Joystick";
 import Slider from "./Slider";
 import Console from "./Console";
+import IconButton from "./IconButton";
+import {ReactComponent as BluetoothIcon} from "../icons/bluetooth-signal.svg";
 
 export default class Controller extends React.Component{
     constructor(props){
@@ -28,7 +30,7 @@ export default class Controller extends React.Component{
         })
     }
 
-    connect = () => {
+    connectToBluetooth = () => {
         const options = {
             filters: [
                 {name: "HM10"}
@@ -60,8 +62,13 @@ export default class Controller extends React.Component{
     render(){
         return(
             <div className={style.container}>
-                {/* Web Bluetooth
-                <button onClick={this.connect}>Connect</button> */}
+                <div className={style.bluetoothButtonContainer}>
+                    <IconButton
+                        onClick={this.connectToBluetooth}
+                        icon={BluetoothIcon}
+                        text="Connect To Droid"
+                    />
+                </div>
                 <div className={style.controlsContainer}>
                     <div className={style.sliderContainer}>
                         <Slider

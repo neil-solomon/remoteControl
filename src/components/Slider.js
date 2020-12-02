@@ -11,7 +11,7 @@ export default class Slider extends React.Component{
         this.carElement = null;
 
         this.state = {
-            carTop: this.props.height/2 - 12.5,
+            carTop: (this.props.height-25)/2,
             carMoveEnabled: false,
         };
     }
@@ -42,11 +42,11 @@ export default class Slider extends React.Component{
     componentDidUpdate = (prevProps, prevState) => {
         if (prevState.carTop !== this.state.carTop) {
             this.props.updateSliderValue(
-                -1 * ((this.state.carTop - (this.props.height/2 - 12.5)) / ((this.props.height-25)/2))
+                -1 * ((this.state.carTop - (this.props.height-25)/2) / ((this.props.height-25)/2))
             );
         }
         if (prevProps.height !== this.props.height) {
-            this.setState({ carTop: this.props.height/2 - 12.5 })
+            this.setState({ carTop: (this.props.height-25)/2 })
         }
     }
 
@@ -124,7 +124,7 @@ export default class Slider extends React.Component{
     }
 
     carToCenter = () => {
-        const dist = (this.props.height/2 - 12.5) - this.state.carTop;
+        const dist = (this.props.height-25)/2 - this.state.carTop;
         const carTop_prev = this.state.carTop;
 
         for (let i = 1; i < this.carToCenterTimeouts.length; i++) {
@@ -137,7 +137,7 @@ export default class Slider extends React.Component{
 
         this.carToCenterTimeouts[this.carToCenterTimeouts.length - 1] = setTimeout( () => {
             this.setState({
-                carTop: this.props.height/2 - 12.5,
+                carTop: (this.props.height-25)/2,
             })
         }, this.carToCenterTimeouts.length*10);
     }
@@ -156,7 +156,10 @@ export default class Slider extends React.Component{
                     id="Slider_car"
                     className={style.car}
                     style={{
-                        top: this.state.carTop
+                        top: this.state.carTop,
+                        backgroundColor: "rgb(0,255,0," + 
+                            Math.abs((this.state.carTop - (this.props.height-25)/2) / ((this.props.height-25)/2)) + 
+                            ")"
                     }}
                 />
                 <div
