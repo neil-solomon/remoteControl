@@ -19,7 +19,7 @@ export default class Controller extends React.Component {
       bluetoothDevice: null,
       bluetoothCharacteristic: null,
 
-      password: "",
+      password: "", //
     };
   }
 
