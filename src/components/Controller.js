@@ -18,6 +18,8 @@ export default class Controller extends React.Component {
 
       bluetoothDevice: null,
       bluetoothCharacteristic: null,
+
+      password: "",
     };
   }
 
@@ -41,19 +43,41 @@ export default class Controller extends React.Component {
     ) {
       if (this.state.bluetoothCharacteristic) {
         console.log(
-          this.state.xVel + 100,
-          this.state.yVel + 100,
-          this.state.rotVel + 100
+          this.state.xVel + 150,
+          this.state.yVel + 150,
+          this.state.rotVel + 150
         );
         this.state.bluetoothCharacteristic.writeValue(
           new Uint8Array([
-            this.state.xVel + 100, // ensure that all values are between 0 and 200
-            this.state.yVel + 100,
-            this.state.rotVel + 100,
-            36, // $ is command termination character
+            this.state.xVel + 150, // ensure that all values are between 50 and 250
+            this.state.yVel + 150,
+            this.state.rotVel + 150,
+            36, // terminate command
           ])
         );
       }
+    }
+
+    if (
+      this.state.bluetoothCharacteristic &&
+      !prevState.bluetoothCharacteristic
+    ) {
+      var data = this.state.password.split("").map((char, index) => {
+        return this.state.password.charCodeAt(index);
+      });
+
+      if (!this.state.bluetoothCharacteristic) {
+        return;
+      }
+
+      this.state.bluetoothCharacteristic.writeValue(
+        new Uint8Array([
+          data[0],
+          data[1],
+          data[2],
+          35, // terminate password
+        ])
+      );
     }
   };
 
@@ -75,33 +99,48 @@ export default class Controller extends React.Component {
         });
         this.setState({ bluetoothDevice });
 
-        bluetoothDevice.gatt.connect().then((server) => {
-          console.log("server", server);
+        bluetoothDevice.gatt
+          .connect()
+          .then((server) => {
+            console.log("server", server);
 
-          server.getPrimaryService(0xffe0).then((service) => {
-            console.log("service", service);
+            server
+              .getPrimaryService(0xffe0)
+              .then((service) => {
+                console.log("service", service);
 
-            service.getCharacteristic(0xffe1).then((characteristic) => {
-              console.log("characteristic", characteristic);
-              characteristic.addEventListener(
-                "characteristicvaluechanged",
-                (e) => {
-                  var data = [];
-                  for (let i = 0; i < e.target.value.byteLength; i++) {
-                    data.push(e.target.value.getUint8(i));
-                  }
-                  console.log(
-                    "characteristicvaluechanged",
-                    e.target.value,
-                    data
-                  );
-                }
-              );
-              characteristic.startNotifications();
-              this.setState({ bluetoothCharacteristic: characteristic });
-            });
+                service
+                  .getCharacteristic(0xffe1)
+                  .then((characteristic) => {
+                    console.log("characteristic", characteristic);
+                    characteristic.addEventListener(
+                      "characteristicvaluechanged",
+                      (e) => {
+                        var data = [];
+                        for (let i = 0; i < e.target.value.byteLength; i++) {
+                          data.push(e.target.value.getUint8(i));
+                        }
+                        console.log(
+                          "characteristicvaluechanged",
+                          e.target.value,
+                          data
+                        );
+                      }
+                    );
+                    characteristic.startNotifications();
+                    this.setState({ bluetoothCharacteristic: characteristic });
+                  })
+                  .catch((error) => {
+                    console.log(error);
+                  });
+              })
+              .catch((error) => {
+                console.log(error);
+              });
+          })
+          .catch((error) => {
+            console.log(error);
           });
-        });
       })
       .catch((error) => {
         console.log(error);
@@ -137,15 +176,35 @@ export default class Controller extends React.Component {
     }
   };
 
+  updatePassword = (event) => {
+    this.setState({ password: event.target.value });
+  };
+
   render() {
     return (
       <div className={style.container}>
         <div className={style.bluetoothButtonContainer}>
-          {this.state.bluetoothDevice &&
-            !this.state.bluetoothCharacteristic && (
-              <div>Connecting to {this.state.bluetoothDevice.name} ... </div>
+          <div>
+            {!this.state.bluetoothDevice && (
+              <>
+                Not Connected{" "}
+                <input
+                  type="password"
+                  placeholder="password"
+                  onChange={this.updatePassword}
+                ></input>
+              </>
             )}
-          {this.state.bluetoothCharacteristic && (
+            {this.state.bluetoothDevice &&
+              !this.state.bluetoothCharacteristic && (
+                <>Connecting to {this.state.bluetoothDevice.name} ... </>
+              )}
+            {this.state.bluetoothDevice &&
+              this.state.bluetoothCharacteristic && (
+                <>Connected to {this.state.bluetoothDevice.name} ! </>
+              )}
+          </div>
+          {/* {this.state.bluetoothCharacteristic && (
             <div>
               <input type="text" id="commandInput"></input>
               <button onClick={this.sendCommand}>
@@ -153,7 +212,7 @@ export default class Controller extends React.Component {
                 send to {this.state.bluetoothDevice.name}
               </button>
             </div>
-          )}
+          )} */}
           <IconButton
             onClick={this.connectToBluetooth}
             icon={BluetoothIcon}
