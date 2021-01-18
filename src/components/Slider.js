@@ -191,12 +191,12 @@ export default class Slider extends React.Component {
               ")",
           }}
         ></div>
-        <div
+        {/* <div
           className={style.carInset}
           style={{
             top: this.state.carTop + 2,
           }}
-        />
+        /> */}
         <div
           className={style.carLine}
           style={{
