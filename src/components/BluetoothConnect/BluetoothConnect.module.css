@@ -1,0 +1,41 @@
+.container {
+  text-align: center;
+  margin-bottom: 25px;
+  animation: fadeIn 0.25s forwards;
+}
+
+.password {
+  height: 25px;
+}
+
+.message {
+  height: 25px;
+  animation: fadeIn 0.25s forwards;
+}
+
+.icon {
+  height: 25px;
+  width: 25px;
+  transition: fill 0.5s;
+}
+
+.red {
+  fill: rgb(255, 0, 0);
+}
+
+.yellow {
+  fill: rgb(255, 255, 0);
+}
+
+.green {
+  fill: rgb(0, 225, 0);
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}

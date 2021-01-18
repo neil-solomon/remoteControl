@@ -2,9 +2,8 @@ import React from "react";
 import style from "./Controller.module.css";
 import Joystick from "../Joystick";
 import Slider from "../Slider";
+import BluetoothConnect from "../BluetoothConnect";
 import Console from "../Console";
-import BluetoothConnectButton from "../BluetoothConnectButton";
-import { ReactComponent as BluetoothIcon } from "../../icons/bluetooth-signal.svg";
 import { ReactComponent as SmartphoneIcon } from "../../icons/smartphone.svg";
 
 export default class Controller extends React.Component {
@@ -201,44 +200,16 @@ export default class Controller extends React.Component {
         </div>
       );
     }
-
+    console.log("Controller", this.state.password);
     return (
       <div className={style.container}>
-        <div className={style.bluetoothButtonContainer}>
-          <div
-            className={style.bluetoothMessage}
-            key={
-              "bluetoothMessage_" +
-              (this.state.bluetoothDevice ? "1" : "0") +
-              (this.state.bluetoothCharacteristic ? "1" : "0")
-            }
-          >
-            {!this.state.bluetoothDevice && (
-              <>
-                Not Connected{" "}
-                <input
-                  type="password"
-                  placeholder="enter password"
-                  onChange={this.updatePassword}
-                ></input>
-              </>
-            )}
-            {this.state.bluetoothDevice &&
-              !this.state.bluetoothCharacteristic && (
-                <>Connecting to {this.state.bluetoothDevice.name} ... </>
-              )}
-            {this.state.bluetoothDevice &&
-              this.state.bluetoothCharacteristic && (
-                <>Connected to {this.state.bluetoothDevice.name} ! </>
-              )}
-          </div>
-          <BluetoothConnectButton
-            onClick={this.connectToBluetooth}
-            icon={BluetoothIcon}
-            text="Connect"
-            id="bluetoothConnectButton"
-          />
-        </div>
+        <BluetoothConnect
+          connectToBluetooth={this.connectToBluetooth}
+          bluetoothCharacteristic={this.state.bluetoothCharacteristic}
+          bluetoothDevice={this.state.bluetoothDevice}
+          updatePassword={this.updatePassword}
+          password={this.state.password}
+        />
         <div
           className={style.controlsContainer}
           style={{ height: this.state.size + 100 }}
