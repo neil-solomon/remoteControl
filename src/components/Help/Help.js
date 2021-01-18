@@ -10,7 +10,7 @@ export default class Help extends React.Component {
 
   render() {
     return (
-      <div className={style.container}>
+      <div className={style.container} data-test="Help">
         <div>
           Icons made by{" "}
           <a

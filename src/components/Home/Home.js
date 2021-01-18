@@ -10,7 +10,7 @@ export default class Home extends React.Component {
 
   render() {
     return (
-      <div className={style.container}>
+      <div className={style.container} data-test="Home">
         <div className={style.title}>FROG</div>
         <div>Fantastic Robotic Omni-directonal Ground-transport</div>
       </div>

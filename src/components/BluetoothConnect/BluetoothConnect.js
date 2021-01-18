@@ -13,7 +13,7 @@ export default class BluetoothConnect extends React.Component {
     ) {
       iconColor = style.green;
     }
-    console.log("BluetoothConnect", this.props.password);
+
     return (
       <div className={style.container}>
         <div>

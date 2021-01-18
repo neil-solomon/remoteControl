@@ -192,7 +192,7 @@ export default class Controller extends React.Component {
   render() {
     if (window.innerWidth < 600) {
       return (
-        <div className={style.rotateDeviceContainer}>
+        <div className={style.rotateDeviceContainer} data-test="Controller">
           Rotate Device
           <div className={style.rotateDeviceIconContainer}>
             <SmartphoneIcon className={style.rotateDeviceIcon} />
@@ -200,9 +200,9 @@ export default class Controller extends React.Component {
         </div>
       );
     }
-    console.log("Controller", this.state.password);
+
     return (
-      <div className={style.container}>
+      <div className={style.container} data-test="Controller">
         <BluetoothConnect
           connectToBluetooth={this.connectToBluetooth}
           bluetoothCharacteristic={this.state.bluetoothCharacteristic}

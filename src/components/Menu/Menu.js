@@ -13,17 +13,23 @@ export default class Menu extends React.Component {
   render() {
     return (
       <div className={style.container}>
-        <div className={style.title} onClick={() => this.props.changeMenu(0)}>
+        <div
+          className={style.title}
+          onClick={() => this.props.changeMenu(0)}
+          data-test="Menu_title"
+        >
           FROG
         </div>
         <div className={style.menuIcons}>
           <ControllerIcon
             className={style.icon}
             onClick={() => this.props.changeMenu(1)}
+            data-test="Menu_controllerIcon"
           />
           <QuestionIcon
             className={style.icon}
             onClick={() => this.props.changeMenu(2)}
+            data-test="Menu_questionIcon"
           />
         </div>
       </div>
