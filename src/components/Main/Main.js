@@ -1,9 +1,9 @@
 import React from "react";
 import style from "./Main.module.css";
-import Menu from "./Menu";
-import Home from "./Home";
-import Controller from "./Controller";
-import Help from "./Help";
+import Menu from "../Menu";
+import Home from "../Home";
+import Controller from "../Controller";
+import Help from "../Help";
 
 export default class Main extends React.Component {
   constructor(props) {

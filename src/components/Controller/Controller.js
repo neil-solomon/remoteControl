@@ -1,11 +1,11 @@
 import React from "react";
 import style from "./Controller.module.css";
-import Joystick from "./Joystick";
-import Slider from "./Slider";
-import Console from "./Console";
-import IconButton from "./IconButton";
-import { ReactComponent as BluetoothIcon } from "../icons/bluetooth-signal.svg";
-import { ReactComponent as SmartphoneIcon } from "../icons/smartphone.svg";
+import Joystick from "../Joystick";
+import Slider from "../Slider";
+import Console from "../Console";
+import BluetoothConnectButton from "../BluetoothConnectButton";
+import { ReactComponent as BluetoothIcon } from "../../icons/bluetooth-signal.svg";
+import { ReactComponent as SmartphoneIcon } from "../../icons/smartphone.svg";
 
 export default class Controller extends React.Component {
   constructor(props) {
@@ -20,7 +20,7 @@ export default class Controller extends React.Component {
       bluetoothDevice: null,
       bluetoothCharacteristic: null,
 
-      password: "", //
+      password: "",
     };
   }
 
@@ -232,7 +232,7 @@ export default class Controller extends React.Component {
                 <>Connected to {this.state.bluetoothDevice.name} ! </>
               )}
           </div>
-          <IconButton
+          <BluetoothConnectButton
             onClick={this.connectToBluetooth}
             icon={BluetoothIcon}
             text="Connect"

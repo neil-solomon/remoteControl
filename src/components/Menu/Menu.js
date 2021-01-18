@@ -1,7 +1,7 @@
 import React from "react";
 import style from "./Menu.module.css";
-import { ReactComponent as QuestionIcon } from "../icons/question.svg";
-import { ReactComponent as ControllerIcon } from "../icons/video-game.svg";
+import { ReactComponent as QuestionIcon } from "../../icons/question.svg";
+import { ReactComponent as ControllerIcon } from "../../icons/video-game.svg";
 
 export default class Menu extends React.Component {
   constructor(props) {

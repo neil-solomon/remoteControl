@@ -1,7 +1,7 @@
 import React from "react";
-import style from "./IconButton.module.css";
+import style from "./BluetoothConnectButton.module.css";
 
-export default class IconButton extends React.Component {
+export default class BluetoothConnectButton extends React.Component {
   constructor(props) {
     super(props);
 
