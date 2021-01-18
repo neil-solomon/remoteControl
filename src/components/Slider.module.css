@@ -1,34 +1,43 @@
-.container{
-    position: relative;
+.container {
+  position: relative;
 }
 
-.track{
-    position: absolute;
-    top: 0px;
-    left: 18px;
-    z-index: 1;
-    width: 25px;
-    border: 5px solid rgb(33, 33, 33);
-    border-radius: 20px;
-    background: linear-gradient(rgb(0,255,0), rgb(0,0,0), rgb(0,255,0));
+.track {
+  position: absolute;
+  top: 0px;
+  left: 18px;
+  z-index: 1;
+  width: 35px;
+  border: 5px solid rgb(33, 33, 33);
+  border-radius: 20px;
+  background: linear-gradient(rgb(0, 255, 0), rgb(0, 0, 0), rgb(0, 255, 0));
 }
 
-.car{
-    position: absolute;
-    left: 0px;
-    z-index: 2;
-    width: 60px;
-    height: 25px;
-    border: 5px solid rgb(33, 33, 33);
-    border-radius: 20px;
-    background: rgb(200,200,200,.5);
+.car {
+  position: absolute;
+  left: 0px;
+  z-index: 2;
+  width: 70px;
+  height: 25px;
+  border: 5px solid rgb(33, 33, 33);
+  border-radius: 20px;
 }
 
-.carLine{
-    position: absolute;
-    z-index: 3;
-    left: 21px;
-    width: 30px;
-    height: 2px;
-    background:rgb(33, 33, 33);
+.carInset {
+  position: absolute;
+  left: 2px;
+  z-index: 3;
+  width: 74px;
+  height: 29px;
+  border: 1px solid rgb(0, 255, 0, 0.5);
+  border-radius: 20px;
+}
+
+.carLine {
+  position: absolute;
+  z-index: 3;
+  left: 21px;
+  width: 40px;
+  height: 2px;
+  background: rgb(33, 33, 33);
 }

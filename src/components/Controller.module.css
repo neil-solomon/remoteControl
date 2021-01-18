@@ -1,32 +1,87 @@
-.container{
-    /* padding-top: 10vh; */
+.container {
+  /* padding-top: 10vh; */
 }
 
-.bluetoothButtonContainer{
-    text-align: center;
-    margin-bottom: 50px;
+.rotateDeviceContainer {
+  text-align: center;
+  font-size: 1.5em;
+  animation: fadeIn 0.25s forwards;
 }
 
-.controlsContainer{
-    display: flex;
-    justify-content: space-evenly;
-    flex-wrap: wrap;
+.rotateDeviceIconContainer {
+  width: 200px;
+  height: 200px;
+  margin-top: 25px;
+  margin-left: auto;
+  margin-right: auto;
+  animation: rotateDevice 2s infinite;
 }
 
-.sliderContainer{
-    /* display: inline-block; */
-    /* vertical-align: top; */
-    margin-left: 5vw;
+@keyframes rotateDevice {
+  0% {
+    opacity: 0;
+    transform: rotate(0deg);
+  }
+  20% {
+    opacity: 1;
+    transform: rotate(0deg);
+  }
+  80% {
+    opacity: 1;
+    transform: rotate(-90deg);
+  }
+  100% {
+    opacity: 0;
+    transform: rotate(-90deg);
+  }
 }
 
-.consoleContainer{
-    /* display: inline-block; */
-    /* vertical-align: top; */
-    margin-left: 5vw;
+.rotateDeviceIcon {
+  fill: rgb(76, 175, 80);
+  /* width: 100px;
+  height: 100px; */
 }
 
-.joystickContainer{
-    /* display: inline-block; */
-    /* vertical-align: top; */
-    /* margin-left: calc(35vw - 50vh); */
+.bluetoothButtonContainer {
+  text-align: center;
+  margin-bottom: 25px;
+  animation: fadeIn 0.25s forwards;
+}
+
+.bluetoothMessage {
+  margin-bottom: 10px;
+}
+
+.controlsContainer {
+  display: flex;
+  justify-content: space-evenly;
+  flex-wrap: wrap;
+  animation: fadeIn 0.25s forwards;
+}
+
+.sliderContainer {
+  /* display: inline-block; */
+  /* vertical-align: top; */
+  margin-left: 5vw;
+}
+
+.consoleContainer {
+  /* display: inline-block; */
+  /* vertical-align: top; */
+  margin-left: 5vw;
+}
+
+.joystickContainer {
+  /* display: inline-block; */
+  /* vertical-align: top; */
+  /* margin-left: calc(35vw - 50vh); */
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
 }

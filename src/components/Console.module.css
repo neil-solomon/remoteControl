@@ -1,11 +1,11 @@
-.container{
-    text-align: center;
-    padding-top: 10vh;
-    font-size: 1.5em;
+.container {
+  text-align: center;
+  padding-top: 10vh;
+  font-size: 1.5em;
 }
 
-.value{
-    display: inline-block;
-    padding-left: 10px;
-    width: 50px;
+.value {
+  display: inline-block;
+  padding-left: 10px;
+  width: 50px;
 }

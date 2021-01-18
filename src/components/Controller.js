@@ -5,6 +5,7 @@ import Slider from "./Slider";
 import Console from "./Console";
 import IconButton from "./IconButton";
 import { ReactComponent as BluetoothIcon } from "../icons/bluetooth-signal.svg";
+import { ReactComponent as SmartphoneIcon } from "../icons/smartphone.svg";
 
 export default class Controller extends React.Component {
   constructor(props) {
@@ -181,16 +182,26 @@ export default class Controller extends React.Component {
   };
 
   render() {
+    if (window.innerWidth < 600) {
+      return (
+        <div className={style.rotateDeviceContainer}>
+          Rotate Device
+          <div className={style.rotateDeviceIconContainer}>
+            <SmartphoneIcon className={style.rotateDeviceIcon} />
+          </div>
+        </div>
+      );
+    }
     return (
       <div className={style.container}>
         <div className={style.bluetoothButtonContainer}>
-          <div>
+          <div className={style.bluetoothMessage}>
             {!this.state.bluetoothDevice && (
               <>
                 Not Connected{" "}
                 <input
                   type="password"
-                  placeholder="password"
+                  placeholder="enter password"
                   onChange={this.updatePassword}
                 ></input>
               </>
@@ -204,22 +215,16 @@ export default class Controller extends React.Component {
                 <>Connected to {this.state.bluetoothDevice.name} ! </>
               )}
           </div>
-          {/* {this.state.bluetoothCharacteristic && (
-            <div>
-              <input type="text" id="commandInput"></input>
-              <button onClick={this.sendCommand}>
-                {" "}
-                send to {this.state.bluetoothDevice.name}
-              </button>
-            </div>
-          )} */}
           <IconButton
             onClick={this.connectToBluetooth}
             icon={BluetoothIcon}
-            text="Connect To Bluetooth"
+            text="Connect"
           />
         </div>
-        <div className={style.controlsContainer}>
+        <div
+          className={style.controlsContainer}
+          style={{ height: this.state.size + 100 }}
+        >
           <div className={style.sliderContainer}>
             <Slider
               height={this.state.size}

@@ -1,41 +1,44 @@
-.container{
-    position: sticky;
-    top: 0px;
-    left: 0px;
-    height: 50px;
-    width: 100vw;
-    box-shadow: 0px 5px 10px rgb(69, 90, 100,.5);
-    background-color: #FFFFFF;
+.container {
+  position: sticky;
+  top: 0px;
+  left: 0px;
+  z-index: 1;
+  height: 50px;
+  width: 100vw;
+  box-shadow: 0px 5px 10px rgb(69, 90, 100, 0.5);
+  background-color: #ffffff;
 }
 
-.title{
-    color: rgb(76, 175, 80);
-    display: inline-block;
-    vertical-align: top;
-    font-weight: bold;
-    font-size: 1em;
-    padding-top: 7px;
-    padding-left: 25px;
-    cursor: pointer;
+.title {
+  color: rgb(76, 175, 80);
+  display: inline-block;
+  vertical-align: top;
+  font-weight: bold;
+  font-size: 2em;
+  padding-top: 3px;
+  padding-left: 10px;
+  cursor: pointer;
+  /* text-shadow: 1px 1px 0px rgb(76, 175, 80), -1px 1px 0px rgb(76, 175, 80),
+    1px -1px 0px rgb(76, 175, 80), -1px -1px 0px rgb(76, 175, 80); */
 }
 
 .menuIcons {
-    display: inline-block;
-    margin-top: 7px;
-    margin-left: calc(100vw - 350px);
+  display: inline-block;
+  margin-top: 7px;
+  margin-left: calc(100vw - 205px);
 }
 
-.icon{
-    width: 35px;
-    height: 35px;
-    display: inline-block;
-    vertical-align: top;
-    margin-left: 25px;
-    cursor: pointer;
-    display: inline-block;
-    fill: rgb(69, 90, 100);
-    transition: fill .25s;
+.icon {
+  width: 35px;
+  height: 35px;
+  display: inline-block;
+  vertical-align: top;
+  margin-left: 15px;
+  cursor: pointer;
+  display: inline-block;
+  fill: rgb(69, 90, 100);
+  transition: fill 0.25s;
 }
-.icon:hover{
-    fill: rgb(76, 175, 80);
+.icon:hover {
+  fill: rgb(76, 175, 80);
 }

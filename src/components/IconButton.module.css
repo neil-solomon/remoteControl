@@ -1,46 +1,50 @@
-.button{
-    padding-top: 10px;
-    padding-bottom: 9px;
-    padding-left: 45px;
-    padding-right: 5px;
-    font-size: .75em;
-    background-color: white;
-    border-radius: 20px;
-    border: 1px solid rgb(69, 90, 100);
-    box-shadow: 0px 5px 5px rgb(69, 90, 100,.5), 0px 5px 5px rgb(69, 90, 100,0) inset;
-    cursor: pointer;
-    transition: box-shadow .25s, padding-left .25s, padding-right .25s;
+.button {
+  padding-top: 10px;
+  padding-bottom: 10px;
+  padding-left: 35px;
+  padding-right: 5px;
+  font-size: 0.75em;
+  background-color: white;
+  border-radius: 20px;
+  border: 1px solid rgb(69, 90, 100);
+  box-shadow: 0px 5px 5px rgb(69, 90, 100, 0.5),
+    0px 5px 5px rgb(69, 90, 100, 0) inset;
+  cursor: pointer;
+  transition: box-shadow 0.25s, padding-left 0.25s, padding-right 0.25s;
 }
 
-.button:hover{
-    box-shadow: 0px 10px 10px rgb(69, 90, 100,.5), 0px 5px 5px rgb(69, 90, 100,0) inset;
-    border: 1px solid rgb(96, 125, 139);
-    padding-left: 30px;
-    padding-right: 20px;
+.button:hover {
+  box-shadow: 0px 10px 10px rgb(69, 90, 100, 0.5),
+    0px 5px 5px rgb(69, 90, 100, 0) inset;
+  border: 1px solid rgb(96, 125, 139);
+  padding-left: 25px;
+  padding-right: 15px;
 }
 
-.button:active{
-    box-shadow: 0px 5px 5px rgb(69, 90, 100,0), 0px 5px 5px rgb(69, 90, 100,.5) inset;
+.button:active {
+  box-shadow: 0px 5px 5px rgb(69, 90, 100, 0),
+    0px 5px 5px rgb(69, 90, 100, 0.5) inset;
 }
 
-.button :nth-child(2){
-    display: inline-block; 
-    vertical-align: top;
-    margin-left: 10px;
-    opacity: 0;
-    transition: opacity .25s;
+.button :nth-child(2) {
+  display: inline-block;
+  vertical-align: top;
+  margin-left: 10px;
+  opacity: 0;
+  transition: opacity 0.25s;
 }
-.button:hover :nth-child(2){
-    opacity: 1;
-}
-
-.icon{
-    height: 1.5em;
-    width: 1.5em;
-    fill: rgb(76, 175, 80);
+.button:hover :nth-child(2) {
+  opacity: 1;
 }
 
-.text{
-    display: inline-block;
-    padding-top: 6px;
+.icon {
+  height: 1.5em;
+  width: 1.5em;
+  fill: rgb(76, 175, 80);
+}
+
+.text {
+  display: inline-block;
+  padding-top: 6px;
+  line-height: 8px;
 }

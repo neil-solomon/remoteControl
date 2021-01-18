@@ -1,47 +1,51 @@
-.container{
-    position: relative;
-    /* margin-left: 100px;
+.container {
+  position: relative;
+  /* margin-left: 100px;
     margin-top: 100px; */
 }
 
-.base{
-    position: absolute;
-    border-radius: 100%;
-    border: 5px solid rgb(33, 33, 33);
-    user-select: none;
+.base {
+  position: absolute;
+  border-radius: 100%;
+  border: 5px solid rgb(33, 33, 33);
+  user-select: none;
 }
 
-.stick{
-    /* display: none; */
-    position: absolute;
-    z-index: 2;
-    background: radial-gradient(rgb(0,0,0,.5), rgb(0,200,0), rgb(0,0,0));
-    border-radius: 100%;
-    border: 5px solid rgb(33, 33, 33);
-    user-select: none;
+.stick {
+  /* display: none; */
+  position: absolute;
+  z-index: 2;
+  background: radial-gradient(rgb(0, 0, 0, 0.5), rgb(0, 200, 0), rgb(0, 0, 0));
+  border-radius: 100%;
+  border: 5px solid rgb(33, 33, 33);
+  user-select: none;
 }
 
-.stickCrossVertical{
-    display: none;
-    position: absolute;
-    z-index: 3;
-    background: rgb(33, 33, 33);
-    /* background: linear-gradient(rgb(0,0,0), rgb(0,255,0), rgb(0,0,0)); */
-    width: 3px;
+.stickCrossVertical {
+  display: none;
+  position: absolute;
+  z-index: 3;
+  background: rgb(33, 33, 33);
+  /* background: linear-gradient(rgb(0,0,0), rgb(0,255,0), rgb(0,0,0)); */
+  width: 3px;
 }
 
-.stickCrossHorizontal{
-    display: none;
-    position: absolute;
-    z-index: 3;
-    background: rgb(33, 33, 33);
-    /* background: linear-gradient(rgb(0,0,0), rgb(0,255,0), rgb(0,0,0)); */
-    height: 3px;
+.stickCrossHorizontal {
+  display: none;
+  position: absolute;
+  z-index: 3;
+  background: rgb(33, 33, 33);
+  /* background: linear-gradient(rgb(0,0,0), rgb(0,255,0), rgb(0,0,0)); */
+  height: 3px;
 }
 
-.baseShine{
-    position: absolute;
-    z-index: 1;
-    border-radius: 100%;
-    background-image: radial-gradient(rgb(255,255,255), rgb(225,225,225), rgb(225,225,225));
+.baseShine {
+  position: absolute;
+  z-index: 1;
+  border-radius: 100%;
+  background-image: radial-gradient(
+    rgb(255, 255, 255),
+    rgb(225, 225, 225),
+    rgb(225, 225, 225)
+  );
 }
