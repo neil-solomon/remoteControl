@@ -25,6 +25,7 @@ export default class IconButton extends React.Component {
         onClick={this.props.onClick}
         onMouseEnter={this.handleHoverIn}
         onMouseLeave={this.handleHoverOut}
+        id={this.props.id}
       >
         <div className={style.text}>{this.props.text}</div>
         <div>

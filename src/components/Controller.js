@@ -83,6 +83,15 @@ export default class Controller extends React.Component {
   };
 
   connectToBluetooth = () => {
+    var bluetoothConnectButton = document.getElementById(
+      "bluetoothConnectButton"
+    );
+    if (bluetoothConnectButton) {
+      bluetoothConnectButton.blur();
+    } else {
+      console.log("cant find bluetoothConnectButton");
+    }
+
     const options = {
       filters: [{ name: "FrogRobotics" }],
       optionalServices: [0xffe0],
@@ -192,10 +201,18 @@ export default class Controller extends React.Component {
         </div>
       );
     }
+
     return (
       <div className={style.container}>
         <div className={style.bluetoothButtonContainer}>
-          <div className={style.bluetoothMessage}>
+          <div
+            className={style.bluetoothMessage}
+            key={
+              "bluetoothMessage_" +
+              (this.state.bluetoothDevice ? "1" : "0") +
+              (this.state.bluetoothCharacteristic ? "1" : "0")
+            }
+          >
             {!this.state.bluetoothDevice && (
               <>
                 Not Connected{" "}
@@ -219,6 +236,7 @@ export default class Controller extends React.Component {
             onClick={this.connectToBluetooth}
             icon={BluetoothIcon}
             text="Connect"
+            id="bluetoothConnectButton"
           />
         </div>
         <div
