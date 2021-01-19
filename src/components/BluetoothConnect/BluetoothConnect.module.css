@@ -13,6 +13,38 @@
   animation: fadeIn 0.25s forwards;
 }
 
+.connectButton {
+  border-radius: 10px;
+  color: rgb(69, 90, 100);
+  border: 1px solid rgb(69, 90, 100);
+  background-color: white;
+  padding-top: 3px;
+  padding-bottom: 3px;
+  padding-right: 10px;
+  padding-left: 10px;
+  box-shadow: 0px 3px 5px rgb(69, 90, 100, 0.5),
+    inset 0px 3px 5px rgb(69, 90, 100, 0);
+  transition: color 0.25s, border 0.25s, box-shadow 0.25s, background-color;
+}
+.connectButton:hover:enabled {
+  color: rgb(76, 175, 80);
+  border: 1px solid rgb(76, 175, 80);
+  box-shadow: 0px 5px 5px rgb(69, 90, 100, 0.75),
+    inset 0px 3px 5px rgb(69, 90, 100, 0);
+}
+.connectButton:active:enabled {
+  color: rgb(76, 175, 80);
+  border: 1px solid rgb(76, 175, 80);
+  box-shadow: 0px 5px 5px rgb(69, 90, 100, 0),
+    inset 0px 3px 5px rgb(69, 90, 100, 0.5);
+}
+.connectButton:disabled {
+  background-color: rgb(207, 216, 220);
+  box-shadow: 0px 5px 5px rgb(69, 90, 100, 0),
+    inset 0px 3px 5px rgb(69, 90, 100, 0);
+  cursor: default;
+}
+
 .icon {
   height: 25px;
   width: 25px;

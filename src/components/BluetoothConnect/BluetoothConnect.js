@@ -3,6 +3,11 @@ import style from "./BluetoothConnect.module.css";
 import { ReactComponent as BluetoothIcon } from "../../icons/bluetooth-signal.svg";
 
 export default class BluetoothConnect extends React.Component {
+  connectButtonClick = (event) => {
+    event.target.blur();
+    this.props.connectToBluetooth();
+  };
+
   render() {
     var iconColor = style.red;
     if (this.props.bluetoothDevice && !this.props.bluetoothCharacteristic) {
@@ -46,7 +51,9 @@ export default class BluetoothConnect extends React.Component {
                 style={{ marginRight: 10 }}
               ></input>
               <button
-                onClick={this.props.connectToBluetooth}
+                id="BluetoothConnect_connectButton"
+                className={style.connectButton}
+                onClick={this.connectButtonClick}
                 disabled={this.props.password === ""}
               >
                 connect

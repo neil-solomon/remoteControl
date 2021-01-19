@@ -82,15 +82,6 @@ export default class Controller extends React.Component {
   };
 
   connectToBluetooth = () => {
-    var bluetoothConnectButton = document.getElementById(
-      "bluetoothConnectButton"
-    );
-    if (bluetoothConnectButton) {
-      bluetoothConnectButton.blur();
-    } else {
-      console.log("cant find bluetoothConnectButton");
-    }
-
     const options = {
       filters: [{ name: "FrogRobotics" }],
       optionalServices: [0xffe0],
