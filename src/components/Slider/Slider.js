@@ -190,6 +190,7 @@ export default class Slider extends React.Component {
               ) +
               ")",
           }}
+          data-test="Slider_car"
         ></div>
         {/* <div
           className={style.carInset}
@@ -202,6 +203,7 @@ export default class Slider extends React.Component {
           style={{
             top: this.state.carTop + 16,
           }}
+          data-test="Slider_carLine"
         />
       </div>
     );

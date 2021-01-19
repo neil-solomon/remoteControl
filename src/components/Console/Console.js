@@ -13,15 +13,21 @@ export default class Console extends React.Component {
       <div className={style.container}>
         <div>
           X-Vel:
-          <div className={style.value}>{this.props.xVel}</div>
+          <div className={style.value} data-test="Console_xvel">
+            {this.props.xVel}
+          </div>
         </div>
         <div>
           Y-Vel:
-          <div className={style.value}>{this.props.yVel}</div>
+          <div className={style.value} data-test="Console_yvel">
+            {this.props.yVel}
+          </div>
         </div>
         <div>
           Rot-Vel:
-          <div className={style.value}>{this.props.rotVel}</div>
+          <div className={style.value} data-test="Console_rotvel">
+            {this.props.rotVel}
+          </div>
         </div>
       </div>
     );

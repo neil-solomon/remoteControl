@@ -364,6 +364,7 @@ export default class Joystick extends React.Component {
           onFocus={() => {
             console.log("stickFocus");
           }}
+          data-test="Joystick_stick"
         >
           <div
             className={style.stickCrossVertical}
