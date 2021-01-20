@@ -1,12 +1,9 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import React from "react";
+import "./App.css";
 import Main from "./components/Main";
 
 function App() {
-  return (
-    <Main></Main>
-  );
+  return <Main></Main>;
 }
 
 export default App;
