@@ -11,7 +11,17 @@ export default class Help extends React.Component {
   render() {
     return (
       <div className={style.container} data-test="Help">
-        <div>
+        <div className={style.addToHomeScreen}>
+          <div>
+            <strong>
+              Add Frog Robotics to your Home Screen for offline use:
+            </strong>
+          </div>
+          <div>Chrome: Settings &gt; Add to Home Screen</div>
+          <div>Safari: Share &gt; Add to Home Screen</div>
+          <div>Firefox: Click Add to Home Screen icon</div>
+        </div>
+        <div className={style.credits}>
           Icons made by{" "}
           <a
             href="https://www.flaticon.com/authors/freepik"
