@@ -31,11 +31,11 @@ export default class Help extends React.Component {
               <strong>Mobile</strong>
             </div>
             <div>Settings &gt; Add to Home Screen</div>
-            <div className={this.state.imageStyle[0]}>
+            <div className={style.imageContainer}>
               <img
                 src={addToHome_mobile}
                 alt="addToHome_mobile"
-                className={style.image}
+                className={style.image + " " + this.state.imageStyle[0]}
                 onLoad={() => this.showImage(0)}
               />
             </div>
@@ -45,18 +45,18 @@ export default class Help extends React.Component {
               <strong>Desktop</strong>
             </div>
             <div>Settings &gt; More Tools &gt; Create Shortcut</div>
-            <div className={this.state.imageStyle[1]}>
+            <div className={style.imageContainer}>
               <img
                 src={addToHome_desktop}
                 alt="addToHome_desktop"
-                className={style.image}
+                className={style.image + " " + this.state.imageStyle[1]}
                 onLoad={() => this.showImage(1)}
               />
             </div>
           </div>
         </div>
         <div className={style.credits}>
-          <div>
+          <div className={style.creditsItem}>
             Icons made by{" "}
             <a
               href="https://www.flaticon.com/authors/freepik"
@@ -70,7 +70,7 @@ export default class Help extends React.Component {
               www.flaticon.com
             </a>
           </div>
-          <div>
+          <div className={style.creditsItem}>
             Project bootstrapped with{" "}
             <a
               href="https://reactjs.org/docs/create-a-new-react-app.html#create-react-app"
@@ -80,7 +80,7 @@ export default class Help extends React.Component {
               create-react-app
             </a>
           </div>
-          <div>
+          <div className={style.creditsItem}>
             Color style from{" "}
             <a
               href="https://www.materialpalette.com/"
