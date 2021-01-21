@@ -38,8 +38,9 @@ export default class BluetoothConnect extends React.Component {
 
     return (
       <div className={style.container}>
-        <div>
+        <div className={style.iconContainer}>
           <BluetoothIcon className={style.icon + " " + iconColor} />
+          <BluetoothIcon className={style.iconShadow} />
         </div>
         <div
           className={style.message}
