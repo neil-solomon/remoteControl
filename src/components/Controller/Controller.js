@@ -181,7 +181,7 @@ export default class Controller extends React.Component {
   };
 
   render() {
-    if (window.innerWidth < 600) {
+    if (window.innerWidth < window.innerHeight && window.innerWidth < 600) {
       return (
         <div className={style.rotateDeviceContainer} data-test="Controller">
           Rotate Device

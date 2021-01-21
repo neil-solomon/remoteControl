@@ -9,7 +9,7 @@ export default class BluetoothConnect extends React.Component {
   };
 
   render() {
-    if (navigator.userAgent.indexOf("Chrome") === -1) {
+    if (!navigator.bluetooth) {
       return (
         <div className={style.container}>
           <div className={style.noChrome}>
