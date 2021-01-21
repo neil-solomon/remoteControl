@@ -9,6 +9,23 @@ export default class BluetoothConnect extends React.Component {
   };
 
   render() {
+    if (navigator.userAgent.indexOf("Chrome") === -1) {
+      return (
+        <div className={style.container}>
+          <div className={style.noChrome}>
+            Your browser does not support bluetooth connectivity.
+          </div>
+          <div className={style.noChrome}>
+            Use{" "}
+            <a href="https://www.google.com/chrome/?brand=JJTC&geo=US&gclid=CjwKCAiA6aSABhApEiwA6Cbm_8WGhVRyUDMNyE-JXnX_gpYsTmQ88WiH7sDQ6HPqhcqzot4e72v-QRoCrXQQAvD_BwE&gclsrc=aw.ds">
+              Chrome
+            </a>{" "}
+            instead.
+          </div>
+        </div>
+      );
+    }
+
     var iconColor = style.red;
     if (this.props.bluetoothDevice && !this.props.bluetoothCharacteristic) {
       iconColor = style.yellow;

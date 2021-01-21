@@ -4,6 +4,10 @@
   animation: fadeIn 0.25s forwards;
 }
 
+.noChrome {
+  font-size: 1.25em;
+}
+
 .password {
   height: 20px;
 }
