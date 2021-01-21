@@ -3,9 +3,48 @@
   margin-top: 50px;
 }
 
-.addToHomeScreen {
+.homeScreenTitle {
+  font-size: 1.5em;
+  margin-bottom: 10px;
+}
+
+.addToHomeScreenItem {
+  display: inline-block;
+  margin-left: 50px;
+  margin-right: 50px;
+}
+
+.image {
+  height: 350px;
+  width: auto;
+  max-width: calc(100vw - 100px);
+  transition: opacity 0.5s;
+  box-shadow: 0px 10px 10px rgb(0, 0, 0, 0.5);
+  border: 2px solid rgb(76, 175, 80);
+  border-radius: 10px;
+  margin-top: 5px;
+  margin-bottom: 50px;
+}
+
+.hidden {
+  opacity: 0;
+}
+
+.visible {
+  opacity: 1;
 }
 
 .credits {
-  margin-top: 50px;
+  font-size: 0.75em;
+  margin-top: 200px;
+  padding-bottom: 10px;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
 }
