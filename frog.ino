@@ -20,7 +20,7 @@ const double beta = (chassisWidth * tan(wheelRollerAngle) + chassisLength) / tan
 const int mainLoopDelay = 1000; // use a delay in the main loop to manage how hard the Arduino CPU is working
 
 char c;
-int command [] = {NULL, NULL, NULL, NULL};
+int command [] = {NULL, NULL, NULL, NULL, NULL};
 int commandCount = 0;
 bool dataReceived;
 
@@ -56,19 +56,20 @@ void loop() {
     c = Serial1.read();
     Serial.write((int)c);
     command[commandCount++] = (int)c;
-    if (commandCount == 4) {
+    if (commandCount == 5) {
       commandCount = 0;  
     }
     
-    if (command[0] && command[1] && command[2] && command[3]) { // the buffer is full
-      if (command[3] == 35) { // password command
-        if (command[0] != 49 || command[1] != 50 || command[2] != 51) { // bad password
-          Serial.println("bad password, disconnecting"); // tell bluetooth module to disconnect
-          Serial1.write("AT");
+    if (command[0] && command[1] && command[2] && command[3] && command[4]) { // the buffer is full
+      if (command[4] == 35) { // password command
+        if (command[0] != 49 || command[1] != 50 || command[2] != 51 || command[3] != 52) {
+          Serial.println("bad password, disconnecting"); 
+          Serial1.write("AT"); // tell bluetooth module to disconnect
           command[0] = NULL; // clear buffer
           command[1] = NULL; 
           command[2] = NULL; 
-          command[3] = NULL; 
+          command[3] = NULL;
+          command[4] = NULL;  
         }
         else {
           Serial.println("good password");
@@ -76,9 +77,10 @@ void loop() {
           command[1] = NULL; 
           command[2] = NULL; 
           command[3] = NULL; 
+          command[4] = NULL; 
         }
       }  
-      else if (command[3] == 36) { // direction command
+      else if (command[4] == 36) { // direction command
         analogWrite(wheel1_pin, command[0] - 50);
         analogWrite(wheel2_pin, command[1] - 50);
         analogWrite(wheel3_pin, command[2] - 50);

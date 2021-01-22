@@ -64,16 +64,18 @@ export default class BluetoothConnect extends React.Component {
             <>
               <input
                 type="password"
-                placeholder="enter password"
+                placeholder="PIN"
                 onChange={this.props.updatePassword}
-                style={{ marginRight: 10 }}
+                className={style.passwordInput}
                 data-test="BluetoothConnect_input"
+                maxLength={4}
+                size={4}
               ></input>
               <button
                 id="BluetoothConnect_connectButton"
                 className={style.connectButton}
                 onClick={this.connectButtonClick}
-                disabled={this.props.password === ""}
+                disabled={this.props.password.length !== 4}
                 data-test="BluetoothConnect_button"
               >
                 connect

@@ -42,19 +42,15 @@ export default class Controller extends React.Component {
       this.state.rotVel !== prevState.rotVel
     ) {
       if (this.state.bluetoothCharacteristic) {
-        console.log(
-          this.state.xVel + 150,
+        var data = [
+          this.state.xVel + 150, // ensure that all values are between 50 and 250
           this.state.yVel + 150,
-          this.state.rotVel + 150
-        );
-        this.state.bluetoothCharacteristic.writeValue(
-          new Uint8Array([
-            this.state.xVel + 150, // ensure that all values are between 50 and 250
-            this.state.yVel + 150,
-            this.state.rotVel + 150,
-            36, // terminate command
-          ])
-        );
+          this.state.rotVel + 150,
+          1, // dummy value, 0 doesn't work as dummy value
+          36, // terminate command
+        ];
+        console.log(data);
+        this.state.bluetoothCharacteristic.writeValue(new Uint8Array(data));
       }
     }
 
@@ -66,18 +62,9 @@ export default class Controller extends React.Component {
         return this.state.password.charCodeAt(index);
       });
 
-      if (!this.state.bluetoothCharacteristic) {
-        return;
-      }
+      data.push(35); // terminate password
 
-      this.state.bluetoothCharacteristic.writeValue(
-        new Uint8Array([
-          data[0],
-          data[1],
-          data[2],
-          35, // terminate password
-        ])
-      );
+      this.state.bluetoothCharacteristic.writeValue(new Uint8Array(data));
     }
   };
 

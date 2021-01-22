@@ -12,8 +12,14 @@
   height: 20px;
 }
 
+.passwordInput {
+  font-size: 1.25em;
+  margin-right: 10px;
+}
+
 .message {
-  height: 25px;
+  font-size: 1.25em;
+  height: 30px;
   animation: fadeIn 0.25s forwards;
 }
 
@@ -22,6 +28,7 @@
   color: rgb(69, 90, 100);
   border: 1px solid rgb(69, 90, 100);
   background-color: white;
+  font-size: 1.25em;
   padding-top: 3px;
   padding-bottom: 3px;
   padding-right: 10px;
