@@ -13,7 +13,6 @@ export default class Help extends React.Component {
   }
 
   showImage = (index) => {
-    console.log("showImage", index);
     var imageStyle = JSON.parse(JSON.stringify(this.state.imageStyle));
     imageStyle[index] = style.visible;
     this.setState({ imageStyle });

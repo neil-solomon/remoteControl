@@ -23,16 +23,20 @@ export default class Controller extends React.Component {
     };
   }
 
-  componentWillUnmount = () => {
-    window.removeEventListener("resize", () => {
-      this.setState({ size: Math.min(0.5 * window.innerHeight, 300) });
-    });
-  };
-
   componentDidMount = () => {
     window.addEventListener("resize", () => {
       this.setState({ size: Math.min(0.5 * window.innerHeight, 300) });
     });
+    window.addEventListener("beforeunload", this.disconnectBluetooth);
+  };
+
+  componentWillUnmount = () => {
+    this.disconnectBluetooth();
+
+    window.removeEventListener("resize", () => {
+      this.setState({ size: Math.min(0.5 * window.innerHeight, 300) });
+    });
+    window.addEventListener("beforeunload", this.disconnectBluetooth);
   };
 
   componentDidUpdate = (prevProps, prevState) => {
@@ -68,7 +72,7 @@ export default class Controller extends React.Component {
     }
   };
 
-  connectToBluetooth = () => {
+  connectBluetooth = () => {
     const options = {
       filters: [{ name: "FrogRobotics" }],
       optionalServices: [0xffe0],
@@ -134,6 +138,21 @@ export default class Controller extends React.Component {
       });
   };
 
+  disconnectBluetooth = () => {
+    console.log("disconnetBluetooth");
+    if (this.state.bluetoothCharacteristic) {
+      var data = [
+        1,
+        1,
+        1,
+        1,
+        37, // disconnect
+      ];
+      console.log(data);
+      this.state.bluetoothCharacteristic.writeValue(new Uint8Array(data));
+    }
+  };
+
   updateJoystickVals = (yVel, xVel) => {
     this.setState({
       xVel: parseInt(100 * xVel),
@@ -182,7 +201,7 @@ export default class Controller extends React.Component {
     return (
       <div className={style.container} data-test="Controller">
         <BluetoothConnect
-          connectToBluetooth={this.connectToBluetooth}
+          connectBluetooth={this.connectBluetooth}
           bluetoothCharacteristic={this.state.bluetoothCharacteristic}
           bluetoothDevice={this.state.bluetoothDevice}
           updatePassword={this.updatePassword}

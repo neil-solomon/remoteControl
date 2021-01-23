@@ -41,6 +41,10 @@ export default class Slider extends React.Component {
 
     clearTimeout(this.keyPressDebounce_timeout);
 
+    for (let i = 0; i < this.carToCenterTimeouts.length; i++) {
+      clearTimeout(this.carToCenterTimeouts[i]);
+    }
+
     this.carElement.removeEventListener("touchstart", (event) =>
       this.car_touchstart(event)
     );
@@ -191,13 +195,7 @@ export default class Slider extends React.Component {
               ")",
           }}
           data-test="Slider_car"
-        ></div>
-        {/* <div
-          className={style.carInset}
-          style={{
-            top: this.state.carTop + 2,
-          }}
-        /> */}
+        />
         <div
           className={style.carLine}
           style={{

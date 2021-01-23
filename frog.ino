@@ -23,7 +23,7 @@ char c;
 int command [] = {NULL, NULL, NULL, NULL, NULL};
 int commandCount = 0;
 bool dataReceived;
-
+bool passwordReceived = false;
 int batteryLevel = 0;
 char bluetoothValue[20];
 /* 
@@ -49,6 +49,18 @@ void setup() {
 
 void loop() {
   // this function is called repeatedly while the Arduino is running  
+
+  if (!passwordReceived && (millis() % 10000 == 0)) { // disconnect the bluetooth module every 10 seconds if the password has not been received.
+    Serial.println("password timeout");
+    Serial1.write("AT");
+    delay(100);
+    while (Serial1.available()) {
+      c = Serial1.read();
+      Serial.print(c);
+    }
+    Serial.println();
+  }
+  
   dataReceived = false;
 
   while (Serial1.available()){ // receive data from bluetooth module
@@ -62,17 +74,19 @@ void loop() {
     
     if (command[0] && command[1] && command[2] && command[3] && command[4]) { // the buffer is full
       if (command[4] == 35) { // password command
-        if (command[0] != 49 || command[1] != 50 || command[2] != 51 || command[3] != 52) {
-          Serial.println("bad password, disconnecting"); 
-          Serial1.write("AT"); // tell bluetooth module to disconnect
-          command[0] = NULL; // clear buffer
+        Serial.println("password");
+        if (command[0] == 49 && command[1] == 50 && command[2] == 51 && command[3] == 52) {
+          Serial.println("good password");
+          passwordReceived = true;
+          command[0] = NULL; // clear buffer 
           command[1] = NULL; 
           command[2] = NULL; 
-          command[3] = NULL;
-          command[4] = NULL;  
+          command[3] = NULL; 
+          command[4] = NULL; 
         }
         else {
-          Serial.println("good password");
+          Serial.println("bad password");
+          passwordReceived = false;
           command[0] = NULL; // clear buffer 
           command[1] = NULL; 
           command[2] = NULL; 
@@ -85,6 +99,10 @@ void loop() {
         analogWrite(wheel2_pin, command[1] - 50);
         analogWrite(wheel3_pin, command[2] - 50);
         analogWrite(wheel4_pin, 0);
+      }
+      else if (command[4] == 37) { // disconnect command
+        Serial.println("disconnect command");
+        passwordReceived = false;
       }
     }
   }
@@ -187,6 +205,15 @@ void bluetooth_setup() {
   
   Serial.print("    AT+TYPE0 -> ");
   Serial1.write("AT+TYPE0"); // set the bluetooth module to not require a password to connect
+  delay(delayTime);
+  while (Serial1.available()) {
+    c = Serial1.read();
+    Serial.print(c);
+  }
+  Serial.println();
+
+  Serial.print("    AT+NOTI1 -> ");
+  Serial1.write("AT+NOTI1"); // set the bluetooth module to not require a password to connect
   delay(delayTime);
   while (Serial1.available()) {
     c = Serial1.read();
