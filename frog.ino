@@ -1,9 +1,17 @@
+#include <CytronMotorDriver.h>
+
 /*
 Serial uses rx0 (pin 0) and tx0(pin 1) of the Arduino Mega. This is used for Serial output that can be viewed in the Serial Monitor.
 Serial1 uses rx1 (pin 19) and tx1(pin 18) of the Arduino Mega. This is used to communicate with the HM-10 BLE module.
 */
 
 const int serialRate = 9600; // control the rate at which the serial ports communicate
+
+CytronMD motor1(PWM_DIR, 2, 22);
+CytronMD motor2(PWM_DIR, 3, 23);
+CytronMD motor3(PWM_DIR, 4, 24);
+CytronMD motor4(PWM_DIR, 5, 25);
+CytronMD motors [] = {motor1, motor2, motor3, motor4};
 
 const int wheel1_pin = 2; // assign pwm pins to each wheel
 const int wheel2_pin = 3;
@@ -142,6 +150,28 @@ void wheels_setup() {
   analogWrite(wheel4_pin, 0);
   Serial.println("    wheel4 setup");
 
+  for (int i = 0; i < 4; i++) {
+    motors[i].setSpeed(0);  
+  }
+
+  for (int i = 0; i < 4; i++) { // each motor
+    for (int j = 0; j < 256; j++) {
+      motors[i].setSpeed(j);
+      delay(1);
+    }
+    for (int j = 255; j >= 0; j--) {
+      motors[i].setSpeed(j);
+      delay(1);
+    }
+    for (int j = 0; j < 256; j++) {
+      motors[i].setSpeed(-1 * j);
+      delay(1);
+    }
+    for (int j = 255; j >= 0; j--) {
+      motors[i].setSpeed(-1 * j);
+      delay(1);
+    }
+  }
 }
 
 void battery_setup() {
