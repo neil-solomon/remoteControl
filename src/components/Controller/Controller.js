@@ -244,7 +244,7 @@ export default class Controller extends React.Component {
             />
             <KeyboardIcon
               className={style.keyboardIcon}
-              style={{ marginTop: (this.state.size - 50) / 2 }}
+              style={{ marginTop: (this.state.size - 40) / 2 }}
             />
           </div>
           <div className={style.consoleContainer}>
@@ -257,7 +257,7 @@ export default class Controller extends React.Component {
           <div className={style.joystickContainer}>
             <MouseIcon
               className={style.mouseIcon}
-              style={{ marginTop: (this.state.size - 50) / 2 }}
+              style={{ marginTop: (this.state.size - 30) / 2 }}
             />
             <Joystick
               baseSize={this.state.size}
