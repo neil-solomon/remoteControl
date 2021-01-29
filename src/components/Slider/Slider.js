@@ -126,24 +126,30 @@ export default class Slider extends React.Component {
   handleKeydown = (event) => {
     if (this.state.keyPressDebounce) return;
 
-    if (event.keyCode === 82) {
+    var keyPressDebounce_timeout_length;
+
+    if (event.keyCode === 38) {
       this.setState({
         carTop: Math.max(this.state.carTop - 5, 0),
         keyPressDebounce: true,
       });
-    } else if (event.keyCode === 70) {
+      keyPressDebounce_timeout_length = this.props.debounceTime;
+    } else if (event.keyCode === 40) {
       this.setState({
         carTop: Math.min(this.state.carTop + 5, this.props.height - 25),
         keyPressDebounce: true,
       });
-    } else if (event.keyCode === 32) {
+      keyPressDebounce_timeout_length = this.props.debounceTime;
+    } else if (event.keyCode === 37 || event.keyCode === 39) {
       this.carToCenter();
       this.setState({ keyPressDebounce: true });
+      keyPressDebounce_timeout_length =
+        this.props.debounceTime * (this.carToCenterTimeouts.length + 1);
     }
 
     this.keyPressDebounce_timeout = setTimeout(() => {
       this.setState({ keyPressDebounce: false });
-    }, this.props.debounceTime);
+    }, keyPressDebounce_timeout_length);
   };
 
   carToCenter = () => {

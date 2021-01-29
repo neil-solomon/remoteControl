@@ -8,10 +8,12 @@ export default class Joystick extends React.Component {
     this.baseElement = null;
     this.stickElement = null;
     this.stickToCenterTimeouts = new Array(this.props.toZeroTime).fill(null);
+    this.stickToCenterDebounce_timeout = null;
 
     this.state = {
       stickMotionEnabled: false,
       moveStickDebounce: false,
+      stickToCenterDebounce: false,
       stickTop_prev:
         (this.props.baseSize * (1 - this.props.stickToBaseRatio)) / 2,
       stickLeft_prev:
@@ -37,12 +39,29 @@ export default class Joystick extends React.Component {
     this.stickElement.addEventListener("touchcancel", (event) =>
       this.stick_touchend(event)
     );
+
+    window.addEventListener("mousemove", (event) => this.moveStick(event));
+    window.addEventListener("mouseup", () => this.disableStickMotion());
   };
 
   componentWillUnmount = () => {
+    this.stickElement.removeEventListener("touchstart", (event) =>
+      this.stick_touchstart(event)
+    );
+    this.stickElement.removeEventListener("touchmove", (event) =>
+      this.stick_touchmove(event)
+    );
+    this.stickElement.removeEventListener("touchend", (event) =>
+      this.stick_touchend(event)
+    );
+    this.stickElement.removeEventListener("touchcancel", (event) =>
+      this.stick_touchend(event)
+    );
     window.removeEventListener("mousemove", (event) => this.moveStick(event));
     window.removeEventListener("mouseup", () => this.disableStickMotion());
 
+    clearTimeout(this.stickToCenterDebounce_timeout);
+    clearTimeout(this.moveStickDebounce_timeout);
     for (const timeout of this.stickToCenterTimeouts) {
       clearTimeout(timeout);
     }
@@ -109,15 +128,12 @@ export default class Joystick extends React.Component {
 
   stick_touchend = (event) => {
     event.preventDefault();
-
     this.stickToCenter();
-
     this.setState({ stickMotionEnabled: false });
   };
 
   enableStickMotion = (event) => {
-    window.addEventListener("mousemove", (event) => this.moveStick(event));
-    window.addEventListener("mouseup", () => this.disableStickMotion());
+    if (this.state.stickToCenterDebounce) return;
 
     this.setState({
       stickMotionEnabled: true,
@@ -130,13 +146,16 @@ export default class Joystick extends React.Component {
   disableStickMotion = () => {
     if (!this.state.stickMotionEnabled) return;
 
-    window.removeEventListener("mousemove", (event) => this.moveStick(event));
-
     this.stickToCenter();
     this.setState({ stickMotionEnabled: false });
   };
 
   stickToCenter = () => {
+    this.setState({ stickToCenterDebounce: true });
+    this.stickToCenterDebounce_timeout = setTimeout(() => {
+      this.setState({ stickToCenterDebounce: false });
+    }, (this.stickToCenterTimeouts.length + 1) * this.props.debounceTime);
+
     const distX =
       (this.props.baseSize * (1 - this.props.stickToBaseRatio)) / 2 -
       this.state.stickLeft;
@@ -336,14 +355,20 @@ export default class Joystick extends React.Component {
           }}
         />
         {/* <div
-                    className={style.baseShine}
-                    style={{
-                        width: this.props.baseSize/4,
-                        height: this.props.baseSize/4,
-                        top: 7*this.props.baseSize/8 - (this.state.stickTop + this.props.baseSize * this.props.stickToBaseRatio / 2),
-                        left: 7*this.props.baseSize/8 - (this.state.stickLeft + this.props.baseSize * this.props.stickToBaseRatio / 2)
-                    }}
-                /> */}
+          className={style.baseShine}
+          style={{
+            width: this.props.baseSize / 4,
+            height: this.props.baseSize / 4,
+            top:
+              (7 * this.props.baseSize) / 8 -
+              (this.state.stickTop +
+                (this.props.baseSize * this.props.stickToBaseRatio) / 2),
+            left:
+              (7 * this.props.baseSize) / 8 -
+              (this.state.stickLeft +
+                (this.props.baseSize * this.props.stickToBaseRatio) / 2),
+          }}
+        /> */}
         <div
           id="Joystick_stick"
           className={style.stick}
