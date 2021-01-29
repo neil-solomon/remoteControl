@@ -67,6 +67,24 @@
   /* margin-left: calc(35vw - 50vh); */
 }
 
+.keyboardIcon {
+  height: 50px;
+  width: 50px;
+  display: inline-block;
+  vertical-align: top;
+  margin-left: 20px;
+  fill: rgb(96, 125, 139);
+}
+
+.mouseIcon {
+  height: 40px;
+  width: 40px;
+  display: inline-block;
+  vertical-align: top;
+  margin-right: 10px;
+  fill: rgb(96, 125, 139);
+}
+
 @keyframes fadeIn {
   from {
     opacity: 0;

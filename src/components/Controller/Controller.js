@@ -5,6 +5,8 @@ import Slider from "../Slider";
 import BluetoothConnect from "../BluetoothConnect";
 import Console from "../Console";
 import { ReactComponent as SmartphoneIcon } from "../../icons/smartphone.svg";
+import { ReactComponent as KeyboardIcon } from "../../icons/keyboard-key.svg";
+import { ReactComponent as MouseIcon } from "../../icons/mouse.svg";
 
 export default class Controller extends React.Component {
   constructor(props) {
@@ -240,6 +242,10 @@ export default class Controller extends React.Component {
               debounceTime={this.controlsDebounceTime}
               toZeroTime={this.controlsToZeroTime}
             />
+            <KeyboardIcon
+              className={style.keyboardIcon}
+              style={{ marginTop: (this.state.size - 50) / 2 }}
+            />
           </div>
           <div className={style.consoleContainer}>
             <Console
@@ -249,6 +255,10 @@ export default class Controller extends React.Component {
             />
           </div>
           <div className={style.joystickContainer}>
+            <MouseIcon
+              className={style.mouseIcon}
+              style={{ marginTop: (this.state.size - 50) / 2 }}
+            />
             <Joystick
               baseSize={this.state.size}
               stickToBaseRatio={4 / 5}
