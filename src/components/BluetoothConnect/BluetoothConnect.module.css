@@ -67,22 +67,22 @@
 .icon {
   position: absolute;
   top: 0px;
-  left: 5px;
+  left: 0px;
   z-index: 2;
-  height: 25px;
-  width: 25px;
+  height: 30px;
+  width: 30px;
   transition: fill 0.5s;
 }
 
 .iconShadow {
   position: absolute;
   top: 6px;
-  left: 8px;
+  left: 6px;
   z-index: 1;
-  height: 25px;
-  width: 25px;
+  height: 30px;
+  width: 30px;
   fill: rgb(0, 0, 0, 0.2);
-  filter: blur(1.5px);
+  filter: blur(2px);
 }
 
 .red {

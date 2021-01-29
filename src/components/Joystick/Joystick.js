@@ -183,6 +183,10 @@ export default class Joystick extends React.Component {
         stickTop: (this.props.baseSize * (1 - this.props.stickToBaseRatio)) / 2,
         stickLeft:
           (this.props.baseSize * (1 - this.props.stickToBaseRatio)) / 2,
+        stickTop_prev:
+          (this.props.baseSize * (1 - this.props.stickToBaseRatio)) / 2,
+        stickLeft_prev:
+          (this.props.baseSize * (1 - this.props.stickToBaseRatio)) / 2,
       });
     }, this.stickToCenterTimeouts.length * this.props.debounceTime);
   };
