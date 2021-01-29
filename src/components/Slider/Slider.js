@@ -6,7 +6,7 @@ export default class Slider extends React.Component {
     super(props);
 
     this.keyPressDebounce_timeout = null;
-    this.carToCenterTimeouts = new Array(20).fill(null);
+    this.carToCenterTimeouts = new Array(this.props.toZeroTime).fill(null);
     this.trackElement = null;
     this.carElement = null;
 
@@ -143,7 +143,7 @@ export default class Slider extends React.Component {
 
     this.keyPressDebounce_timeout = setTimeout(() => {
       this.setState({ keyPressDebounce: false });
-    }, 10);
+    }, this.props.debounceTime);
   };
 
   carToCenter = () => {
@@ -155,7 +155,7 @@ export default class Slider extends React.Component {
         this.setState({
           carTop: carTop_prev + (dist * i) / this.carToCenterTimeouts.length,
         });
-      }, i * 10);
+      }, i * this.props.debounceTime);
     }
 
     this.carToCenterTimeouts[this.carToCenterTimeouts.length - 1] = setTimeout(
@@ -164,7 +164,7 @@ export default class Slider extends React.Component {
           carTop: (this.props.height - 25) / 2,
         });
       },
-      this.carToCenterTimeouts.length * 10
+      this.carToCenterTimeouts.length * this.props.debounceTime
     );
   };
 

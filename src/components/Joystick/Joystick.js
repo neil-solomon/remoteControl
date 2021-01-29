@@ -7,7 +7,7 @@ export default class Joystick extends React.Component {
 
     this.baseElement = null;
     this.stickElement = null;
-    this.stickToCenterTimeouts = new Array(20).fill(null);
+    this.stickToCenterTimeouts = new Array(this.props.toZeroTime).fill(null);
 
     this.state = {
       stickMotionEnabled: false,
@@ -154,7 +154,7 @@ export default class Joystick extends React.Component {
             this.state.stickLeft_prev +
             (distX * i) / this.stickToCenterTimeouts.length,
         });
-      }, i * 10);
+      }, i * this.props.debounceTime);
     }
 
     this.stickToCenterTimeouts[
@@ -165,7 +165,7 @@ export default class Joystick extends React.Component {
         stickLeft:
           (this.props.baseSize * (1 - this.props.stickToBaseRatio)) / 2,
       });
-    }, this.stickToCenterTimeouts.length * 10);
+    }, this.stickToCenterTimeouts.length * this.props.debounceTime);
   };
 
   moveStick = (event) => {
@@ -282,7 +282,7 @@ export default class Joystick extends React.Component {
 
     this.moveStickDebounce_timeout = setTimeout(() => {
       this.setState({ moveStickDebounce: false });
-    }, 10);
+    }, this.props.debounceTime);
   };
 
   makeStickRotate = (dimension) => {

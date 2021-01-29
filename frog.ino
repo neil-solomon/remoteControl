@@ -6,52 +6,37 @@ Serial1 uses rx1 (pin 19) and tx1(pin 18) of the Arduino Mega. This is used to c
 */
 
 const int serialRate = 9600; // control the rate at which the serial ports communicate
+const double chassisLength = .4; // meters
+const double chassisWidth = .2; // meters
+const double pi = 3.141593;
+const double wheelRollerAngle = pi/4; // radians 
+const double wheelRadius = .05; // meters
+const double lambda = 1 / tan(wheelRollerAngle);
+const double beta = (chassisWidth * tan(wheelRollerAngle) + chassisLength) / tan(wheelRollerAngle);
 
-CytronMD motor1(PWM_DIR, 2, 22);
+CytronMD motor1(PWM_DIR, 2, 22); // a motor driver uses to pins to communicate: 1 for motor velocity (pwm), 1 for motor direction (high/low)
 CytronMD motor2(PWM_DIR, 3, 23);
 CytronMD motor3(PWM_DIR, 4, 24);
 CytronMD motor4(PWM_DIR, 5, 25);
 CytronMD motors [] = {motor1, motor2, motor3, motor4};
-
-const int wheel1_pin = 2; // assign pwm pins to each wheel
-const int wheel2_pin = 3;
-const int wheel3_pin = 4;
-const int wheel4_pin = 5;
-
-const double chassisLength = 100;
-const double chassisWidth = 50;
-const double wheelRollerAngle = 45; // this is degrees, perhaps should be radians
-const double wheelRadius = 50;
-const double lambda = 1 / tan(wheelRollerAngle);
-const double beta = (chassisWidth * tan(wheelRollerAngle) + chassisLength) / tan(wheelRollerAngle);
-
-const int mainLoopDelay = 1000; // use a delay in the main loop to manage how hard the Arduino CPU is working
-
-char c;
-int command [] = {NULL, NULL, NULL, NULL, NULL};
+unsigned char c; // used to receive data from bluetooth module
+unsigned char command [] = {NULL, NULL, NULL, NULL, NULL}; // buffer for data from bluetooth module
 int commandCount = 0;
 bool dataReceived;
 bool passwordReceived = false;
 int batteryLevel = 0;
-char bluetoothValue[20];
-/* 
-The bluetooth module can store 20 bytes of data:
-bluetoothValue[0] = X velocity
-bluetoothValue[1] = Y velocity
-bluetoothValue[2] = rotational velocity
-bluetoothValue[3] = batteryLevel
-*/
-
 
 void setup() {
   // this function is called once when the Arduino boots up
   Serial.begin(serialRate);
   delay(100);
+  
   Serial.println("setup...");
-  wheels_setup();
-  battery_setup();
   bluetooth_setup();
+  motors_setup();
+  battery_setup();
   Serial.println("setup done");
+  
   Serial.println();
 }
 
@@ -60,13 +45,7 @@ void loop() {
 
   if (!passwordReceived && (millis() % 10000 == 0)) { // disconnect the bluetooth module every 10 seconds if the password has not been received.
     Serial.println("password timeout");
-    Serial1.write("AT");
-    delay(100);
-    while (Serial1.available()) {
-      c = Serial1.read();
-      Serial.print(c);
-    }
-    Serial.println();
+    bluetooth_disconnect();
   }
   
   dataReceived = false;
@@ -74,43 +53,22 @@ void loop() {
   while (Serial1.available()){ // receive data from bluetooth module
     dataReceived = true;
     c = Serial1.read();
-    Serial.write((int)c);
-    command[commandCount++] = (int)c;
+    Serial.write(c);
+    command[commandCount++] = c;
     if (commandCount == 5) {
       commandCount = 0;  
     }
     
     if (command[0] && command[1] && command[2] && command[3] && command[4]) { // the buffer is full
       if (command[4] == 35) { // password command
-        Serial.println("password");
-        if (command[0] == 49 && command[1] == 50 && command[2] == 51 && command[3] == 52) {
-          Serial.println("good password");
-          passwordReceived = true;
-          command[0] = NULL; // clear buffer 
-          command[1] = NULL; 
-          command[2] = NULL; 
-          command[3] = NULL; 
-          command[4] = NULL; 
-        }
-        else {
-          Serial.println("bad password");
-          passwordReceived = false;
-          command[0] = NULL; // clear buffer 
-          command[1] = NULL; 
-          command[2] = NULL; 
-          command[3] = NULL; 
-          command[4] = NULL; 
-        }
+        checkPassword();
       }  
-      else if (command[4] == 36) { // direction command
-        analogWrite(wheel1_pin, command[0] - 50);
-        analogWrite(wheel2_pin, command[1] - 50);
-        analogWrite(wheel3_pin, command[2] - 50);
-        analogWrite(wheel4_pin, 0);
+      else if (commandCount == 0 && (command[0] == 36 || command[1] == 36 || command[2] == 36 || command[3] == 36 || command[4] == 36)) { // direction command
+        sendCommandToMotors();
       }
       else if (command[4] == 37) { // disconnect command
         Serial.println("disconnect command");
-        passwordReceived = false;
+        bluetooth_disconnect();
       }
     }
   }
@@ -118,43 +76,23 @@ void loop() {
   if (commandCount == 0 && dataReceived){
     Serial.println();  
   }
-
-//  readBluetooth();
-//  sendWheelVelocities();
 //  readBatteryLevel();
-//  writeBluetooth();
-//  delay(mainLoopDelay);
 }
 
-void wheels_setup() {
+void motors_setup() {
   /* 
-  We will use PWM to control the wheel velocities.
-    We will need to know the specs of the motors to set this up precisely.
-  Right now I’m using SoftwareSerial objects for the wheels but they might just be analog outputs.
+  This tests to ensure the motors are set up properly. Each motor is run forward then backwards.
 */
-  Serial.println("  wheels_setup...");
-  
-  pinMode(wheel1_pin, OUTPUT);
-  analogWrite(wheel1_pin, 100);
-  Serial.println("    wheel1 setup");
-  
-  pinMode(wheel2_pin, OUTPUT);
-  analogWrite(wheel2_pin, 100);
-  Serial.println("    wheel2 setup");
-  
-  pinMode(wheel3_pin, OUTPUT);
-  analogWrite(wheel3_pin, 100);
-  Serial.println("    wheel3 setup");
-  
-  pinMode(wheel4_pin, OUTPUT);  
-  analogWrite(wheel4_pin, 0);
-  Serial.println("    wheel4 setup");
+  Serial.println("  motors_setup...");
 
   for (int i = 0; i < 4; i++) {
     motors[i].setSpeed(0);  
   }
 
   for (int i = 0; i < 4; i++) { // each motor
+    Serial.print("    motor ");
+    Serial.print(i+1);
+    Serial.println(" forwards");
     for (int j = 0; j < 256; j++) {
       motors[i].setSpeed(j);
       delay(1);
@@ -163,6 +101,9 @@ void wheels_setup() {
       motors[i].setSpeed(j);
       delay(1);
     }
+    Serial.print("    motor ");
+    Serial.print(i+1);
+    Serial.println(" backwards");
     for (int j = 0; j < 256; j++) {
       motors[i].setSpeed(-1 * j);
       delay(1);
@@ -179,132 +120,116 @@ void battery_setup() {
   // I believe all we need to do is set the pin that the battery is connected to.
 }
 
-void bluetooth_setup() {
-  /* Every command sent to the bluetooth module should receive a response of 'OK ...' */
-  int delayTime = 100; // wait to receive the response from the bluetooth module
-  
+void bluetooth_setup() { 
   Serial1.begin(serialRate);
-  delay(delayTime * 4);
+  delay(500);
   
   Serial.println("  bluetooth_setup...");
 
-  Serial.print("    AT -> "); // test command
+  bluetooth_setup_param("AT"); // test command
+  bluetooth_setup_param("AT+ROLE0"); // set bluetooth module as a peripheral
+  bluetooth_setup_param("AT+UUID0xFFE0"); // set the service id of the bluetooth module
+  bluetooth_setup_param("AT+CHAR0xFFE1"); // set the characteristic id of the bluetooth module
+  bluetooth_setup_param("AT+NAMEFrogRobotics"); // set the name of the bluetooth module
+  bluetooth_setup_param("AT+TYPE0"); // set the bluetooth module to not require a password to connect
+  bluetooth_setup_param("AT+NOTI0"); // set the bluetooth module to send notifications (not working)
+}
+
+void bluetooth_setup_param(char * command) {
+  /* Every command sent to the bluetooth module should receive a response of 'OK ...' */
+  Serial.print("    "); // print command to terminal
+  Serial.print(command);
+  Serial.print(" -> ");
+  
+  Serial1.write(command); // send command to bluetooth
+  delay(500);
+  while (Serial1.available()) { // print response to terminal
+    c = Serial1.read();
+    Serial.print(c);
+  }
+  Serial.println();
+}
+
+void bluetooth_disconnect() {
+  Serial.println("bluetooth_disconnect");
+  passwordReceived = false;
   Serial1.write("AT");
-  delay(delayTime);
+  delay(100);
   while (Serial1.available()) {
     c = Serial1.read();
     Serial.print(c);
   }
-  Serial.println();
-  
-  Serial.print("    AT+ROLE0 -> ");
-  Serial1.write("AT+ROLE0"); // set bluetooth module as a peripheral
-  delay(delayTime);
-  while (Serial1.available()) {
-    c = Serial1.read();
-    Serial.print(c);
-  }
-  Serial.println();
-  
-  Serial.print("    AT+UUID0xFFE0 -> ");
-  Serial1.write("AT+UUID0xFFE0"); // set the service id of the bluetooth module
-  delay(delayTime);
-  while (Serial1.available()) {
-    c = Serial1.read();
-    Serial.print(c);
-  }
-  Serial.println();
+  Serial.println();  
 
-  Serial.print("    AT+CHAR0xFFE1 -> ");
-  Serial1.write("AT+CHAR0xFFE1"); // set the characteristic id of the bluetooth module
-  delay(delayTime);
-  while (Serial1.available()) {
-    c = Serial1.read();
-    Serial.print(c);
-  }
-  Serial.println();
-  
-  Serial.print("    AT+NAMEFrogRobotics -> ");
-  Serial1.write("AT+NAMEFrogRobotics"); // set the name of the bluetooth module
-  delay(delayTime);
-  while (Serial1.available()) {
-    c = Serial1.read();
-    Serial.print(c);
-  }
-  Serial.println();
-  
-  Serial.print("    AT+TYPE0 -> ");
-  Serial1.write("AT+TYPE0"); // set the bluetooth module to not require a password to connect
-  delay(delayTime);
-  while (Serial1.available()) {
-    c = Serial1.read();
-    Serial.print(c);
-  }
-  Serial.println();
-
-  Serial.print("    AT+NOTI1 -> ");
-  Serial1.write("AT+NOTI1"); // set the bluetooth module to not require a password to connect
-  delay(delayTime);
-  while (Serial1.available()) {
-    c = Serial1.read();
-    Serial.print(c);
-  }
-  Serial.println();
+  clearBuffer();
 }
 
-void readBluetooth() {
-//  bluetooth.listen();
-//  int i = 0;
-//  char data;
-//  Serial.print("readBluetooth: ");
-//  while (bluetooth.available()) {
-//  while (bluetooth.available() && i <20) {
-//    data = bluetooth.read();
-//    Serial.print(data);
-//    bluetoothValue[i] = data;
-//    i += 1;
-//  }
-//  Serial.println();
+void checkPassword() {
+  Serial.println("checkPassword");
+  if (command[0] == 49 && command[1] == 50 && command[2] == 51 && command[3] == 52) {
+    Serial.println("good password");
+    passwordReceived = true;
+  }
+  else {
+    Serial.println("bad password");
+    passwordReceived = false;
+  }  
+  clearBuffer();
 }
 
-void sendWheelVelocities() {
-//  wheel1.print(wheelRotVel_to_value(calculateWheelRotVel(1)));
-//  wheel2.print(wheelRotVel_to_value(calculateWheelRotVel(2)));
-//  wheel3.print(wheelRotVel_to_value(calculateWheelRotVel(3)));
-//  wheel4.print(wheelRotVel_to_value(calculateWheelRotVel(4)));
+
+void sendCommandToMotors() {
+  int commandEndIndex;
+  for (int i = 0; i < 5; i++) {
+    if (command[i] == 36) {
+      commandEndIndex = i;
+      break; 
+    }
+  }
+  
+  int motorVelocity = 0;
+  for (int i = 0; i < 4; i++) {
+    motorVelocity = calculateMotorVelocity(i, commandEndIndex);
+    motors[i].setSpeed(motorVelocity);
+    Serial.print("motor ");
+    Serial.print(i+1);
+    Serial.print(" : ");
+    Serial.println(motorVelocity);
+  }
 }
 
-int wheelRotVel_to_value(double wheelRotVel) {
-  // receive the rotational velocity and return a value the motor encoder can use.
-  int value = 0;
-  return value;
-}
+double calculateMotorVelocity(int motorNumber, int commandEndIndex) {
+  int xVelocity = (int)command[(commandEndIndex + 1) % 5] - 150;
+  int yVelocity = (int)command[(commandEndIndex + 2) % 5] - 150;
+  int rotVelocity = (int)command[(commandEndIndex + 3) % 5] - 150;
+  double motorVelocity = 0;
+  
+//  Serial.print(xVelocity);
+//  Serial.print(" ");
+//  Serial.print(yVelocity);
+//  Serial.print(" ");
+//  Serial.println(rotVelocity);
 
-double calculateWheelRotVel(int wheelNumber) {
-  int xVel = (int) bluetoothValue[0];
-  int yVel = (int) bluetoothValue[1];
-  int rotVel = (int) bluetoothValue[2];
-  double wheelVel = 0;
-
-  switch(wheelNumber) {
-  // use matrix calculations to find velocity for each wheel
+  switch(motorNumber) {
+  // use matrix calculations to find velocity for each motor
+    case 0:
+      motorVelocity = (1/wheelRadius) * (yVelocity + lambda * xVelocity - beta * rotVelocity);
+      break;
     case 1:
-      wheelVel = (1/wheelRadius) * (yVel + lambda * xVel - beta * rotVel);
+      motorVelocity = (1/wheelRadius) * (yVelocity - lambda * xVelocity + beta * rotVelocity);
       break;
     case 2:
-      wheelVel = (1/wheelRadius) * (yVel - lambda * xVel + beta * rotVel);
+      motorVelocity = (1/wheelRadius) * (yVelocity - lambda * xVelocity - beta * rotVelocity);
       break;
     case 3:
-      wheelVel = (1/wheelRadius) * (yVel - lambda * xVel - beta * rotVel);
-      break;
-    case 4:
-      wheelVel = (1/wheelRadius) * (yVel + lambda * xVel + beta * rotVel);
+      motorVelocity = (1/wheelRadius) * (yVelocity + lambda * xVelocity + beta * rotVelocity);
       break;
     default:
       break;
   }
-
-  return wheelVel;
+  
+  int normalizedMotorVelocity = floor(motorVelocity / 10);
+  return normalizedMotorVelocity;
 }
 
 void readBatteryLevel() {
@@ -325,9 +250,11 @@ dischargeCurve[0] is the voltage corresponding to the battery being 0% charged, 
     i += 1;
   }
 
-  bluetoothValue[4] = i;
+  return i; 
 }
 
-void writeBluetooth() {
-//  bluetooth.write(bluetoothValue, 20);
+void clearBuffer() {
+  for (int i = 0; i < 5; i++) {
+    command[i] = NULL;  
+  }
 }

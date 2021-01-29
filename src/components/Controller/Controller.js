@@ -10,6 +10,12 @@ export default class Controller extends React.Component {
   constructor(props) {
     super(props);
 
+    this.controlsDebounceTime = 5; // millsecs
+    this.controlsToZeroTime = 100;
+
+    this.sendCommandDebounce = false;
+    this.sendCommandDebounce_timeout = null;
+
     this.state = {
       xVel: 0,
       yVel: 0,
@@ -46,6 +52,22 @@ export default class Controller extends React.Component {
       this.state.rotVel !== prevState.rotVel
     ) {
       if (this.state.bluetoothCharacteristic) {
+        if (
+          this.sendCommandDebounce &&
+          !(
+            this.state.xVel === 0 &&
+            this.state.yVel === 0 &&
+            this.state.rotVel === 0
+          )
+        ) {
+          return;
+        }
+
+        this.sendCommandDebounce = true;
+        this.sendCommandDebounce_timeout = setTimeout(() => {
+          this.sendCommandDebounce = false;
+        }, 100);
+
         var data = [
           this.state.xVel + 150, // ensure that all values are between 50 and 250
           this.state.yVel + 150,
@@ -215,6 +237,8 @@ export default class Controller extends React.Component {
             <Slider
               height={this.state.size}
               updateSliderValue={this.updateSliderValue}
+              debounceTime={this.controlsDebounceTime}
+              toZeroTime={this.controlsToZeroTime}
             />
           </div>
           <div className={style.consoleContainer}>
@@ -230,6 +254,8 @@ export default class Controller extends React.Component {
               stickToBaseRatio={4 / 5}
               validRadiusToBaseRatio={1 / 4}
               updateJoystickVals={this.updateJoystickVals}
+              debounceTime={this.controlsDebounceTime}
+              toZeroTime={this.controlsToZeroTime}
             />
           </div>
         </div>
