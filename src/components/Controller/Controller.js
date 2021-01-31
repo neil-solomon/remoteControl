@@ -1,9 +1,9 @@
 import React from "react";
 import style from "./Controller.module.css";
-import Joystick from "../Joystick";
-import Slider from "../Slider";
-import BluetoothConnect from "../BluetoothConnect";
-import Console from "../Console";
+import ControllerJoystick from "../ControllerJoystick";
+import ControllerSlider from "../ControllerSlider";
+import ControllerBluetoothConnect from "../ControllerBluetoothConnect";
+import ControllerConsole from "../ControllerConsole";
 import { ReactComponent as SmartphoneIcon } from "../../icons/smartphone.svg";
 import { ReactComponent as KeyboardIcon } from "../../icons/keyboard-key.svg";
 import { ReactComponent as MouseIcon } from "../../icons/mouse.svg";
@@ -224,7 +224,7 @@ export default class Controller extends React.Component {
 
     return (
       <div className={style.container} data-test="Controller">
-        <BluetoothConnect
+        <ControllerBluetoothConnect
           connectBluetooth={this.connectBluetooth}
           bluetoothCharacteristic={this.state.bluetoothCharacteristic}
           bluetoothDevice={this.state.bluetoothDevice}
@@ -236,7 +236,7 @@ export default class Controller extends React.Component {
           style={{ height: this.state.size + 100 }}
         >
           <div className={style.sliderContainer}>
-            <Slider
+            <ControllerSlider
               height={this.state.size}
               updateSliderValue={this.updateSliderValue}
               debounceTime={this.controlsDebounceTime}
@@ -248,7 +248,7 @@ export default class Controller extends React.Component {
             />
           </div>
           <div className={style.consoleContainer}>
-            <Console
+            <ControllerConsole
               xVel={this.state.xVel}
               yVel={this.state.yVel}
               rotVel={this.state.rotVel}
@@ -259,7 +259,7 @@ export default class Controller extends React.Component {
               className={style.mouseIcon}
               style={{ marginTop: (this.state.size - 30) / 2 }}
             />
-            <Joystick
+            <ControllerJoystick
               baseSize={this.state.size}
               stickToBaseRatio={4 / 5}
               validRadiusToBaseRatio={1 / 4}

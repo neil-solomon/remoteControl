@@ -1,7 +1,7 @@
 import React from "react";
-import style from "./Console.module.css";
+import style from "./ControllerConsole.module.css";
 
-export default class Console extends React.Component {
+export default class ControllerConsole extends React.Component {
   constructor(props) {
     super(props);
 

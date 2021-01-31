@@ -1,7 +1,7 @@
 import React from "react";
-import style from "./Joystick.module.css";
+import style from "./ControllerJoystick.module.css";
 
-export default class Joystick extends React.Component {
+export default class ControllerJoystick extends React.Component {
   constructor(props) {
     super(props);
 

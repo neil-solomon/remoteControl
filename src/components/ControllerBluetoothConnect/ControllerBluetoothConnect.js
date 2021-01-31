@@ -1,8 +1,8 @@
 import React from "react";
-import style from "./BluetoothConnect.module.css";
+import style from "./ControllerBluetoothConnect.module.css";
 import { ReactComponent as BluetoothIcon } from "../../icons/bluetooth-signal.svg";
 
-export default class BluetoothConnect extends React.Component {
+export default class ControllerBluetoothConnect extends React.Component {
   connectButtonClick = (event) => {
     event.target.blur();
     this.props.connectBluetooth();

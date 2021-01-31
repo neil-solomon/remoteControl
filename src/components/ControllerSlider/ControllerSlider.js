@@ -1,7 +1,7 @@
 import React from "react";
-import style from "./Slider.module.css";
+import style from "./ControllerSlider.module.css";
 
-export default class Slider extends React.Component {
+export default class ControllerSlider extends React.Component {
   constructor(props) {
     super(props);
 
