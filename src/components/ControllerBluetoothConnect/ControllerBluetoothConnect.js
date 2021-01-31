@@ -68,6 +68,7 @@ export default class ControllerBluetoothConnect extends React.Component {
                 onChange={this.props.updatePassword}
                 className={style.passwordInput}
                 data-test="BluetoothConnect_input"
+                id="BluetoothConnect_input"
                 maxLength={4}
                 size={4}
               ></input>

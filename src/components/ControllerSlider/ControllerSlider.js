@@ -126,6 +126,10 @@ export default class ControllerSlider extends React.Component {
   handleKeydown = (event) => {
     if (this.state.keyPressDebounce) return;
     // console.log(event.keyCode);
+
+    var passwordInput = document.getElementById("BluetoothConnect_input");
+    if (passwordInput === document.activeElement) return;
+
     var keyPressDebounce_timeout_length;
 
     if (event.keyCode === 87) {
