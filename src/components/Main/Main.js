@@ -11,7 +11,7 @@ export default class Main extends React.Component {
     super(props);
 
     this.state = {
-      pageView: [true, false, false, false], // home, controller, pathPlanning, help
+      pageView: [false, false, true, false], // home, controller, pathPlanning, help
       contentContainerClassName: style.fadeIn,
     };
   }
