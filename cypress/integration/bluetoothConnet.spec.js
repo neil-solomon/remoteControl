@@ -8,11 +8,13 @@ describe("Bluetooth Connect:", () => {
   });
 
   it("shows the entered password in the input", () => {
-    cy.get("[data-test=BluetoothConnect_input]").type("TEST_PASSWORD");
-    cy.get("[data-test=BluetoothConnect_input]").should(
-      "have.value",
-      "TEST_PASSWORD"
-    );
+    cy.get("[data-test=BluetoothConnect_input]").type("TEST");
+    cy.get("[data-test=BluetoothConnect_input]").should("have.value", "TEST");
+  });
+
+  it("shows the entered password in the input only up to 4 chars", () => {
+    cy.get("[data-test=BluetoothConnect_input]").type("TEST_LONG");
+    cy.get("[data-test=BluetoothConnect_input]").should("have.value", "TEST");
   });
 
   it("has a disabled button if the password input is empty, enabled otherwise", () => {

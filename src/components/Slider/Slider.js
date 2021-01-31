@@ -125,7 +125,7 @@ export default class Slider extends React.Component {
 
   handleKeydown = (event) => {
     if (this.state.keyPressDebounce) return;
-    console.log(event.keyCode);
+    // console.log(event.keyCode);
     var keyPressDebounce_timeout_length;
 
     if (event.keyCode === 87) {

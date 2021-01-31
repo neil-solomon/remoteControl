@@ -2,6 +2,7 @@ import React from "react";
 import style from "./Menu.module.css";
 import { ReactComponent as QuestionIcon } from "../../icons/question.svg";
 import { ReactComponent as ControllerIcon } from "../../icons/video-game.svg";
+import { ReactComponent as MazeIcon } from "../../icons/out-of-the-maze.svg";
 
 export default class Menu extends React.Component {
   constructor(props) {
@@ -23,12 +24,18 @@ export default class Menu extends React.Component {
         <div className={style.menuIcons}>
           <ControllerIcon
             className={style.icon}
+            style={{ marginRight: 5 }}
             onClick={() => this.props.changeMenu(1)}
             data-test="Menu_controllerIcon"
           />
-          <QuestionIcon
+          <MazeIcon
             className={style.icon}
             onClick={() => this.props.changeMenu(2)}
+            data-test="Menu_mazeIcon"
+          />
+          <QuestionIcon
+            className={style.icon}
+            onClick={() => this.props.changeMenu(3)}
             data-test="Menu_questionIcon"
           />
         </div>
