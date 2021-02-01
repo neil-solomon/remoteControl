@@ -6,7 +6,7 @@ export default class PathPlanningMenu extends React.Component {
     super(props);
 
     this.state = {
-      buttonHover: [false, false, false],
+      buttonHover: new Array(props.activeAction.length).fill(false),
     };
   }
 

@@ -74,7 +74,7 @@ export default class ControllerBluetoothConnect extends React.Component {
               ></input>
               <button
                 id="BluetoothConnect_connectButton"
-                className={style.connectButton}
+                className="Button"
                 onClick={this.connectButtonClick}
                 disabled={this.props.password.length !== 4}
                 data-test="BluetoothConnect_button"
