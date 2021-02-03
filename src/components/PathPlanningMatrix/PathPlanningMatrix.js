@@ -5,7 +5,8 @@ export default class PathPlanningMatrix extends React.Component {
   constructor(props) {
     super(props);
 
-    this.matrixSize = 35;
+    this.matrixWidth = 50;
+    this.matrixHeight = 20;
     this.cellStyle = {
       start: style.cellStart,
       end: style.cellEnd,
@@ -22,18 +23,30 @@ export default class PathPlanningMatrix extends React.Component {
 
     this.state = {
       generatingPath: false,
+      mouseDragActive: false,
+      cellSize: this.getCellSize(),
       shortPath: null,
       startCell: null,
       endCell: null,
-      matrix: new Array(this.matrixSize).fill(
-        new Array(this.matrixSize).fill({
+      matrix: new Array(this.matrixHeight).fill(
+        new Array(this.matrixWidth).fill({
           type: null, // start, end, barrier
         })
       ),
     };
   }
 
+  componentDidMount() {
+    window.addEventListener("resize", () => {
+      this.setState({ cellSize: this.getCellSize() });
+    });
+  }
+
   componentWillUnmount() {
+    window.removeEventListener("resize", () => {
+      this.setState({ cellSize: this.getCellSize() });
+    });
+
     for (let i = 0; i < this.animateLevels_timeouts.length; i++) {
       clearTimeout(this.animateLevels_timeouts[i]);
     }
@@ -42,6 +55,19 @@ export default class PathPlanningMatrix extends React.Component {
     clearTimeout(this.generatingPathDone_timeout);
     clearTimeout(this.findShortestPath_helper_timeout);
   }
+
+  componentDidUpdate(prevProps, prevState) {
+    // console.log(prevState.generatingPath !== this.state.generatingPath);
+    // console.log(prevState.shortPath !== this.state.shortPath);
+    // console.log(prevState.startCell !== this.state.startCell);
+    // console.log(prevState.endCell !== this.state.endCell);
+    // console.log(prevState.matrix !== this.state.matrix);
+    // console.log(" ");
+  }
+
+  getCellSize = () => {
+    return window.innerWidth / this.matrixWidth - 6;
+  };
 
   cellTypeUpdate = (event) => {
     if (this.state.generatingPath) return;
@@ -70,25 +96,23 @@ export default class PathPlanningMatrix extends React.Component {
     row = parseInt(row);
     col = parseInt(col);
 
-    var startCell = this.state.startCell;
-    var endCell = this.state.endCell;
+    var startCell = JSON.parse(JSON.stringify(this.state.startCell));
+    var endCell = JSON.parse(JSON.stringify(this.state.endCell));
 
     if (this.props.activeAction[0]) {
-      for (let i = 0; i < matrix.length; i++) {
-        for (let j = 0; j < matrix[i].length; j++) {
-          if (matrix[i][j].type === "start") {
-            matrix[i][j].type = null;
-          }
+      if (startCell) {
+        matrix[startCell[0]][startCell[1]].type = null;
+        if (endCell && endCell[0] === row && endCell[1] === col) {
+          endCell = null;
         }
       }
       matrix[row][col].type = "start";
       startCell = [row, col];
     } else if (this.props.activeAction[1]) {
-      for (let i = 0; i < matrix.length; i++) {
-        for (let j = 0; j < matrix[i].length; j++) {
-          if (matrix[i][j].type === "end") {
-            matrix[i][j].type = null;
-          }
+      if (endCell) {
+        matrix[endCell[0]][endCell[1]].type = null;
+        if (startCell && startCell[0] === row && startCell[1] === col) {
+          startCell = null;
         }
       }
       matrix[row][col].type = "end";
@@ -177,7 +201,7 @@ export default class PathPlanningMatrix extends React.Component {
         }
         // add below cell if valid
         if (
-          cell[0] < this.matrixSize - 1 &&
+          cell[0] < this.matrixHeight - 1 &&
           (this.state.matrix[cell[0] + 1][cell[1]].type === null ||
             this.state.matrix[cell[0] + 1][cell[1]].type === "end") &&
           !cellsVisited.has(JSON.stringify([cell[0] + 1, cell[1]]))
@@ -197,7 +221,7 @@ export default class PathPlanningMatrix extends React.Component {
         }
         // add right cell if valid
         if (
-          cell[1] < this.matrixSize - 1 &&
+          cell[1] < this.matrixWidth - 1 &&
           (this.state.matrix[cell[0]][cell[1] + 1].type === null ||
             this.state.matrix[cell[0]][cell[1] + 1].type === "end") &&
           !cellsVisited.has(JSON.stringify([cell[0], cell[1] + 1]))
@@ -334,6 +358,20 @@ export default class PathPlanningMatrix extends React.Component {
     this.setState({ matrix });
   };
 
+  startMouseDrag = (event) => {
+    this.cellTypeUpdate(event);
+    this.setState({ mouseDragActive: true });
+  };
+
+  mouseDrag = (event) => {
+    if (!this.state.mouseDragActive) return;
+    this.cellTypeUpdate(event);
+  };
+
+  endMouseDrag = (event) => {
+    this.setState({ mouseDragActive: false });
+  };
+
   render() {
     return (
       <div className={style.container}>
@@ -359,9 +397,15 @@ export default class PathPlanningMatrix extends React.Component {
                   {row.map((cell, index1) => (
                     <td
                       className={style.cell + " " + this.cellStyle[cell.type]}
+                      style={{
+                        height: this.state.cellSize,
+                        width: this.state.cellSize,
+                      }}
                       key={"PathPlanningMatrix_cell_" + index0 + "_" + index1}
                       id={"PathPlanningMatrix_cell_" + index0 + "_" + index1}
-                      onClick={this.cellTypeUpdate}
+                      onMouseDown={this.startMouseDrag}
+                      onMouseEnter={this.mouseDrag}
+                      onMouseUp={this.endMouseDrag}
                     ></td>
                   ))}
                 </tr>
