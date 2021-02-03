@@ -1,5 +1,13 @@
 .container {
+  display: inline-block;
   margin-top: 10px;
+}
+
+.icon {
+  height: 25px;
+  width: 25px;
+  margin: 5px;
+  fill: rgb(69, 90, 100);
 }
 
 .button {

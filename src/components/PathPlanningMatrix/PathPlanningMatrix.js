@@ -15,7 +15,7 @@ export default class PathPlanningMatrix extends React.Component {
       animatePath: style.cellAnimatePath,
     };
     this.animateInterval = 50;
-    this.animateLevels_timeouts = null;
+    this.animateLevels_timeouts = [];
     this.animateShortPath_timeout = null;
     this.animateLevelsClear_timeout = null;
     this.generatingPathDone_timeout = null;
@@ -132,6 +132,8 @@ export default class PathPlanningMatrix extends React.Component {
   };
 
   findShortestPath = () => {
+    if (!this.state.startCell || !this.state.endCell) return;
+
     this.clearShortPath();
     this.findShortestPath_helper_timeout = setTimeout(
       this.findShortestPath_helper,
@@ -375,7 +377,7 @@ export default class PathPlanningMatrix extends React.Component {
   render() {
     return (
       <div className={style.container}>
-        <div>
+        {/* <div>
           <button
             className="Button"
             disabled={!this.state.startCell || !this.state.endCell}
@@ -383,7 +385,7 @@ export default class PathPlanningMatrix extends React.Component {
           >
             Find Shortest Path
           </button>
-        </div>
+        </div> */}
         <div className={style.tableContainer}>
           <table align="center" cellSpacing={0} className={style.table}>
             <thead></thead>

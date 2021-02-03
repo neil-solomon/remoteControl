@@ -1,5 +1,9 @@
 import React from "react";
 import style from "./PathPlanningMenu.module.css";
+import { ReactComponent as StartIcon } from "../../icons/pin.svg";
+import { ReactComponent as EndIcon } from "../../icons/flag.svg";
+import { ReactComponent as BarrierIcon } from "../../icons/brickwall.svg";
+import { ReactComponent as EraseIcon } from "../../icons/eraser.svg";
 
 export default class PathPlanningMenu extends React.Component {
   constructor(props) {
@@ -33,7 +37,7 @@ export default class PathPlanningMenu extends React.Component {
 
     var buttonActive = JSON.parse(JSON.stringify(this.state.buttonActive));
     if (buttonActive[index]) return;
-    console.log("!");
+
     buttonActive = new Array(this.state.buttonActive.length).fill(false);
     buttonActive[index] = true;
     var buttonStyle = new Array(this.state.buttonStyle.length).fill(null);
@@ -66,7 +70,7 @@ export default class PathPlanningMenu extends React.Component {
           onMouseLeave={this.buttonMouseLeave}
           onClick={() => this.props.activeActionUpdate(0)}
         >
-          Start
+          <StartIcon className={style.icon} />
         </button>
         <button
           id="PathPlanning_button_1"
@@ -75,7 +79,7 @@ export default class PathPlanningMenu extends React.Component {
           onMouseLeave={this.buttonMouseLeave}
           onClick={() => this.props.activeActionUpdate(1)}
         >
-          End
+          <EndIcon className={style.icon} />
         </button>
         <button
           id="PathPlanning_button_2"
@@ -84,7 +88,16 @@ export default class PathPlanningMenu extends React.Component {
           onMouseLeave={this.buttonMouseLeave}
           onClick={() => this.props.activeActionUpdate(2)}
         >
-          Barrier
+          <BarrierIcon className={style.icon} />
+        </button>
+        <button
+          id="PathPlanning_button_3"
+          className={buttonStyle[3]}
+          onMouseEnter={this.buttonMouseEnter}
+          onMouseLeave={this.buttonMouseLeave}
+          onClick={() => this.props.activeActionUpdate(3)}
+        >
+          <EraseIcon className={style.icon} />
         </button>
       </div>
     );

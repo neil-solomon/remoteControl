@@ -1,9 +1,22 @@
 .container {
-  margin-top: 10px;
+  margin-top: 0px;
+  padding-bottom: 50px;
   text-align: center;
 }
 
 .title {
   font-size: 1.5em;
   font-weight: bold;
+}
+
+.findPathButton {
+  display: inline-block;
+  margin-left: 15px;
+}
+
+.icon {
+  height: 25px;
+  width: 25px;
+  margin: 5px;
+  fill: rgb(69, 90, 100);
 }
