@@ -20,10 +20,12 @@ export default class PathPlanningMatrix extends React.Component {
     this.animateLevelsClear_timeout = null;
     this.generatingPathDone_timeout = null;
     this.findShortestPath_helper_timeout = null;
+    this.mouseDragDebounce_timeout = null;
 
     this.state = {
       generatingPath: false,
       mouseDragActive: false,
+      mouseDragDebounce: false,
       cellSize: this.getCellSize(),
       shortPath: null,
       startCell: null,
@@ -46,6 +48,7 @@ export default class PathPlanningMatrix extends React.Component {
     window.removeEventListener("resize", () => {
       this.setState({ cellSize: this.getCellSize() });
     });
+    window.removeEventListener("mouseup", this.endMouseDrag);
 
     for (let i = 0; i < this.animateLevels_timeouts.length; i++) {
       clearTimeout(this.animateLevels_timeouts[i]);
@@ -54,15 +57,7 @@ export default class PathPlanningMatrix extends React.Component {
     clearTimeout(this.animateShortPath_timeout);
     clearTimeout(this.generatingPathDone_timeout);
     clearTimeout(this.findShortestPath_helper_timeout);
-  }
-
-  componentDidUpdate(prevProps, prevState) {
-    // console.log(prevState.generatingPath !== this.state.generatingPath);
-    // console.log(prevState.shortPath !== this.state.shortPath);
-    // console.log(prevState.startCell !== this.state.startCell);
-    // console.log(prevState.endCell !== this.state.endCell);
-    // console.log(prevState.matrix !== this.state.matrix);
-    // console.log(" ");
+    clearTimeout(this.mouseDragDebounce_timeout);
   }
 
   getCellSize = () => {
@@ -363,29 +358,27 @@ export default class PathPlanningMatrix extends React.Component {
   startMouseDrag = (event) => {
     this.cellTypeUpdate(event);
     this.setState({ mouseDragActive: true });
+    window.addEventListener("mouseup", this.endMouseDrag);
   };
 
   mouseDrag = (event) => {
-    if (!this.state.mouseDragActive) return;
+    if (!this.state.mouseDragActive || this.state.mouseDragDebounce) return;
+
     this.cellTypeUpdate(event);
+    this.setState({ mouseDragDebounce: true });
+    this.mouseDragDebounce_timeout = setTimeout(() => {
+      this.setState({ mouseDragDebounce: false });
+    }, 25);
   };
 
-  endMouseDrag = (event) => {
+  endMouseDrag = () => {
     this.setState({ mouseDragActive: false });
+    window.removeEventListener("mouseup", this.endMouseDrag);
   };
 
   render() {
     return (
       <div className={style.container}>
-        {/* <div>
-          <button
-            className="Button"
-            disabled={!this.state.startCell || !this.state.endCell}
-            onClick={this.findShortestPath}
-          >
-            Find Shortest Path
-          </button>
-        </div> */}
         <div className={style.tableContainer}>
           <table align="center" cellSpacing={0} className={style.table}>
             <thead></thead>
@@ -407,7 +400,6 @@ export default class PathPlanningMatrix extends React.Component {
                       id={"PathPlanningMatrix_cell_" + index0 + "_" + index1}
                       onMouseDown={this.startMouseDrag}
                       onMouseEnter={this.mouseDrag}
-                      onMouseUp={this.endMouseDrag}
                     ></td>
                   ))}
                 </tr>
