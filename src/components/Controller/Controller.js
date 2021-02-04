@@ -22,7 +22,7 @@ export default class Controller extends React.Component {
       xVel: 0,
       yVel: 0,
       rotVel: 0,
-      size: Math.min(0.5 * window.innerHeight, 300),
+      size: this.getControllerSize(),
 
       bluetoothDevice: null,
       bluetoothCharacteristic: null,
@@ -32,9 +32,7 @@ export default class Controller extends React.Component {
   }
 
   componentDidMount = () => {
-    window.addEventListener("resize", () => {
-      this.setState({ size: Math.min(0.5 * window.innerHeight, 300) });
-    });
+    window.addEventListener("resize", this.getControllerSize);
     window.addEventListener("beforeunload", this.disconnectBluetooth);
   };
 
@@ -93,6 +91,17 @@ export default class Controller extends React.Component {
       data.push(35); // terminate password
 
       this.state.bluetoothCharacteristic.writeValue(new Uint8Array(data));
+    }
+  };
+
+  getControllerSize = () => {
+    console.log("resize");
+    if (window.innerWidth > window.innerHeight) {
+      console.log(1);
+      return Math.min(0.5 * window.innerHeight, 300);
+    } else {
+      console.log(2);
+      return Math.min(0.6 * window.innerWidth, 300);
     }
   };
 
@@ -211,16 +220,16 @@ export default class Controller extends React.Component {
   };
 
   render() {
-    if (window.innerWidth < window.innerHeight && window.innerWidth < 600) {
-      return (
-        <div className={style.rotateDeviceContainer} data-test="Controller">
-          Rotate Device
-          <div className={style.rotateDeviceIconContainer}>
-            <SmartphoneIcon className={style.rotateDeviceIcon} />
-          </div>
-        </div>
-      );
-    }
+    // if (window.innerWidth < window.innerHeight && window.innerWidth < 600) {
+    //   return (
+    //     <div className={style.rotateDeviceContainer} data-test="Controller">
+    //       Rotate Device
+    //       <div className={style.rotateDeviceIconContainer}>
+    //         <SmartphoneIcon className={style.rotateDeviceIcon} />
+    //       </div>
+    //     </div>
+    //   );
+    // }
 
     return (
       <div className={style.container} data-test="Controller">

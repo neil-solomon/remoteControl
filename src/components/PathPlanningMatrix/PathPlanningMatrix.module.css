@@ -21,6 +21,7 @@
   display: inline-block;
   user-select: none;
   transition: border 0.25s;
+  touch-action: none;
 }
 .cell:hover {
   border: 1px solid rgb(76, 175, 80);

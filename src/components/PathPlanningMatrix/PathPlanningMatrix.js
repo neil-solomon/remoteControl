@@ -21,11 +21,15 @@ export default class PathPlanningMatrix extends React.Component {
     this.generatingPathDone_timeout = null;
     this.findShortestPath_helper_timeout = null;
     this.mouseDragDebounce_timeout = null;
+    this.touchDragDebounce_timeout = null;
 
     this.state = {
       generatingPath: false,
       mouseDragActive: false,
       mouseDragDebounce: false,
+      touchDragActive: false,
+      touchDragDebounce: false,
+      startTouchDragCoord: null,
       cellSize: this.getCellSize(),
       shortPath: null,
       startCell: null,
@@ -50,6 +54,9 @@ export default class PathPlanningMatrix extends React.Component {
     });
     window.removeEventListener("mouseup", this.endMouseDrag);
 
+    window.removeEventListener("touchend", this.endTouchDrag);
+    window.removeEventListener("touchcancel", this.endTouchDrag);
+
     for (let i = 0; i < this.animateLevels_timeouts.length; i++) {
       clearTimeout(this.animateLevels_timeouts[i]);
     }
@@ -57,7 +64,9 @@ export default class PathPlanningMatrix extends React.Component {
     clearTimeout(this.animateShortPath_timeout);
     clearTimeout(this.generatingPathDone_timeout);
     clearTimeout(this.findShortestPath_helper_timeout);
+
     clearTimeout(this.mouseDragDebounce_timeout);
+    clearTimeout(this.touchDragDebounce_timeout);
   }
 
   getCellSize = () => {
@@ -114,7 +123,7 @@ export default class PathPlanningMatrix extends React.Component {
       endCell = [row, col];
     } else if (this.props.activeAction[2]) {
       matrix[row][col].type = "barrier";
-    } else {
+    } else if (this.props.activeAction[3]) {
       matrix[row][col].type = null;
       if (this.state.matrix[row][col].type === "start") {
         startCell = null;
@@ -376,6 +385,59 @@ export default class PathPlanningMatrix extends React.Component {
     window.removeEventListener("mouseup", this.endMouseDrag);
   };
 
+  startTouchDrag = (event) => {
+    this.cellTypeUpdate(event);
+    this.setState({
+      touchDragActive: true,
+      startTouchDragCoord: [event.touches[0].clientX, event.touches[0].clientY],
+    });
+    window.addEventListener("touchend", this.endTouchDrag);
+    window.addEventListener("touchcancel", this.endTouchDrag);
+  };
+
+  touchDrag = (event) => {
+    /* The touchMove event is attached the the element where the touch started. 
+      So we need to calculate the cell where the touchMove is over.
+    */
+    if (!this.state.touchDragActive || this.state.touchDragDebounce) return;
+
+    var cellRow =
+      parseInt(event.target.id.split("_")[2]) +
+      parseInt(
+        (event.touches[0].clientY - this.state.startTouchDragCoord[1]) /
+          this.state.cellSize
+      );
+    var cellCol =
+      parseInt(event.target.id.split("_")[3]) +
+      parseInt(
+        (event.touches[0].clientX - this.state.startTouchDragCoord[0]) /
+          this.state.cellSize
+      );
+
+    if (
+      cellRow >= 0 &&
+      cellRow < this.matrixHeight &&
+      cellCol >= 0 &&
+      cellCol < this.matrixWidth
+    ) {
+      var dummyEvent = {
+        target: { id: "dummy_event_" + cellRow + "_" + cellCol },
+      };
+      this.cellTypeUpdate(dummyEvent);
+    }
+
+    this.setState({ touchDragDebounce: true });
+    this.touchDragDebounce_timeout = setTimeout(() => {
+      this.setState({ touchDragDebounce: false });
+    }, 25);
+  };
+
+  endTouchDrag = () => {
+    this.setState({ touchDragActive: false });
+    window.removeEventListener("touchend", this.endTouchDrag);
+    window.removeEventListener("touchcancel", this.endTouchDrag);
+  };
+
   render() {
     return (
       <div className={style.container}>
@@ -400,6 +462,8 @@ export default class PathPlanningMatrix extends React.Component {
                       id={"PathPlanningMatrix_cell_" + index0 + "_" + index1}
                       onMouseDown={this.startMouseDrag}
                       onMouseEnter={this.mouseDrag}
+                      onTouchStart={this.startTouchDrag}
+                      onTouchMove={this.touchDrag}
                     ></td>
                   ))}
                 </tr>
