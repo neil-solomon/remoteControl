@@ -43,7 +43,7 @@ export default class Menu extends React.Component {
             className={
               style.bluetooth +
               " " +
-              (this.props.bluetoothDevice
+              (this.props.bluetoothCharacteristic
                 ? style.bluetoothConnected
                 : style.bluetoothDisconnected)
             }

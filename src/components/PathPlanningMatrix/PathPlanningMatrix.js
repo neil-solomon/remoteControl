@@ -403,13 +403,13 @@ export default class PathPlanningMatrix extends React.Component {
 
     var cellRow =
       parseInt(event.target.id.split("_")[2]) +
-      parseInt(
+      Math.round(
         (event.touches[0].clientY - this.state.startTouchDragCoord[1]) /
           this.state.cellSize
       );
     var cellCol =
       parseInt(event.target.id.split("_")[3]) +
-      parseInt(
+      Math.round(
         (event.touches[0].clientX - this.state.startTouchDragCoord[0]) /
           this.state.cellSize
       );

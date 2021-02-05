@@ -135,7 +135,7 @@ export default class Main extends React.Component {
       <div className={style.container}>
         <Menu
           changeMenu={this.changeMenu}
-          bluetoothDevice={this.state.bluetoothDevice}
+          bluetoothCharacteristic={this.state.bluetoothCharacteristic}
         />
         <div
           className={
