@@ -29,7 +29,7 @@
 .menuIcons {
   display: inline-block;
   margin-top: 7px;
-  margin-left: calc(100vw - 260px);
+  margin-left: calc(100vw - 285px);
 }
 
 .icon {
@@ -37,7 +37,7 @@
   height: 35px;
   display: inline-block;
   vertical-align: top;
-  margin-left: 15px;
+  margin-left: 10px;
   cursor: pointer;
   display: inline-block;
   fill: rgb(69, 90, 100);
@@ -45,4 +45,33 @@
 }
 .icon:hover {
   fill: rgb(76, 175, 80);
+}
+
+.bluetooth {
+  width: 30px;
+  height: 30px;
+  display: inline-block;
+  vertical-align: top;
+  margin-top: 3px;
+  margin-left: 0px;
+}
+
+.bluetoothDisconnected {
+  fill: rgb(69, 90, 100, 0.25);
+}
+
+.bluetoothConnected {
+  animation: bluetoothConnectedGlow 2s infinite;
+}
+
+@keyframes bluetoothConnectedGlow {
+  0% {
+    fill: rgb(69, 90, 100, 0.25);
+  }
+  50% {
+    fill: rgb(76, 175, 80, 0.75);
+  }
+  100% {
+    fill: rgb(69, 90, 100, 0.25);
+  }
 }

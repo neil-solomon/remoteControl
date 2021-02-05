@@ -1,5 +1,6 @@
 import React from "react";
 import style from "./Menu.module.css";
+import { ReactComponent as BluetoothIcon } from "../../icons/bluetooth-signal.svg";
 import { ReactComponent as QuestionIcon } from "../../icons/question.svg";
 import { ReactComponent as ControllerIcon } from "../../icons/video-game.svg";
 import { ReactComponent as MazeIcon } from "../../icons/out-of-the-maze.svg";
@@ -37,6 +38,15 @@ export default class Menu extends React.Component {
             className={style.icon}
             onClick={() => this.props.changeMenu(3)}
             data-test="Menu_questionIcon"
+          />
+          <BluetoothIcon
+            className={
+              style.bluetooth +
+              " " +
+              (this.props.bluetoothDevice
+                ? style.bluetoothConnected
+                : style.bluetoothDisconnected)
+            }
           />
         </div>
       </div>

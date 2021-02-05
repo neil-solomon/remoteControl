@@ -133,7 +133,10 @@ export default class Main extends React.Component {
   render() {
     return (
       <div className={style.container}>
-        <Menu changeMenu={this.changeMenu} />
+        <Menu
+          changeMenu={this.changeMenu}
+          bluetoothDevice={this.state.bluetoothDevice}
+        />
         <div
           className={
             style.contentContainer + " " + this.state.contentContainerClassName
