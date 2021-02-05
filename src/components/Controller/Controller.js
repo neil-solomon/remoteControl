@@ -23,26 +23,16 @@ export default class Controller extends React.Component {
       yVel: 0,
       rotVel: 0,
       size: this.getControllerSize(),
-
-      bluetoothDevice: null,
-      bluetoothCharacteristic: null,
-
       password: "",
     };
   }
 
   componentDidMount = () => {
     window.addEventListener("resize", this.getControllerSize);
-    window.addEventListener("beforeunload", this.disconnectBluetooth);
   };
 
   componentWillUnmount = () => {
-    this.disconnectBluetooth();
-
-    window.removeEventListener("resize", () => {
-      this.setState({ size: Math.min(0.5 * window.innerHeight, 300) });
-    });
-    window.addEventListener("beforeunload", this.disconnectBluetooth);
+    window.removeEventListener("resize", this.getControllerSize);
   };
 
   componentDidUpdate = (prevProps, prevState) => {
@@ -51,7 +41,8 @@ export default class Controller extends React.Component {
       this.state.xVel !== prevState.xVel ||
       this.state.rotVel !== prevState.rotVel
     ) {
-      if (this.state.bluetoothCharacteristic) {
+      // if (this.state.bluetoothCharacteristic) {
+      if (this.props.bluetoothCharacteristic) {
         if (
           this.sendCommandDebounce &&
           !(
@@ -76,21 +67,24 @@ export default class Controller extends React.Component {
           36, // terminate command
         ];
         console.log(data);
-        this.state.bluetoothCharacteristic.writeValue(new Uint8Array(data));
+        this.props.sendToBluetooth(data);
+        // this.state.bluetoothCharacteristic.writeValue(new Uint8Array(data));
       }
     }
 
     if (
-      this.state.bluetoothCharacteristic &&
-      !prevState.bluetoothCharacteristic
+      // this.state.bluetoothCharacteristic &&
+      // !prevState.bluetoothCharacteristic
+      this.props.bluetoothCharacteristic &&
+      !prevProps.bluetoothCharacteristic
     ) {
       var data = this.state.password.split("").map((char, index) => {
         return this.state.password.charCodeAt(index);
       });
 
       data.push(35); // terminate password
-
-      this.state.bluetoothCharacteristic.writeValue(new Uint8Array(data));
+      this.props.sendToBluetooth(data);
+      // this.state.bluetoothCharacteristic.writeValue(new Uint8Array(data));
     }
   };
 
@@ -105,87 +99,6 @@ export default class Controller extends React.Component {
     }
   };
 
-  connectBluetooth = () => {
-    const options = {
-      filters: [{ name: "FrogRobotics" }],
-      optionalServices: [0xffe0],
-    };
-
-    navigator.bluetooth
-      .requestDevice(options)
-      .then((bluetoothDevice) => {
-        console.log("bluetoothDevice", bluetoothDevice);
-        bluetoothDevice.addEventListener("gattserverdisconnected", (e) => {
-          this.setState({
-            bluetoothDevice: null,
-            bluetoothCharacteristic: null,
-          });
-        });
-        this.setState({ bluetoothDevice });
-
-        bluetoothDevice.gatt
-          .connect()
-          .then((server) => {
-            console.log("server", server);
-
-            server
-              .getPrimaryService(0xffe0)
-              .then((service) => {
-                console.log("service", service);
-
-                service
-                  .getCharacteristic(0xffe1)
-                  .then((characteristic) => {
-                    console.log("characteristic", characteristic);
-                    characteristic.addEventListener(
-                      "characteristicvaluechanged",
-                      (e) => {
-                        var data = [];
-                        for (let i = 0; i < e.target.value.byteLength; i++) {
-                          data.push(e.target.value.getUint8(i));
-                        }
-                        console.log(
-                          "characteristicvaluechanged",
-                          e.target.value,
-                          data
-                        );
-                      }
-                    );
-                    characteristic.startNotifications();
-                    this.setState({ bluetoothCharacteristic: characteristic });
-                  })
-                  .catch((error) => {
-                    console.log(error);
-                  });
-              })
-              .catch((error) => {
-                console.log(error);
-              });
-          })
-          .catch((error) => {
-            console.log(error);
-          });
-      })
-      .catch((error) => {
-        console.log(error);
-      });
-  };
-
-  disconnectBluetooth = () => {
-    console.log("disconnetBluetooth");
-    if (this.state.bluetoothCharacteristic) {
-      var data = [
-        1,
-        1,
-        1,
-        1,
-        37, // disconnect
-      ];
-      console.log(data);
-      this.state.bluetoothCharacteristic.writeValue(new Uint8Array(data));
-    }
-  };
-
   updateJoystickVals = (yVel, xVel) => {
     this.setState({
       xVel: parseInt(100 * xVel),
@@ -197,22 +110,6 @@ export default class Controller extends React.Component {
     this.setState({
       rotVel: parseInt(100 * value),
     });
-  };
-
-  sendCommand = () => {
-    var commandInput = document.getElementById("commandInput");
-    if (!commandInput) {
-      return;
-    }
-
-    var sendData = commandInput.value.split("");
-    for (let i = 0; i < sendData.length; i++) {
-      sendData[i] = sendData[i].charCodeAt(0);
-    }
-    if (commandInput) {
-      console.log(commandInput.value);
-      this.state.bluetoothCharacteristic.writeValue(new Uint8Array(sendData));
-    }
   };
 
   updatePassword = (event) => {
@@ -234,9 +131,9 @@ export default class Controller extends React.Component {
     return (
       <div className={style.container} data-test="Controller">
         <ControllerBluetoothConnect
-          connectBluetooth={this.connectBluetooth}
-          bluetoothCharacteristic={this.state.bluetoothCharacteristic}
-          bluetoothDevice={this.state.bluetoothDevice}
+          connectBluetooth={this.props.connectBluetooth}
+          bluetoothCharacteristic={this.props.bluetoothCharacteristic}
+          bluetoothDevice={this.props.bluetoothDevice}
           updatePassword={this.updatePassword}
           password={this.state.password}
         />
