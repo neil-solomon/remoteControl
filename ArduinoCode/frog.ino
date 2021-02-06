@@ -19,10 +19,9 @@ CytronMD motor2(PWM_DIR, 3, 23);
 CytronMD motor3(PWM_DIR, 4, 24);
 CytronMD motor4(PWM_DIR, 5, 25);
 CytronMD motors [] = {motor1, motor2, motor3, motor4};
-unsigned char c; // used to receive data from bluetooth module
-unsigned char command [] = {NULL, NULL, NULL, NULL, NULL}; // buffer for data from bluetooth module
-int commandCount = 0;
-bool dataReceived;
+unsigned char bluetoothReceiveBuffer [128] = {NULL};
+int bluetoothReceiveBuffer_length = 0;
+unsigned long bluetoothConnectionTimer = 0;
 bool passwordReceived = false;
 int batteryLevel = 0;
 
@@ -33,8 +32,8 @@ void setup() {
   
   Serial.println("setup...");
   bluetooth_setup();
-  motors_setup();
-  battery_setup();
+//  motors_setup();
+//  battery_setup();
   Serial.println("setup done");
   
   Serial.println();
@@ -42,41 +41,37 @@ void setup() {
 
 void loop() {
   // this function is called repeatedly while the Arduino is running  
-
-  if (!passwordReceived && (millis() % 10000 == 0)) { // disconnect the bluetooth module every 10 seconds if the password has not been received.
-    Serial.println("password timeout");
-    bluetooth_disconnect();
-  }
   
-  dataReceived = false;
+  bluetooth_receive();
+  bluetooth_print();
 
-  while (Serial1.available()){ // receive data from bluetooth module
-    dataReceived = true;
-    c = Serial1.read();
-    Serial.write(c);
-    command[commandCount++] = c;
-    if (commandCount == 5) {
-      commandCount = 0;  
+  if (bluetoothReceiveBuffer_length > 0) {
+    if (bluetoothReceiveBuffer[0] == 35) {
+      checkPassword();
     }
-    
-    if (command[0] && command[1] && command[2] && command[3] && command[4]) { // the buffer is full
-      if (command[4] == 35) { // password command
-        checkPassword();
-      }  
-      else if (commandCount == 0 && (command[0] == 36 || command[1] == 36 || command[2] == 36 || command[3] == 36 || command[4] == 36)) { // direction command
-        sendCommandToMotors();
-      }
-      else if (command[4] == 37) { // disconnect command
-        Serial.println("disconnect command");
-        bluetooth_disconnect();
-      }
+    else if (bluetoothReceiveBuffer[0] == 36) {
+      sendMotorVelocities((int)bluetoothReceiveBuffer[1] - 150, (int)bluetoothReceiveBuffer[2] - 150, (int)bluetoothReceiveBuffer[3] - 150);
     }
-  }
-  
-  if (commandCount == 0 && dataReceived){
-    Serial.println();  
-  }
-//  readBatteryLevel();
+    else if (bluetoothReceiveBuffer[0] == 37) {
+      bluetooth_disconnect();
+    }
+    else if (bluetoothReceiveBuffer[2] == 43) {
+      handleBluetoothNotification();  
+    }
+  } 
+
+  if (bluetoothConnectionTimer != 0) {
+    if (millis() - bluetoothConnectionTimer > 10000 && !passwordReceived) {
+      Serial.print("password timeout ");
+      Serial.println(bluetoothConnectionTimer);
+      bluetooth_disconnect();  
+    }
+    else if (millis() % 10000 == 0) {
+      readBatteryLevel();
+      sendBatteryLevel();
+      delay(1);
+    }
+  } 
 }
 
 void motors_setup() {
@@ -126,16 +121,16 @@ void bluetooth_setup() {
   
   Serial.println("  bluetooth_setup...");
 
-  bluetooth_setup_param("AT"); // test command
-  bluetooth_setup_param("AT+ROLE0"); // set bluetooth module as a peripheral
-  bluetooth_setup_param("AT+UUID0xFFE0"); // set the service id of the bluetooth module
-  bluetooth_setup_param("AT+CHAR0xFFE1"); // set the characteristic id of the bluetooth module
-  bluetooth_setup_param("AT+NAMEFrogRobotics"); // set the name of the bluetooth module
-  bluetooth_setup_param("AT+TYPE0"); // set the bluetooth module to not require a password to connect
-  bluetooth_setup_param("AT+NOTI0"); // set the bluetooth module to send notifications (not working)
+  bluetooth_setupParameter("AT"); // test command
+  bluetooth_setupParameter("AT+ROLE0"); // set bluetooth module as a peripheral
+  bluetooth_setupParameter("AT+UUID0xFFE0"); // set the service id of the bluetooth module
+  bluetooth_setupParameter("AT+CHAR0xFFE1"); // set the characteristic id of the bluetooth module
+  bluetooth_setupParameter("AT+NAMEFrogRobotics"); // set the name of the bluetooth module
+  bluetooth_setupParameter("AT+TYPE0"); // set the bluetooth module to not require a password to connect
+  bluetooth_setupParameter("AT+NOTI1"); // set the bluetooth module to send notifications 
 }
 
-void bluetooth_setup_param(char * command) {
+void bluetooth_setupParameter(char * command) {
   /* Every command sent to the bluetooth module should receive a response of 'OK ...' */
   Serial.print("    "); // print command to terminal
   Serial.print(command);
@@ -144,52 +139,79 @@ void bluetooth_setup_param(char * command) {
   Serial1.write(command); // send command to bluetooth
   delay(500);
   while (Serial1.available()) { // print response to terminal
-    c = Serial1.read();
-    Serial.print(c);
+    Serial.print((char)Serial1.read());
+    delay(5);
   }
   Serial.println();
+}
+
+void bluetooth_receive() {
+  bluetoothReceiveBuffer_length = 0;
+  while (Serial1.available()) {
+    bluetoothReceiveBuffer[bluetoothReceiveBuffer_length++] = Serial1.read();
+    delay(5);
+  }
+}
+
+void bluetooth_print() {
+  if (bluetoothReceiveBuffer_length == 0) {
+    return;
+  }
+  for (int i = 0; i < bluetoothReceiveBuffer_length; i++) {
+    Serial.print((char)bluetoothReceiveBuffer[i]);  
+  }
+  Serial.println();
+}
+
+void handleBluetoothNotification() {
+  if (bluetoothReceiveBuffer_length == 7) {
+    if (bluetoothReceiveBuffer[3] == 67 && bluetoothReceiveBuffer[4] == 79 && bluetoothReceiveBuffer[5] == 78 && bluetoothReceiveBuffer[6] == 78) {
+      // bluetooth connected
+      bluetoothConnectionTimer = millis();
+      Serial.print("bluetooth connection ");
+      Serial.println(bluetoothConnectionTimer);
+    }
+    else if (bluetoothReceiveBuffer[3] == 76 && bluetoothReceiveBuffer[4] == 79 && bluetoothReceiveBuffer[5] == 83 && bluetoothReceiveBuffer[6] == 84) {
+      // bluetooth disconnected
+      passwordReceived = false;
+      bluetoothConnectionTimer = 0;
+      sendMotorVelocities(0, 0, 0);
+    }
+  }
 }
 
 void bluetooth_disconnect() {
   Serial.println("bluetooth_disconnect");
   passwordReceived = false;
+  bluetoothConnectionTimer = 0;
+  sendMotorVelocities(0, 0, 0);
   Serial1.write("AT");
   delay(100);
   while (Serial1.available()) {
-    c = Serial1.read();
-    Serial.print(c);
+    Serial.print((char)Serial1.read());
+    delay(5);
   }
   Serial.println();  
-
-  clearBuffer();
 }
 
 void checkPassword() {
-  Serial.println("checkPassword");
-  if (command[0] == 49 && command[1] == 50 && command[2] == 51 && command[3] == 52) {
+  Serial.print("checkPassword: ");
+  if (bluetoothReceiveBuffer[1] == 49 && bluetoothReceiveBuffer[2] == 50 && bluetoothReceiveBuffer[3] == 51 && bluetoothReceiveBuffer[4] == 52) {
     Serial.println("good password");
     passwordReceived = true;
   }
   else {
     Serial.println("bad password");
+    bluetooth_disconnect();
     passwordReceived = false;
   }  
-  clearBuffer();
 }
 
 
-void sendCommandToMotors() {
-  int commandEndIndex;
-  for (int i = 0; i < 5; i++) {
-    if (command[i] == 36) {
-      commandEndIndex = i;
-      break; 
-    }
-  }
-  
+void sendMotorVelocities(int xVel, int yVel, int rotVel) {
   int motorVelocity = 0;
   for (int i = 0; i < 4; i++) {
-    motorVelocity = calculateMotorVelocity(i, commandEndIndex);
+    motorVelocity = calculateMotorVelocity(i, xVel, yVel, rotVel);
     motors[i].setSpeed(motorVelocity);
     Serial.print("motor ");
     Serial.print(i+1);
@@ -198,31 +220,22 @@ void sendCommandToMotors() {
   }
 }
 
-double calculateMotorVelocity(int motorNumber, int commandEndIndex) {
-  int xVelocity = (int)command[(commandEndIndex + 1) % 5] - 150;
-  int yVelocity = (int)command[(commandEndIndex + 2) % 5] - 150;
-  int rotVelocity = (int)command[(commandEndIndex + 3) % 5] - 150;
+double calculateMotorVelocity(int motorNumber, int xVel, int yVel, int rotVel) {
   double motorVelocity = 0;
-  
-//  Serial.print(xVelocity);
-//  Serial.print(" ");
-//  Serial.print(yVelocity);
-//  Serial.print(" ");
-//  Serial.println(rotVelocity);
 
   switch(motorNumber) {
   // use matrix calculations to find velocity for each motor
     case 0:
-      motorVelocity = (1/wheelRadius) * (yVelocity + lambda * xVelocity - beta * rotVelocity);
+      motorVelocity = (1/wheelRadius) * (yVel + lambda * xVel - beta * rotVel);
       break;
     case 1:
-      motorVelocity = (1/wheelRadius) * (yVelocity - lambda * xVelocity + beta * rotVelocity);
+      motorVelocity = (1/wheelRadius) * (yVel - lambda * xVel + beta * rotVel);
       break;
     case 2:
-      motorVelocity = (1/wheelRadius) * (yVelocity - lambda * xVelocity - beta * rotVelocity);
+      motorVelocity = (1/wheelRadius) * (yVel - lambda * xVel - beta * rotVel);
       break;
     case 3:
-      motorVelocity = (1/wheelRadius) * (yVelocity + lambda * xVelocity + beta * rotVelocity);
+      motorVelocity = (1/wheelRadius) * (yVel + lambda * xVel + beta * rotVel);
       break;
     default:
       break;
@@ -243,18 +256,20 @@ dischargeCurve[0] is the voltage corresponding to the battery being 0% charged, 
 */
 
   int dischargeCurve[] = {3, 3.1, 3.2, 3.3, 3.4, 3.5, 3.6, 3.7, 3.8, 3.9};
-  int batteryLevel = analogRead(0);
+  int batteryVoltage = analogRead(0);
   
   int i = 0;
-  while (i<10 && batteryLevel < dischargeCurve[i]) {
+  while (i < 10 && batteryVoltage < dischargeCurve[i]) {
     i += 1;
   }
 
-  return i; 
+//  batteryLevel = i; 
+  batteryLevel = random(10);
 }
 
-void clearBuffer() {
-  for (int i = 0; i < 5; i++) {
-    command[i] = NULL;  
-  }
+void sendBatteryLevel() {
+  Serial.print("sendBatteryLevel: ");
+  Serial.println(batteryLevel);
+  char data [] = {38, (char)batteryLevel};
+  Serial1.write(data);  
 }

@@ -29,6 +29,12 @@ export default class ControllerConsole extends React.Component {
             {this.props.rotVel}
           </div>
         </div>
+        <div>
+          Battery:{" "}
+          {this.props.batteryLevel !== null
+            ? this.props.batteryLevel * 10 + "%"
+            : "-"}
+        </div>
       </div>
     );
   }

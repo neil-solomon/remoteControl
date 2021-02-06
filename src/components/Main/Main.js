@@ -15,6 +15,7 @@ export default class Main extends React.Component {
       contentContainerClassName: style.fadeIn,
       bluetoothDevice: null,
       bluetoothCharacteristic: null,
+      batteryLevel: null,
     };
   }
 
@@ -81,11 +82,7 @@ export default class Main extends React.Component {
                         for (let i = 0; i < e.target.value.byteLength; i++) {
                           data.push(e.target.value.getUint8(i));
                         }
-                        console.log(
-                          "characteristicValueChanged",
-                          e.target.value,
-                          data
-                        );
+                        this.updateCharacteristicValue(e.target.value, data);
                       }
                     );
                     characteristic.startNotifications();
@@ -108,16 +105,17 @@ export default class Main extends React.Component {
       });
   };
 
+  updateCharacteristicValue = (eventValue, data) => {
+    console.log("characteristicValueChanged", eventValue, data);
+    if (data.length > 1 && data[0] === 38) {
+      this.setState({ batteryLevel: data[1] });
+    }
+  };
+
   disconnectBluetooth = () => {
     console.log("disconnetBluetooth");
     if (this.state.bluetoothCharacteristic) {
-      var data = [
-        1,
-        1,
-        1,
-        1,
-        37, // disconnect
-      ];
+      var data = [37]; // disconnect
       console.log(data);
       this.state.bluetoothCharacteristic.writeValue(new Uint8Array(data));
     }
@@ -149,6 +147,7 @@ export default class Main extends React.Component {
               connectBluetooth={this.connectBluetooth}
               bluetoothCharacteristic={this.state.bluetoothCharacteristic}
               bluetoothDevice={this.state.bluetoothDevice}
+              batteryLevel={this.state.batteryLevel}
             />
           )}
           {this.state.pageView[2] && <PathPlanning />}

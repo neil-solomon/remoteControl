@@ -60,11 +60,10 @@ export default class Controller extends React.Component {
         }, 100);
 
         var data = [
+          36, // motor command
           this.state.xVel + 150, // ensure that all values are between 50 and 250
           this.state.yVel + 150,
           this.state.rotVel + 150,
-          1, // dummy value, 0 doesn't work as dummy value
-          36, // terminate command
         ];
         console.log(data);
         this.props.sendToBluetooth(data);
@@ -82,19 +81,16 @@ export default class Controller extends React.Component {
         return this.state.password.charCodeAt(index);
       });
 
-      data.push(35); // terminate password
+      data.unshift(35); // password command
       this.props.sendToBluetooth(data);
       // this.state.bluetoothCharacteristic.writeValue(new Uint8Array(data));
     }
   };
 
   getControllerSize = () => {
-    console.log("resize");
     if (window.innerWidth > window.innerHeight) {
-      console.log(1);
       return Math.min(0.5 * window.innerHeight, 300);
     } else {
-      console.log(2);
       return Math.min(0.6 * window.innerWidth, 300);
     }
   };
@@ -158,6 +154,7 @@ export default class Controller extends React.Component {
               xVel={this.state.xVel}
               yVel={this.state.yVel}
               rotVel={this.state.rotVel}
+              batteryLevel={this.props.batteryLevel}
             />
           </div>
           <div className={style.joystickContainer}>
