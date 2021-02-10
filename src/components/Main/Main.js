@@ -123,7 +123,7 @@ export default class Main extends React.Component {
       console.log(data);
       this.state.bluetoothCharacteristic
         .writeValue(new Uint8Array(data))
-        .then(() => this.delayPromise(10))
+        .then(() => this.delayPromise(25))
         .catch((error) => console.log("sendToBluetooth", error));
     }
   };
