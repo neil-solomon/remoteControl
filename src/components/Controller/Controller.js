@@ -65,7 +65,6 @@ export default class Controller extends React.Component {
           this.state.yVel + 150,
           this.state.rotVel + 150,
         ];
-        console.log(data);
         this.props.sendToBluetooth(data);
         // this.state.bluetoothCharacteristic.writeValue(new Uint8Array(data));
       }

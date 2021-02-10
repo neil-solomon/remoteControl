@@ -114,18 +114,24 @@ export default class Main extends React.Component {
 
   disconnectBluetooth = () => {
     console.log("disconnetBluetooth");
-    if (this.state.bluetoothCharacteristic) {
-      var data = [37]; // disconnect
-      console.log(data);
-      this.state.bluetoothCharacteristic.writeValue(new Uint8Array(data));
-    }
+    var data = [37, 37, 37]; // disconnect
+    this.sendToBluetooth(data);
   };
 
   sendToBluetooth = (data) => {
     if (this.state.bluetoothCharacteristic) {
       console.log(data);
-      this.state.bluetoothCharacteristic.writeValue(new Uint8Array(data));
+      this.state.bluetoothCharacteristic
+        .writeValue(new Uint8Array(data))
+        .then(() => this.delayPromise(10))
+        .catch((error) => console.log("sendToBluetooth", error));
     }
+  };
+
+  delayPromise = (delay) => {
+    return new Promise((resolve) => {
+      setTimeout(resolve, delay);
+    });
   };
 
   render() {
