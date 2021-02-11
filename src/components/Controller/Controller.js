@@ -12,7 +12,7 @@ export default class Controller extends React.Component {
   constructor(props) {
     super(props);
 
-    this.controlsDebounceTime = 5; // millsecs
+    this.controlsDebounceTime = 5; // millisecondss
     this.controlsToZeroTime = 100;
 
     this.sendCommandDebounce = false;
@@ -66,13 +66,10 @@ export default class Controller extends React.Component {
           this.state.rotVel + 150,
         ];
         this.props.sendToBluetooth(data);
-        // this.state.bluetoothCharacteristic.writeValue(new Uint8Array(data));
       }
     }
 
     if (
-      // this.state.bluetoothCharacteristic &&
-      // !prevState.bluetoothCharacteristic
       this.props.bluetoothCharacteristic &&
       !prevProps.bluetoothCharacteristic
     ) {
@@ -80,9 +77,8 @@ export default class Controller extends React.Component {
         return this.state.password.charCodeAt(index);
       });
 
-      data.unshift(35); // password command
+      // data.unshift(35); // password command
       this.props.sendToBluetooth(data);
-      // this.state.bluetoothCharacteristic.writeValue(new Uint8Array(data));
     }
   };
 
