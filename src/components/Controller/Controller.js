@@ -78,7 +78,7 @@ export default class Controller extends React.Component {
       });
 
       data.unshift(35); // password command
-      setTimeout(this.props.sendToBluetooth(data), 1000);
+      setTimeout(() => this.props.sendToBluetooth(data), 2000);
     }
   };
 
