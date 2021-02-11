@@ -29,11 +29,28 @@ export default class ControllerConsole extends React.Component {
             {this.props.rotVel}
           </div>
         </div>
-        <div>
-          Battery:{" "}
-          {this.props.batteryLevel !== null
-            ? this.props.batteryLevel * 10 + "%"
-            : "-"}
+        <div className={style.batteryContainer}>
+          <div className={style.batteryOuter}></div>
+          <div
+            className={style.batteryInner}
+            style={{
+              width:
+                this.props.batteryLevel !== null
+                  ? this.props.batteryLevel * 5.75
+                  : 57.5,
+            }}
+          ></div>
+          <div
+            className={style.batteryNumber}
+            style={{
+              left: this.props.batteryLevel === 10 ? 20 : 24,
+            }}
+          >
+            {this.props.batteryLevel !== null
+              ? this.props.batteryLevel * 10 + "%"
+              : "----"}
+          </div>
+          <div className={style.batteryTip}></div>
         </div>
       </div>
     );

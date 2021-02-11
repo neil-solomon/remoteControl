@@ -9,3 +9,48 @@
   padding-left: 10px;
   width: 50px;
 }
+
+.batteryContainer {
+  margin-top: 5px;
+  margin-left: 20px;
+  position: relative;
+}
+
+.batteryOuter {
+  position: absolute;
+  top: 0px;
+  left: 0px;
+  border: 4px solid rgb(69, 90, 100);
+  border-radius: 10px;
+  width: 65px;
+  height: 25px;
+}
+
+.batteryTip {
+  position: absolute;
+  height: 15px;
+  width: 8px;
+  top: 8px;
+  left: 70px;
+  border-radius: 4px;
+  background-color: rgb(69, 90, 100);
+}
+
+.batteryInner {
+  position: absolute;
+  top: 7px;
+  left: 7px;
+  border-radius: 4px;
+  height: 18px;
+  background-color: rgb(69, 90, 100);
+  transition: width 0.5s;
+}
+
+.batteryNumber {
+  position: absolute;
+  text-align: center;
+  top: 5px;
+  font-size: 14px;
+  font-weight: bold;
+  color: rgb(76, 175, 80);
+}
