@@ -17,6 +17,7 @@ export default class Controller extends React.Component {
 
     this.sendCommandDebounce = false;
     this.sendCommandDebounce_timeout = null;
+    this.sendPassword_timeout = null;
 
     this.state = {
       xVel: 0,
@@ -33,6 +34,8 @@ export default class Controller extends React.Component {
 
   componentWillUnmount = () => {
     window.removeEventListener("resize", this.getControllerSize);
+    clearTimeout(this.sendCommandDebounce_timeout);
+    clearTimeout(this.sendPassword_timeout);
   };
 
   componentDidUpdate = (prevProps, prevState) => {
@@ -78,7 +81,10 @@ export default class Controller extends React.Component {
       });
 
       data.unshift(35); // password command
-      setTimeout(() => this.props.sendToBluetooth(data), 2000);
+      this.sendPassword_timeout = setTimeout(
+        () => this.props.sendToBluetooth(data),
+        1000
+      );
     }
   };
 
