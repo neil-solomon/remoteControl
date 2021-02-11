@@ -14,9 +14,30 @@
   margin-left: 15px;
 }
 
+.findPathOptions {
+  display: inline-block;
+  margin-left: 5px;
+  text-align: left;
+  width: 100px;
+}
+
+.checkboxContainer {
+  transition: opacity 0.25s;
+  user-select: none;
+}
+
 .icon {
   height: 25px;
   width: 25px;
   margin: 5px;
   fill: rgb(69, 90, 100);
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
 }

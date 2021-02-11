@@ -156,7 +156,7 @@ export default class PathPlanningMatrix extends React.Component {
     var reachedEnd = generateLevelsObj["reachedEnd"];
     var levels = generateLevelsObj["levels"];
     var shortPath = this.findShortestPath_generateShortPath(reachedEnd, levels);
-
+    console.log(levels, shortPath);
     this.animateLevels(levels);
 
     if (shortPath) {
@@ -166,7 +166,6 @@ export default class PathPlanningMatrix extends React.Component {
         this.animateInterval * levels.length
       );
       this.generatingPathDone_timeout = setTimeout(() => {
-        console.log("generatingPathDone_timeout shortPath");
         this.setState({ generatingPath: false, shortPath });
       }, this.animateInterval * (levels.length + shortPath.length));
     } else {
@@ -201,45 +200,49 @@ export default class PathPlanningMatrix extends React.Component {
           reachedEnd = true;
           break;
         }
-        // add above cell if valid
-        if (
-          cell[0] > 0 &&
-          (this.state.matrix[cell[0] - 1][cell[1]].type === null ||
-            this.state.matrix[cell[0] - 1][cell[1]].type === "end") &&
-          !cellsVisited.has(JSON.stringify([cell[0] - 1, cell[1]]))
-        ) {
+
+        // add above cell
+        if (this.cellIsAvailable(cell[0] - 1, cell[1], cellsVisited)) {
           nextLevel.push([cell[0] - 1, cell[1]]);
           cellsVisited.add(JSON.stringify([cell[0] - 1, cell[1]]));
         }
-        // add below cell if valid
-        if (
-          cell[0] < this.matrixHeight - 1 &&
-          (this.state.matrix[cell[0] + 1][cell[1]].type === null ||
-            this.state.matrix[cell[0] + 1][cell[1]].type === "end") &&
-          !cellsVisited.has(JSON.stringify([cell[0] + 1, cell[1]]))
-        ) {
+        // add below cell
+        if (this.cellIsAvailable(cell[0] + 1, cell[1], cellsVisited)) {
           nextLevel.push([cell[0] + 1, cell[1]]);
           cellsVisited.add(JSON.stringify([cell[0] + 1, cell[1]]));
         }
-        // add left cell if valid
-        if (
-          cell[1] > 0 &&
-          (this.state.matrix[cell[0]][cell[1] - 1].type === null ||
-            this.state.matrix[cell[0]][cell[1] - 1].type === "end") &&
-          !cellsVisited.has(JSON.stringify([cell[0], cell[1] - 1]))
-        ) {
+        // add left cell
+        if (this.cellIsAvailable(cell[0], cell[1] - 1, cellsVisited)) {
           nextLevel.push([cell[0], cell[1] - 1]);
           cellsVisited.add(JSON.stringify([cell[0], cell[1] - 1]));
         }
-        // add right cell if valid
-        if (
-          cell[1] < this.matrixWidth - 1 &&
-          (this.state.matrix[cell[0]][cell[1] + 1].type === null ||
-            this.state.matrix[cell[0]][cell[1] + 1].type === "end") &&
-          !cellsVisited.has(JSON.stringify([cell[0], cell[1] + 1]))
-        ) {
+        // add right cell
+        if (this.cellIsAvailable(cell[0], cell[1] + 1, cellsVisited)) {
           nextLevel.push([cell[0], cell[1] + 1]);
           cellsVisited.add(JSON.stringify([cell[0], cell[1] + 1]));
+        }
+
+        if (this.props.useDiagonal) {
+          // add top-left cell
+          if (this.cellIsAvailable(cell[0] - 1, cell[1] - 1, cellsVisited)) {
+            nextLevel.push([cell[0] - 1, cell[1] - 1]);
+            cellsVisited.add(JSON.stringify([cell[0] - 1, cell[1] - 1]));
+          }
+          // add top-right cell
+          if (this.cellIsAvailable(cell[0] - 1, cell[1] + 1, cellsVisited)) {
+            nextLevel.push([cell[0] - 1, cell[1] + 1]);
+            cellsVisited.add(JSON.stringify([cell[0] - 1, cell[1] + 1]));
+          }
+          // add bottom-right cell
+          if (this.cellIsAvailable(cell[0] + 1, cell[1] + 1, cellsVisited)) {
+            nextLevel.push([cell[0] + 1, cell[1] + 1]);
+            cellsVisited.add(JSON.stringify([cell[0] + 1, cell[1] + 1]));
+          }
+          // add bottom-left cell
+          if (this.cellIsAvailable(cell[0] + 1, cell[1] - 1, cellsVisited)) {
+            nextLevel.push([cell[0] + 1, cell[1] - 1]);
+            cellsVisited.add(JSON.stringify([cell[0] + 1, cell[1] - 1]));
+          }
         }
       }
       if (nextLevel.length === 0 || reachedEnd) {
@@ -247,9 +250,23 @@ export default class PathPlanningMatrix extends React.Component {
       }
       levels.push(nextLevel);
     }
-
     var returnObj = { reachedEnd: reachedEnd, levels: levels };
     return returnObj;
+  };
+
+  cellIsAvailable = (row, col, cellsVisited) => {
+    if (
+      row >= 0 &&
+      row < this.matrixHeight &&
+      col >= 0 &&
+      col < this.matrixWidth &&
+      (this.state.matrix[row][col].type === "end" ||
+        this.state.matrix[row][col].type === null) &&
+      !cellsVisited.has(JSON.stringify([row, col]))
+    ) {
+      return true;
+    }
+    return false;
   };
 
   findShortestPath_generateShortPath = (reachedEnd, levels) => {
@@ -263,7 +280,12 @@ export default class PathPlanningMatrix extends React.Component {
           Math.sqrt(
             Math.pow(levels[i][j][0] - shortPath[0][0], 2) +
               Math.pow(levels[i][j][1] - shortPath[0][1], 2)
-          ) == 1
+          ) == 1 ||
+          (this.props.useDiagonal &&
+            Math.sqrt(
+              Math.pow(levels[i][j][0] - shortPath[0][0], 2) +
+                Math.pow(levels[i][j][1] - shortPath[0][1], 2)
+            ).toFixed(3) == 1.414)
         ) {
           shortPath.unshift([levels[i][j][0], levels[i][j][1]]);
           break;

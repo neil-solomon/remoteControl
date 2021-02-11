@@ -12,6 +12,8 @@ export default class PathPlanning extends React.Component {
 
     this.state = {
       activeAction: [false, false, false, false], // start, end, barrier, erase, findPath
+      useDiagonal: false,
+      useWideBerth: false,
     };
   }
 
@@ -29,6 +31,22 @@ export default class PathPlanning extends React.Component {
     this.matrix.current.findShortestPath();
   };
 
+  toggle_useDiagonal = () => {
+    if (this.state.useWideBerth) {
+      this.setState({
+        useDiagonal: !this.state.useDiagonal,
+        useWideBerth: false,
+      });
+    } else {
+      this.setState({ useDiagonal: !this.state.useDiagonal });
+    }
+  };
+
+  toggle_wideBerth = () => {
+    if (!this.state.useDiagonal) return;
+    this.setState({ useWideBerth: !this.state.useWideBerth });
+  };
+
   render() {
     return (
       <div className={style.container} data-test="PathPlanning">
@@ -42,8 +60,36 @@ export default class PathPlanning extends React.Component {
             <FindPathIcon className={style.icon} />
           </button>
         </div>
+        <div className={style.findPathOptions}>
+          <div
+            className={style.checkboxContainer}
+            onClick={this.toggle_useDiagonal}
+          >
+            <input
+              type="checkbox"
+              checked={this.state.useDiagonal}
+              readOnly={true}
+            />
+            <span>Diagonal</span>
+          </div>
+          <div
+            className={style.checkboxContainer}
+            style={{ opacity: this.state.useDiagonal ? 1 : 0.75 }}
+            onClick={this.toggle_wideBerth}
+          >
+            <input
+              type="checkbox"
+              checked={this.state.useWideBerth}
+              readOnly={true}
+              disabled={!this.state.useDiagonal}
+            />
+            <span>Wide Berth</span>
+          </div>
+        </div>
         <PathPlanningMatrix
           activeAction={this.state.activeAction}
+          useDiagonal={this.state.useDiagonal}
+          useWideBerth={this.state.useWideBerth}
           ref={this.matrix}
         />
       </div>

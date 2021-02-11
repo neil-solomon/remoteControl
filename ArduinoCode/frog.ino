@@ -49,10 +49,10 @@ void loop() {
     if (bluetoothReceiveBuffer[0] == 35) {
       checkPassword();
     }
-    else if (bluetoothReceiveBuffer[0] == 36) {
+    else if (bluetoothReceiveBuffer[0] == 36 && passwordReceived) {
       sendMotorVelocities((int)bluetoothReceiveBuffer[1] - 150, (int)bluetoothReceiveBuffer[2] - 150, (int)bluetoothReceiveBuffer[3] - 150);
     }
-    else if (bluetoothReceiveBuffer[0] == 37) {
+    else if (bluetoothReceiveBuffer[0] == 37 && bluetoothReceiveBuffer[1] == 37 && bluetoothReceiveBuffer[2] == 37) {
       bluetooth_disconnect();
     }
     else if (bluetoothReceiveBuffer[2] == 43) {
@@ -62,11 +62,11 @@ void loop() {
 
   if (bluetoothConnectionTimer != 0) {
     if (millis() - bluetoothConnectionTimer > 10000 && !passwordReceived) {
-      Serial.print("password timeout ");
-      Serial.println(bluetoothConnectionTimer);
+      Serial.println("password timeout ");
+//      Serial.println(bluetoothConnectionTimer);
       bluetooth_disconnect();  
     }
-    else if (millis() % 10000 == 0) {
+    else if (millis() % 1000 == 0) {
       readBatteryLevel();
       sendBatteryLevel();
       delay(1);
@@ -168,8 +168,8 @@ void handleBluetoothNotification() {
     if (bluetoothReceiveBuffer[3] == 67 && bluetoothReceiveBuffer[4] == 79 && bluetoothReceiveBuffer[5] == 78 && bluetoothReceiveBuffer[6] == 78) {
       // bluetooth connected
       bluetoothConnectionTimer = millis();
-      Serial.print("bluetooth connection ");
-      Serial.println(bluetoothConnectionTimer);
+      Serial.println("bluetooth connection ");
+//      Serial.println(bluetoothConnectionTimer);
     }
     else if (bluetoothReceiveBuffer[3] == 76 && bluetoothReceiveBuffer[4] == 79 && bluetoothReceiveBuffer[5] == 83 && bluetoothReceiveBuffer[6] == 84) {
       // bluetooth disconnected
@@ -213,10 +213,10 @@ void sendMotorVelocities(int xVel, int yVel, int rotVel) {
   for (int i = 0; i < 4; i++) {
     motorVelocity = calculateMotorVelocity(i, xVel, yVel, rotVel);
     motors[i].setSpeed(motorVelocity);
-    Serial.print("motor ");
-    Serial.print(i+1);
-    Serial.print(" : ");
-    Serial.println(motorVelocity);
+//    Serial.print("motor ");
+//    Serial.print(i+1);
+//    Serial.print(" : ");
+//    Serial.println(motorVelocity);
   }
 }
 
@@ -264,7 +264,7 @@ dischargeCurve[0] is the voltage corresponding to the battery being 0% charged, 
   }
 
 //  batteryLevel = i; 
-  batteryLevel = random(10);
+  batteryLevel = random(11);
 }
 
 void sendBatteryLevel() {
