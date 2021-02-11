@@ -136,7 +136,12 @@ export default class PathPlanningMatrix extends React.Component {
   };
 
   findShortestPath = () => {
-    if (!this.state.startCell || !this.state.endCell) return;
+    if (
+      !this.state.startCell ||
+      !this.state.endCell ||
+      this.state.generatingPath
+    )
+      return;
 
     this.clearShortPath();
     this.findShortestPath_helper_timeout = setTimeout(
@@ -161,13 +166,14 @@ export default class PathPlanningMatrix extends React.Component {
         this.animateInterval * levels.length
       );
       this.generatingPathDone_timeout = setTimeout(() => {
+        console.log("generatingPathDone_timeout shortPath");
         this.setState({ generatingPath: false, shortPath });
       }, this.animateInterval * (levels.length + shortPath.length));
+    } else {
+      this.generatingPathDone_timeout = setTimeout(() => {
+        this.setState({ generatingPath: false, shortPath });
+      }, this.animateInterval * levels.length);
     }
-
-    this.generatingPathDone_timeout = setTimeout(() => {
-      this.setState({ generatingPath: false, shortPath });
-    }, this.animateInterval * levels.length);
   };
 
   findShortestPath_generateLevels = () => {
