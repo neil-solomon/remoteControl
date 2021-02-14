@@ -188,7 +188,7 @@ export default class ControllerJoystick extends React.Component {
         stickLeft_prev:
           (this.props.baseSize * (1 - this.props.stickToBaseRatio)) / 2,
       });
-    }, this.stickToCenterTimeouts.length * this.props.debounceTime);
+    }, (this.stickToCenterTimeouts.length + 1) * this.props.debounceTime);
   };
 
   moveStick = (event) => {

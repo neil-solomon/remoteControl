@@ -48,7 +48,7 @@ export default class ControllerConsole extends React.Component {
           >
             {this.props.batteryLevel !== null
               ? this.props.batteryLevel * 10 + "%"
-              : "----"}
+              : "90%"}
           </div>
           <div className={style.batteryTip}></div>
         </div>

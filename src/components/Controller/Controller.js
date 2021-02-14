@@ -18,6 +18,7 @@ export default class Controller extends React.Component {
     this.sendCommandDebounce = false;
     this.sendCommandDebounce_timeout = null;
     this.sendPassword_timeout = null;
+    this.motorStop_timeouts = [null, null, null, null, null]; // send the motor stop command several times to ensure that the command is received
 
     this.state = {
       xVel: 0,
@@ -36,27 +37,33 @@ export default class Controller extends React.Component {
     window.removeEventListener("resize", this.getControllerSize);
     clearTimeout(this.sendCommandDebounce_timeout);
     clearTimeout(this.sendPassword_timeout);
+    for (const timeout of this.motorStop_timeouts) {
+      clearTimeout(timeout);
+    }
   };
 
   componentDidUpdate = (prevProps, prevState) => {
-    if (
-      this.state.yVel !== prevState.yVel ||
-      this.state.xVel !== prevState.xVel ||
-      this.state.rotVel !== prevState.rotVel
-    ) {
-      // if (this.state.bluetoothCharacteristic) {
-      if (this.props.bluetoothCharacteristic) {
-        if (
-          this.sendCommandDebounce &&
-          !(
-            this.state.xVel === 0 &&
-            this.state.yVel === 0 &&
-            this.state.rotVel === 0
-          )
-        ) {
-          return;
-        }
+    if (this.props.bluetoothCharacteristic) {
+      // send password
+      if (!prevProps.bluetoothCharacteristic) {
+        var data = this.state.password.split("").map((char, index) => {
+          return this.state.password.charCodeAt(index);
+        });
 
+        data.unshift(35); // password command
+        this.sendPassword_timeout = setTimeout(
+          () => this.props.sendToBluetooth(data),
+          1000
+        );
+      }
+
+      // send motor motion command
+      if (
+        (this.state.yVel !== prevState.yVel ||
+          this.state.xVel !== prevState.xVel ||
+          this.state.rotVel !== prevState.rotVel) &&
+        !this.sendCommandDebounce
+      ) {
         this.sendCommandDebounce = true;
         this.sendCommandDebounce_timeout = setTimeout(() => {
           this.sendCommandDebounce = false;
@@ -70,21 +77,22 @@ export default class Controller extends React.Component {
         ];
         this.props.sendToBluetooth(data);
       }
-    }
 
-    if (
-      this.props.bluetoothCharacteristic &&
-      !prevProps.bluetoothCharacteristic
-    ) {
-      var data = this.state.password.split("").map((char, index) => {
-        return this.state.password.charCodeAt(index);
-      });
-
-      data.unshift(35); // password command
-      this.sendPassword_timeout = setTimeout(
-        () => this.props.sendToBluetooth(data),
-        1000
-      );
+      // send motor stop command
+      if (
+        this.state.xVel === 0 &&
+        this.state.yVel === 0 &&
+        this.state.rotVel === 0 &&
+        (prevState.xVel !== 0 || prevState.yVel !== 0 || prevState.rotVel !== 0)
+      ) {
+        var data = [36, 150, 150, 150];
+        for (let i = 0; i < this.motorStop_timeouts.length; i++) {
+          this.motorStop_timeouts[i] = setTimeout(
+            () => this.props.sendToBluetooth(data),
+            i * 50
+          );
+        }
+      }
     }
   };
 

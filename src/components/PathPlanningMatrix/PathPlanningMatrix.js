@@ -201,47 +201,103 @@ export default class PathPlanningMatrix extends React.Component {
           break;
         }
 
-        // add above cell
+        var topAvailable = false;
+        var bottomAvailable = false;
+        var leftAvailable = false;
+        var rightAvailable = false;
+
+        // add top cell
         if (this.cellIsAvailable(cell[0] - 1, cell[1], cellsVisited)) {
+          topAvailable = true;
           nextLevel.push([cell[0] - 1, cell[1]]);
           cellsVisited.add(JSON.stringify([cell[0] - 1, cell[1]]));
         }
-        // add below cell
+        // add bottom cell
         if (this.cellIsAvailable(cell[0] + 1, cell[1], cellsVisited)) {
+          bottomAvailable = true;
           nextLevel.push([cell[0] + 1, cell[1]]);
           cellsVisited.add(JSON.stringify([cell[0] + 1, cell[1]]));
         }
         // add left cell
         if (this.cellIsAvailable(cell[0], cell[1] - 1, cellsVisited)) {
+          leftAvailable = true;
           nextLevel.push([cell[0], cell[1] - 1]);
           cellsVisited.add(JSON.stringify([cell[0], cell[1] - 1]));
         }
         // add right cell
         if (this.cellIsAvailable(cell[0], cell[1] + 1, cellsVisited)) {
+          rightAvailable = true;
           nextLevel.push([cell[0], cell[1] + 1]);
           cellsVisited.add(JSON.stringify([cell[0], cell[1] + 1]));
         }
 
         if (this.props.useDiagonal) {
           // add top-left cell
-          if (this.cellIsAvailable(cell[0] - 1, cell[1] - 1, cellsVisited)) {
-            nextLevel.push([cell[0] - 1, cell[1] - 1]);
-            cellsVisited.add(JSON.stringify([cell[0] - 1, cell[1] - 1]));
+          if (this.props.useWideBerth) {
+            if (
+              this.cellIsAvailable(cell[0] - 1, cell[1] - 1, cellsVisited) &&
+              topAvailable &&
+              leftAvailable
+            ) {
+              nextLevel.push([cell[0] - 1, cell[1] - 1]);
+              cellsVisited.add(JSON.stringify([cell[0] - 1, cell[1] - 1]));
+            }
+          } else {
+            if (this.cellIsAvailable(cell[0] - 1, cell[1] - 1, cellsVisited)) {
+              nextLevel.push([cell[0] - 1, cell[1] - 1]);
+              cellsVisited.add(JSON.stringify([cell[0] - 1, cell[1] - 1]));
+            }
           }
+
           // add top-right cell
-          if (this.cellIsAvailable(cell[0] - 1, cell[1] + 1, cellsVisited)) {
-            nextLevel.push([cell[0] - 1, cell[1] + 1]);
-            cellsVisited.add(JSON.stringify([cell[0] - 1, cell[1] + 1]));
+          if (this.props.useWideBerth) {
+            if (
+              this.cellIsAvailable(cell[0] - 1, cell[1] + 1, cellsVisited) &&
+              topAvailable &&
+              rightAvailable
+            ) {
+              nextLevel.push([cell[0] - 1, cell[1] + 1]);
+              cellsVisited.add(JSON.stringify([cell[0] - 1, cell[1] + 1]));
+            }
+          } else {
+            if (this.cellIsAvailable(cell[0] - 1, cell[1] + 1, cellsVisited)) {
+              nextLevel.push([cell[0] - 1, cell[1] + 1]);
+              cellsVisited.add(JSON.stringify([cell[0] - 1, cell[1] + 1]));
+            }
           }
+
           // add bottom-right cell
-          if (this.cellIsAvailable(cell[0] + 1, cell[1] + 1, cellsVisited)) {
-            nextLevel.push([cell[0] + 1, cell[1] + 1]);
-            cellsVisited.add(JSON.stringify([cell[0] + 1, cell[1] + 1]));
+          if (this.props.useWideBerth) {
+            if (
+              this.cellIsAvailable(cell[0] + 1, cell[1] + 1, cellsVisited) &&
+              bottomAvailable &&
+              rightAvailable
+            ) {
+              nextLevel.push([cell[0] + 1, cell[1] + 1]);
+              cellsVisited.add(JSON.stringify([cell[0] + 1, cell[1] + 1]));
+            }
+          } else {
+            if (this.cellIsAvailable(cell[0] + 1, cell[1] + 1, cellsVisited)) {
+              nextLevel.push([cell[0] + 1, cell[1] + 1]);
+              cellsVisited.add(JSON.stringify([cell[0] + 1, cell[1] + 1]));
+            }
           }
+
           // add bottom-left cell
-          if (this.cellIsAvailable(cell[0] + 1, cell[1] - 1, cellsVisited)) {
-            nextLevel.push([cell[0] + 1, cell[1] - 1]);
-            cellsVisited.add(JSON.stringify([cell[0] + 1, cell[1] - 1]));
+          if (this.props.useWideBerth) {
+            if (
+              this.cellIsAvailable(cell[0] + 1, cell[1] - 1, cellsVisited) &&
+              bottomAvailable &&
+              leftAvailable
+            ) {
+              nextLevel.push([cell[0] + 1, cell[1] - 1]);
+              cellsVisited.add(JSON.stringify([cell[0] + 1, cell[1] - 1]));
+            }
+          } else {
+            if (this.cellIsAvailable(cell[0] + 1, cell[1] - 1, cellsVisited)) {
+              nextLevel.push([cell[0] + 1, cell[1] - 1]);
+              cellsVisited.add(JSON.stringify([cell[0] + 1, cell[1] - 1]));
+            }
           }
         }
       }
