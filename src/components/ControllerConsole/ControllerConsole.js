@@ -52,6 +52,13 @@ export default class ControllerConsole extends React.Component {
           </div>
           <div className={style.batteryTip}></div>
         </div>
+        <button
+          className="Button"
+          style={{ fontSize: ".75em", marginTop: 10 }}
+          onClick={this.props.useAccelerometer}
+        >
+          Use Accelerometer
+        </button>
       </div>
     );
   }

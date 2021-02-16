@@ -1,7 +1,12 @@
 .container {
   text-align: center;
-  padding-top: 10vh;
+  padding-top: 5vh;
   font-size: 1.5em;
+}
+
+.accelButtonContainer {
+  margin-bottom: 10px;
+  font-size: 1em;
 }
 
 .value {
@@ -12,7 +17,9 @@
 
 .batteryContainer {
   margin-top: 5px;
-  margin-left: 20px;
+  margin-left: 50px;
+  height: 35px;
+  width: 50px;
   position: relative;
 }
 

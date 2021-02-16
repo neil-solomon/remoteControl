@@ -121,6 +121,19 @@ export default class Controller extends React.Component {
     this.setState({ password: event.target.value });
   };
 
+  useAccelerometer = () => {
+    const options = { frequency: 60, referenceFrame: "device" };
+    const sensor = new window.AbsoluteOrientationSensor(options);
+
+    sensor.addEventListener("reading", () => {
+      console.log(sensor.quarternion);
+    });
+    sensor.addEventListener("error", (error) => {
+      console.log(error);
+    });
+    sensor.start();
+  };
+
   render() {
     // if (window.innerWidth < window.innerHeight && window.innerWidth < 600) {
     //   return (
@@ -164,6 +177,7 @@ export default class Controller extends React.Component {
               yVel={this.state.yVel}
               rotVel={this.state.rotVel}
               batteryLevel={this.props.batteryLevel}
+              useAccelerometer={this.useAccelerometer}
             />
           </div>
           <div className={style.joystickContainer}>
