@@ -129,10 +129,10 @@ export default class Controller extends React.Component {
       // sensor.quaternion is [x,y,z,w]
       // https://en.wikipedia.org/wiki/Quaternion#Three-dimensional_and_four-dimensional_rotation_groups
       // https://stackoverflow.com/questions/5782658/extracting-yaw-from-a-quaternion#:~:text=Having%20given%20a%20Quaternion%20q,*q.y%20%2D%20q.z*q.z)%3B
-      const q0 = quaternion[3];
-      const q1 = quaternion[0];
-      const q2 = quaternion[1];
-      const q3 = quaternion[2];
+      const q0 = sensor.quaternion[3];
+      const q1 = sensor.quaternion[0];
+      const q2 = sensor.quaternion[1];
+      const q3 = sensor.quaternion[2];
       const roll = Math.atan2(
         2.0 * (q3 * q2 + q0 * q1),
         1.0 - 2.0 * (q1 * q1 + q2 * q2)
