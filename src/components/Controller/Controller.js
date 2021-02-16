@@ -126,7 +126,23 @@ export default class Controller extends React.Component {
     const sensor = new window.AbsoluteOrientationSensor(options);
 
     sensor.addEventListener("reading", () => {
-      console.log(sensor.quaternion);
+      // sensor.quaternion is [x,y,z,w]
+      // https://en.wikipedia.org/wiki/Quaternion#Three-dimensional_and_four-dimensional_rotation_groups
+      // https://stackoverflow.com/questions/5782658/extracting-yaw-from-a-quaternion#:~:text=Having%20given%20a%20Quaternion%20q,*q.y%20%2D%20q.z*q.z)%3B
+      const q0 = quaternion[3];
+      const q1 = quaternion[0];
+      const q2 = quaternion[1];
+      const q3 = quaternion[2];
+      const roll = Math.atan2(
+        2.0 * (q3 * q2 + q0 * q1),
+        1.0 - 2.0 * (q1 * q1 + q2 * q2)
+      );
+      const pitch = Math.asin(2.0 * (q2 * q0 - q3 * q1));
+      const yaw = Math.atan2(
+        2.0 * (q3 * q0 + q1 * q2),
+        -1.0 + 2.0 * (q0 * q0 + q1 * q1)
+      );
+      console.log(roll, pitch, yaw);
     });
     sensor.addEventListener("error", (error) => {
       console.log(error);
