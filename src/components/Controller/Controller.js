@@ -126,7 +126,7 @@ export default class Controller extends React.Component {
     const sensor = new window.AbsoluteOrientationSensor(options);
 
     sensor.addEventListener("reading", () => {
-      console.log(sensor);
+      console.log(sensor.quaternion);
     });
     sensor.addEventListener("error", (error) => {
       console.log(error);
