@@ -122,16 +122,25 @@ export default class Controller extends React.Component {
   };
 
   useAccelerometer = () => {
-    const options = { frequency: 60, referenceFrame: "device" };
-    const sensor = new window.AbsoluteOrientationSensor(options);
-
-    sensor.addEventListener("reading", () => {
-      console.log(sensor.quarternion);
+    Promise.all([
+      navigator.permissions.query({ name: "accelerometer" }),
+      navigator.permissions.query({ name: "magnetometer" }),
+      navigator.permissions.query({ name: "gyroscope" }),
+    ]).then((results) => {
+      if (results.every((result) => result.state === "granted")) {
+        // const options = { frequency: 60, referenceFrame: "device" };
+        // const sensor = new window.AbsoluteOrientationSensor(options);
+        // sensor.addEventListener("reading", () => {
+        //   console.log(sensor.quarternion);
+        // });
+        // sensor.addEventListener("error", (error) => {
+        //   console.log(error);
+        // });
+        // sensor.start();
+      } else {
+        console.log("No permissions to use AbsoluteOrientationSensor.");
+      }
     });
-    sensor.addEventListener("error", (error) => {
-      console.log(error);
-    });
-    sensor.start();
   };
 
   render() {
