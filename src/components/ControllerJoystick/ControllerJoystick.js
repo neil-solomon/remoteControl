@@ -18,8 +18,6 @@ export default class ControllerJoystick extends React.Component {
         (this.props.baseSize * (1 - this.props.stickToBaseRatio)) / 2,
       stickLeft_prev:
         (this.props.baseSize * (1 - this.props.stickToBaseRatio)) / 2,
-      stickTop: (this.props.baseSize * (1 - this.props.stickToBaseRatio)) / 2,
-      stickLeft: (this.props.baseSize * (1 - this.props.stickToBaseRatio)) / 2,
     };
   }
 
@@ -64,37 +62,6 @@ export default class ControllerJoystick extends React.Component {
     clearTimeout(this.moveStickDebounce_timeout);
     for (const timeout of this.stickToCenterTimeouts) {
       clearTimeout(timeout);
-    }
-  };
-
-  componentDidUpdate = (prevProps, prevState) => {
-    if (
-      prevState.stickTop !== this.state.stickTop ||
-      prevState.stickLeft !== this.state.stickLeft
-    ) {
-      this.props.updateJoystickVals(
-        (this.props.baseSize / 2 -
-          this.state.stickTop -
-          (this.props.baseSize * this.props.stickToBaseRatio) / 2) /
-          (this.props.baseSize * this.props.validRadiusToBaseRatio),
-        (-1 *
-          (this.props.baseSize / 2 -
-            this.state.stickLeft -
-            (this.props.baseSize * this.props.stickToBaseRatio) / 2)) /
-          (this.props.baseSize * this.props.validRadiusToBaseRatio)
-      );
-    }
-
-    if (prevProps.baseSize !== this.props.baseSize) {
-      this.setState({
-        stickTop_prev:
-          (this.props.baseSize * (1 - this.props.stickToBaseRatio)) / 2,
-        stickLeft_prev:
-          (this.props.baseSize * (1 - this.props.stickToBaseRatio)) / 2,
-        stickTop: (this.props.baseSize * (1 - this.props.stickToBaseRatio)) / 2,
-        stickLeft:
-          (this.props.baseSize * (1 - this.props.stickToBaseRatio)) / 2,
-      });
     }
   };
 
@@ -158,31 +125,30 @@ export default class ControllerJoystick extends React.Component {
 
     const distX =
       (this.props.baseSize * (1 - this.props.stickToBaseRatio)) / 2 -
-      this.state.stickLeft;
+      this.props.joystickX;
     const distY =
       (this.props.baseSize * (1 - this.props.stickToBaseRatio)) / 2 -
-      this.state.stickTop;
+      this.props.joystickY;
 
     for (let i = 1; i < this.stickToCenterTimeouts.length; i++) {
       this.stickToCenterTimeouts[i - 1] = setTimeout(() => {
-        this.setState({
-          stickTop:
-            this.state.stickTop_prev +
-            (distY * i) / this.stickToCenterTimeouts.length,
-          stickLeft:
-            this.state.stickLeft_prev +
+        this.props.updateJoystickVals(
+          this.state.stickLeft_prev +
             (distX * i) / this.stickToCenterTimeouts.length,
-        });
+          this.state.stickTop_prev +
+            (distY * i) / this.stickToCenterTimeouts.length
+        );
       }, i * this.props.debounceTime);
     }
 
     this.stickToCenterTimeouts[
       this.stickToCenterTimeouts.length - 1
     ] = setTimeout(() => {
+      this.props.updateJoystickVals(
+        (this.props.baseSize * (1 - this.props.stickToBaseRatio)) / 2,
+        (this.props.baseSize * (1 - this.props.stickToBaseRatio)) / 2
+      );
       this.setState({
-        stickTop: (this.props.baseSize * (1 - this.props.stickToBaseRatio)) / 2,
-        stickLeft:
-          (this.props.baseSize * (1 - this.props.stickToBaseRatio)) / 2,
         stickTop_prev:
           (this.props.baseSize * (1 - this.props.stickToBaseRatio)) / 2,
         stickLeft_prev:
@@ -295,11 +261,11 @@ export default class ControllerJoystick extends React.Component {
         this.props.baseSize / 2;
     }
 
+    this.props.updateJoystickVals(newStickLeft, newStickTop);
+
     this.setState({
-      stickTop_prev: this.state.stickTop,
-      stickLeft_prev: this.state.stickLeft,
-      stickTop: newStickTop,
-      stickLeft: newStickLeft,
+      stickTop_prev: this.props.joystickY,
+      stickLeft_prev: this.props.joystickX,
       moveStickDebounce: true,
     });
 
@@ -312,13 +278,13 @@ export default class ControllerJoystick extends React.Component {
     if (dimension === "x") {
       const dist =
         this.props.baseSize / 2 -
-        (this.state.stickTop +
+        (this.props.joystickY +
           (this.props.baseSize * this.props.stickToBaseRatio) / 2);
       return ((100 * dist) / this.props.baseSize).toString();
     } else if (dimension === "y") {
       const dist =
         this.props.baseSize / 2 -
-        (this.state.stickLeft +
+        (this.props.joystickX +
           (this.props.baseSize * this.props.stickToBaseRatio) / 2);
       return ((-100 * dist) / this.props.baseSize).toString();
     }
@@ -344,12 +310,12 @@ export default class ControllerJoystick extends React.Component {
             background:
               "radial-gradient(circle at " +
               (
-                this.state.stickLeft +
+                this.props.joystickX +
                 (this.props.baseSize * this.props.stickToBaseRatio) / 2
               ).toString() +
               "px " +
               (
-                this.state.stickTop +
+                this.props.joystickY +
                 (this.props.baseSize * this.props.stickToBaseRatio) / 2
               ).toString() +
               "px , rgb(0,255,0), rgb(0,0,0))",
@@ -358,27 +324,12 @@ export default class ControllerJoystick extends React.Component {
             console.log("baseFocus");
           }}
         />
-        {/* <div
-          className={style.baseShine}
-          style={{
-            width: this.props.baseSize / 4,
-            height: this.props.baseSize / 4,
-            top:
-              (7 * this.props.baseSize) / 8 -
-              (this.state.stickTop +
-                (this.props.baseSize * this.props.stickToBaseRatio) / 2),
-            left:
-              (7 * this.props.baseSize) / 8 -
-              (this.state.stickLeft +
-                (this.props.baseSize * this.props.stickToBaseRatio) / 2),
-          }}
-        /> */}
         <div
           id="Joystick_stick"
           className={style.stick}
           style={{
-            top: this.state.stickTop,
-            left: this.state.stickLeft,
+            top: this.props.joystickY,
+            left: this.props.joystickX,
             width: this.props.baseSize * this.props.stickToBaseRatio,
             height: this.props.baseSize * this.props.stickToBaseRatio,
             // transform: "rotateY(" + this.makeStickRotate("y") + "deg)",

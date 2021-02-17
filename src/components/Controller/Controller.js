@@ -14,6 +14,8 @@ export default class Controller extends React.Component {
 
     this.controlsDebounceTime = 5; // millisecondss
     this.controlsToZeroTime = 100;
+    this.stickToBaseRatio = 4 / 5;
+    this.validRadiusToBaseRatio = 1 / 4;
 
     this.sendCommandDebounce = false;
     this.sendCommandDebounce_timeout = null;
@@ -21,9 +23,8 @@ export default class Controller extends React.Component {
     this.motorStop_timeouts = [null, null, null, null, null]; // send the motor stop command several times to ensure that the command is received
 
     this.state = {
-      xVel: 0,
-      yVel: 0,
-      rotVel: 0,
+      joystickY: (this.getControllerSize() * (1 - this.stickToBaseRatio)) / 2,
+      joystickX: (this.getControllerSize() * (1 - this.stickToBaseRatio)) / 2,
       sliderPosition: (this.getControllerSize() - 25) / 2,
       size: this.getControllerSize(),
       password: "",
@@ -31,21 +32,11 @@ export default class Controller extends React.Component {
   }
 
   componentDidMount = () => {
-    window.addEventListener("resize", () =>
-      this.setState({
-        size: this.getControllerSize(),
-        sliderPosition: (this.getControllerSize() - 25) / 2,
-      })
-    );
+    window.addEventListener("resize", this.updateSize);
   };
 
   componentWillUnmount = () => {
-    window.removeEventListener("resize", () =>
-      this.setState({
-        size: this.getControllerSize(),
-        sliderPosition: (this.getControllerSize() - 25) / 2,
-      })
-    );
+    window.removeEventListener("resize", this.updateSize);
 
     clearTimeout(this.sendCommandDebounce_timeout);
     clearTimeout(this.sendPassword_timeout);
@@ -72,9 +63,9 @@ export default class Controller extends React.Component {
 
       // send motor motion command
       if (
-        (this.state.yVel !== prevState.yVel ||
-          this.state.xVel !== prevState.xVel ||
-          this.state.rotVel !== prevState.rotVel) &&
+        (this.state.joystickX !== prevState.joystickX ||
+          this.state.joystickY !== prevState.joystickY ||
+          this.state.sliderPosition !== prevState.sliderPosition) &&
         !this.sendCommandDebounce
       ) {
         this.sendCommandDebounce = true;
@@ -84,19 +75,21 @@ export default class Controller extends React.Component {
 
         data = [
           36, // motor command
-          this.state.xVel + 150, // ensure that all values are between 50 and 250
-          this.state.yVel + 150,
-          this.state.rotVel + 150,
+          this.state.joystickX + 150, // ensure that all values are between 50 and 250
+          this.state.joystickY + 150,
+          this.state.sliderPosition + 150,
         ];
         this.props.sendToBluetooth(data);
       }
 
       // send motor stop command
       if (
-        this.state.xVel === 0 &&
-        this.state.yVel === 0 &&
-        this.state.rotVel === 0 &&
-        (prevState.xVel !== 0 || prevState.yVel !== 0 || prevState.rotVel !== 0)
+        this.state.joystickX === 0 &&
+        this.state.joystickY === 0 &&
+        this.state.sliderPosition === 0 &&
+        (prevState.joystickX !== 0 ||
+          prevState.joystickY !== 0 ||
+          prevState.sliderPosition !== 0)
       ) {
         data = [36, 150, 150, 150];
         for (let i = 0; i < this.motorStop_timeouts.length; i++) {
@@ -109,6 +102,15 @@ export default class Controller extends React.Component {
     }
   };
 
+  updateSize = () => {
+    this.setState({
+      joystickY: (this.getControllerSize() * (1 - this.stickToBaseRatio)) / 2,
+      joystickX: (this.getControllerSize() * (1 - this.stickToBaseRatio)) / 2,
+      sliderPosition: (this.getControllerSize() - 25) / 2,
+      size: this.getControllerSize(),
+    });
+  };
+
   getControllerSize = () => {
     if (window.innerWidth > window.innerHeight) {
       return Math.min(0.5 * window.innerHeight, 300);
@@ -117,17 +119,12 @@ export default class Controller extends React.Component {
     }
   };
 
-  updateJoystickVals = (yVel, xVel) => {
-    this.setState({
-      xVel: parseInt(100 * xVel),
-      yVel: parseInt(100 * yVel),
-    });
+  updateSliderPosition = (value) => {
+    this.setState({ sliderPosition: value });
   };
 
-  updateSliderValue = (value) => {
-    this.setState({
-      rotVel: parseInt(100 * value),
-    });
+  updateJoystickVals = (joystickX, joystickY) => {
+    this.setState({ joystickX, joystickY });
   };
 
   updatePassword = (event) => {
@@ -188,10 +185,6 @@ export default class Controller extends React.Component {
     sensor.start();
   };
 
-  updateSliderPosition = (value) => {
-    this.setState({ sliderPosition: value });
-  };
-
   render() {
     // if (window.innerWidth < window.innerHeight && window.innerWidth < 600) {
     //   return (
@@ -233,8 +226,21 @@ export default class Controller extends React.Component {
           </div>
           <div className={style.consoleContainer}>
             <ControllerConsole
-              xVel={this.state.xVel}
-              yVel={this.state.yVel}
+              xVel={(
+                -1 *
+                ((this.state.size / 2 -
+                  this.state.joystickX -
+                  (this.state.size * this.stickToBaseRatio) / 2) /
+                  (this.state.size * this.validRadiusToBaseRatio)) *
+                100
+              ).toFixed(0)}
+              yVel={(
+                ((this.state.size / 2 -
+                  this.state.joystickY -
+                  (this.state.size * this.stickToBaseRatio) / 2) /
+                  (this.state.size * this.validRadiusToBaseRatio)) *
+                100
+              ).toFixed(0)}
               rotVel={(
                 -1 *
                 ((this.state.sliderPosition - (this.state.size - 25) / 2) /
@@ -252,8 +258,10 @@ export default class Controller extends React.Component {
             />
             <ControllerJoystick
               baseSize={this.state.size}
-              stickToBaseRatio={4 / 5}
-              validRadiusToBaseRatio={1 / 4}
+              stickToBaseRatio={this.stickToBaseRatio}
+              validRadiusToBaseRatio={this.validRadiusToBaseRatio}
+              joystickY={this.state.joystickY}
+              joystickX={this.state.joystickX}
               updateJoystickVals={this.updateJoystickVals}
               debounceTime={this.controlsDebounceTime}
               toZeroTime={this.controlsToZeroTime}

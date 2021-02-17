@@ -58,16 +58,6 @@ export default class ControllerSlider extends React.Component {
     );
   };
 
-  componentDidUpdate = (prevProps, prevState) => {
-    if (prevState.carTop !== this.state.carTop) {
-      this.props.updateSliderValue(
-        -1 *
-          ((this.state.carTop - (this.props.height - 25) / 2) /
-            ((this.props.height - 25) / 2))
-      );
-    }
-  };
-
   car_touchstart = (event) => {
     event.preventDefault();
 
