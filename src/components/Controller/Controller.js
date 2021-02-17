@@ -24,17 +24,29 @@ export default class Controller extends React.Component {
       xVel: 0,
       yVel: 0,
       rotVel: 0,
+      sliderPosition: (this.getControllerSize() - 25) / 2,
       size: this.getControllerSize(),
       password: "",
     };
   }
 
   componentDidMount = () => {
-    window.addEventListener("resize", this.getControllerSize);
+    window.addEventListener("resize", () =>
+      this.setState({
+        size: this.getControllerSize(),
+        sliderPosition: (this.getControllerSize() - 25) / 2,
+      })
+    );
   };
 
   componentWillUnmount = () => {
-    window.removeEventListener("resize", this.getControllerSize);
+    window.removeEventListener("resize", () =>
+      this.setState({
+        size: this.getControllerSize(),
+        sliderPosition: (this.getControllerSize() - 25) / 2,
+      })
+    );
+
     clearTimeout(this.sendCommandDebounce_timeout);
     clearTimeout(this.sendPassword_timeout);
     for (const timeout of this.motorStop_timeouts) {
@@ -44,9 +56,10 @@ export default class Controller extends React.Component {
 
   componentDidUpdate = (prevProps, prevState) => {
     if (this.props.bluetoothCharacteristic) {
+      var data;
       // send password
       if (!prevProps.bluetoothCharacteristic) {
-        var data = this.state.password.split("").map((char, index) => {
+        data = this.state.password.split("").map((char, index) => {
           return this.state.password.charCodeAt(index);
         });
 
@@ -69,7 +82,7 @@ export default class Controller extends React.Component {
           this.sendCommandDebounce = false;
         }, 100);
 
-        var data = [
+        data = [
           36, // motor command
           this.state.xVel + 150, // ensure that all values are between 50 and 250
           this.state.yVel + 150,
@@ -85,7 +98,7 @@ export default class Controller extends React.Component {
         this.state.rotVel === 0 &&
         (prevState.xVel !== 0 || prevState.yVel !== 0 || prevState.rotVel !== 0)
       ) {
-        var data = [36, 150, 150, 150];
+        data = [36, 150, 150, 150];
         for (let i = 0; i < this.motorStop_timeouts.length; i++) {
           this.motorStop_timeouts[i] = setTimeout(
             () => this.props.sendToBluetooth(data),
@@ -122,8 +135,14 @@ export default class Controller extends React.Component {
   };
 
   useAccelerometer = () => {
-    const options = { frequency: 60, referenceFrame: "device" };
-    const sensor = new window.AbsoluteOrientationSensor(options);
+    const options = { frequency: 10, referenceFrame: "device" };
+    var sensor;
+    try {
+      sensor = new window.AbsoluteOrientationSensor(options);
+    } catch {
+      console.log("AbsoluteOrientationSensor is not available");
+      return;
+    }
 
     sensor.addEventListener("reading", () => {
       // sensor.quaternion is [x,y,z,w]
@@ -133,21 +152,44 @@ export default class Controller extends React.Component {
       const q1 = sensor.quaternion[0];
       const q2 = sensor.quaternion[1];
       const q3 = sensor.quaternion[2];
-      const roll = Math.atan2(
-        2.0 * (q3 * q2 + q0 * q1),
-        1.0 - 2.0 * (q1 * q1 + q2 * q2)
-      );
-      const pitch = Math.asin(2.0 * (q2 * q0 - q3 * q1));
-      const yaw = Math.atan2(
-        2.0 * (q3 * q0 + q1 * q2),
-        -1.0 + 2.0 * (q0 * q0 + q1 * q1)
-      );
+      var roll;
+      var pitch;
+      var yaw;
+      // watch out for division by 0
+      try {
+        roll = Math.atan2(
+          2.0 * (q3 * q2 + q0 * q1),
+          1.0 - 2.0 * (q1 * q1 + q2 * q2)
+        );
+      } catch {
+        roll = 0;
+      }
+
+      try {
+        pitch = Math.asin(2.0 * (q2 * q0 - q3 * q1));
+      } catch {
+        pitch = 0;
+      }
+
+      try {
+        yaw = Math.atan2(
+          2.0 * (q3 * q0 + q1 * q2),
+          -1.0 + 2.0 * (q0 * q0 + q1 * q1)
+        );
+      } catch {
+        yaw = 0;
+      }
+
       console.log(roll, pitch, yaw);
     });
     sensor.addEventListener("error", (error) => {
       console.log(error);
     });
     sensor.start();
+  };
+
+  updateSliderPosition = (value) => {
+    this.setState({ sliderPosition: value });
   };
 
   render() {
@@ -181,6 +223,8 @@ export default class Controller extends React.Component {
               updateSliderValue={this.updateSliderValue}
               debounceTime={this.controlsDebounceTime}
               toZeroTime={this.controlsToZeroTime}
+              sliderPosition={this.state.sliderPosition}
+              updateSliderPosition={this.updateSliderPosition}
             />
             <KeyboardIcon
               className={style.keyboardIcon}
@@ -191,7 +235,12 @@ export default class Controller extends React.Component {
             <ControllerConsole
               xVel={this.state.xVel}
               yVel={this.state.yVel}
-              rotVel={this.state.rotVel}
+              rotVel={(
+                -1 *
+                ((this.state.sliderPosition - (this.state.size - 25) / 2) /
+                  ((this.state.size - 25) / 2)) *
+                100
+              ).toFixed(0)}
               batteryLevel={this.props.batteryLevel}
               useAccelerometer={this.useAccelerometer}
             />

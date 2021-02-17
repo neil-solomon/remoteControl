@@ -11,7 +11,6 @@ export default class ControllerSlider extends React.Component {
     this.carElement = null;
 
     this.state = {
-      carTop: (this.props.height - 25) / 2,
       carMoveEnabled: false,
     };
   }
@@ -67,25 +66,22 @@ export default class ControllerSlider extends React.Component {
             ((this.props.height - 25) / 2))
       );
     }
-    if (prevProps.height !== this.props.height) {
-      this.setState({ carTop: (this.props.height - 25) / 2 });
-    }
   };
 
   car_touchstart = (event) => {
     event.preventDefault();
 
-    var touchToCarTopOffest;
+    var touchToSliderPositionOffset;
     for (const touch of event.touches) {
       if (touch.target.id === this.carElement.id) {
-        touchToCarTopOffest =
+        touchToSliderPositionOffset =
           touch.clientY - this.carElement.getBoundingClientRect().top;
       }
     }
 
     this.setState({
       carMoveEnabled: true,
-      touchToCarTopOffest,
+      touchToSliderPositionOffset,
     });
   };
 
@@ -94,23 +90,23 @@ export default class ControllerSlider extends React.Component {
 
     if (!this.state.carMoveEnabled) return;
 
-    var newCarTop;
+    var newSliderPosition;
     for (const touch of event.touches) {
       if (touch.target.id === this.carElement.id) {
-        newCarTop =
+        newSliderPosition =
           touch.clientY -
           this.trackElement.getBoundingClientRect().top -
-          this.state.touchToCarTopOffest;
+          this.state.touchToSliderPositionOffset;
       }
     }
 
-    if (newCarTop < 0) {
-      newCarTop = 0;
-    } else if (newCarTop > this.props.height - 25) {
-      newCarTop = this.props.height - 25;
+    if (newSliderPosition < 0) {
+      newSliderPosition = 0;
+    } else if (newSliderPosition > this.props.height - 25) {
+      newSliderPosition = this.props.height - 25;
     }
 
-    this.setState({ carTop: newCarTop });
+    this.props.updateSliderPosition(newSliderPosition);
   };
 
   car_touchend = (event) => {
@@ -133,14 +129,18 @@ export default class ControllerSlider extends React.Component {
     var keyPressDebounce_timeout_length;
 
     if (event.keyCode === 87) {
+      this.props.updateSliderPosition(
+        Math.max(this.props.sliderPosition - 5, 0)
+      );
       this.setState({
-        carTop: Math.max(this.state.carTop - 5, 0),
         keyPressDebounce: true,
       });
       keyPressDebounce_timeout_length = this.props.debounceTime;
     } else if (event.keyCode === 83) {
+      this.props.updateSliderPosition(
+        Math.min(this.props.sliderPosition + 5, this.props.height - 25)
+      );
       this.setState({
-        carTop: Math.min(this.state.carTop + 5, this.props.height - 25),
         keyPressDebounce: true,
       });
       keyPressDebounce_timeout_length = this.props.debounceTime;
@@ -157,22 +157,21 @@ export default class ControllerSlider extends React.Component {
   };
 
   carToCenter = () => {
-    const dist = (this.props.height - 25) / 2 - this.state.carTop;
-    const carTop_prev = this.state.carTop;
+    const sliderDist = (this.props.height - 25) / 2 - this.props.sliderPosition;
+    const sliderPosition_prev = this.props.sliderPosition;
 
     for (let i = 1; i < this.carToCenterTimeouts.length; i++) {
       this.carToCenterTimeouts[i - 1] = setTimeout(() => {
-        this.setState({
-          carTop: carTop_prev + (dist * i) / this.carToCenterTimeouts.length,
-        });
+        this.props.updateSliderPosition(
+          sliderPosition_prev +
+            (sliderDist * i) / this.carToCenterTimeouts.length
+        );
       }, i * this.props.debounceTime);
     }
 
     this.carToCenterTimeouts[this.carToCenterTimeouts.length - 1] = setTimeout(
       () => {
-        this.setState({
-          carTop: (this.props.height - 25) / 2,
-        });
+        this.props.updateSliderPosition((this.props.height - 25) / 2);
       },
       this.carToCenterTimeouts.length * this.props.debounceTime
     );
@@ -195,11 +194,11 @@ export default class ControllerSlider extends React.Component {
           id="Slider_car"
           className={style.car}
           style={{
-            top: this.state.carTop,
+            top: this.props.sliderPosition,
             backgroundColor:
               "rgb(0,255,0," +
               Math.abs(
-                (this.state.carTop - (this.props.height - 25) / 2) /
+                (this.props.sliderPosition - (this.props.height - 25) / 2) /
                   ((this.props.height - 25) / 2)
               ) +
               ")",
@@ -209,7 +208,7 @@ export default class ControllerSlider extends React.Component {
         <div
           className={style.carLine}
           style={{
-            top: this.state.carTop + 16,
+            top: this.props.sliderPosition + 16,
           }}
           data-test="Slider_carLine"
         />
