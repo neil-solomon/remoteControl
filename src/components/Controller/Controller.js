@@ -21,6 +21,15 @@ export default class Controller extends React.Component {
     this.sendCommandDebounce_timeout = null;
     this.sendPassword_timeout = null;
     this.motorStop_timeouts = [null, null, null, null, null]; // send the motor stop command several times to ensure that the command is received
+    this.lockScreen_timeout = null;
+
+    const sensorOptions = { frequency: 10, referenceFrame: "device" };
+    this.sensor = null;
+    try {
+      this.sensor = new window.AbsoluteOrientationSensor(sensorOptions);
+    } catch {
+      console.log("AbsoluteOrientationSensor is not available");
+    }
 
     this.state = {
       joystickY: (this.getControllerSize() * (1 - this.stickToBaseRatio)) / 2,
@@ -36,13 +45,18 @@ export default class Controller extends React.Component {
   };
 
   componentWillUnmount = () => {
-    window.removeEventListener("resize", this.updateSize);
-
+    clearTimeout(this.lockScreen_timeout);
     clearTimeout(this.sendCommandDebounce_timeout);
     clearTimeout(this.sendPassword_timeout);
     for (const timeout of this.motorStop_timeouts) {
       clearTimeout(timeout);
     }
+
+    window.removeEventListener("resize", this.updateSize);
+    this.sensor.removeEventListener("reading", this.handleSensorReading);
+    this.sensor.removeEventListener("error", (error) => {
+      console.log(error);
+    });
   };
 
   componentDidUpdate = (prevProps, prevState) => {
@@ -131,58 +145,82 @@ export default class Controller extends React.Component {
     this.setState({ password: event.target.value });
   };
 
-  useAccelerometer = () => {
-    const options = { frequency: 10, referenceFrame: "device" };
-    var sensor;
+  lockScreen = () => {
+    if (document.documentElement.requestFullscreen) {
+      document.documentElement.requestFullscreen();
+    } else if (document.documentElement.mozRequestFullScreen) {
+      document.documentElement.mozRequestFullScreen();
+    } else if (document.documentElement.webkitRequestFullscreen) {
+      document.documentElement.webkitRequestFullscreen();
+    } else if (document.documentElement.msRequestFullscreen) {
+      document.documentElement.msRequestFullscreen();
+    }
+
+    if (window.screen.orientation.type === "landscape-secondary") {
+      window.screen.orientation.lock("landscape-secondary");
+    } else {
+      window.screen.orientation.lock("landscape-primary");
+    }
+  };
+
+  handleSensorReading = () => {
+    // this.sensor.quaternion is [x,y,z,w]
+    // https://en.wikipedia.org/wiki/Quaternion#Three-dimensional_and_four-dimensional_rotation_groups
+    // https://stackoverflow.com/questions/5782658/extracting-yaw-from-a-quaternion#:~:text=Having%20given%20a%20Quaternion%20q,*q.y%20%2D%20q.z*q.z)%3B
+    const q0 = this.sensor.quaternion[3];
+    const q1 = this.sensor.quaternion[0];
+    const q2 = this.sensor.quaternion[1];
+    const q3 = this.sensor.quaternion[2];
+    var roll;
+    var pitch;
+    var yaw;
+    // watch out for division by 0
     try {
-      sensor = new window.AbsoluteOrientationSensor(options);
+      roll = Math.atan2(
+        2.0 * (q3 * q2 + q0 * q1),
+        1.0 - 2.0 * (q1 * q1 + q2 * q2)
+      );
     } catch {
-      console.log("AbsoluteOrientationSensor is not available");
+      roll = 0;
+    }
+
+    try {
+      pitch = Math.asin(2.0 * (q2 * q0 - q3 * q1));
+    } catch {
+      pitch = 0;
+    }
+
+    try {
+      yaw = Math.atan2(
+        2.0 * (q3 * q0 + q1 * q2),
+        -1.0 + 2.0 * (q0 * q0 + q1 * q1)
+      );
+    } catch {
+      yaw = 0;
+    }
+
+    console.log(roll, pitch, yaw);
+  };
+
+  useAccelerometer = () => {
+    alert(
+      "You have entered ACCELEROMETER MODE. " +
+        "Both of your thumbs must be touching the screen for motion to happen. " +
+        "Releasing either thumb at any time will stop all motion. " +
+        "Press the back button on your device to exit ACCELEROMETER MODE."
+    );
+
+    this.lockScreen_timeout = setTimeout(this.lockScreen(), 100);
+
+    if (!this.sensor) {
       return;
     }
 
-    sensor.addEventListener("reading", () => {
-      // sensor.quaternion is [x,y,z,w]
-      // https://en.wikipedia.org/wiki/Quaternion#Three-dimensional_and_four-dimensional_rotation_groups
-      // https://stackoverflow.com/questions/5782658/extracting-yaw-from-a-quaternion#:~:text=Having%20given%20a%20Quaternion%20q,*q.y%20%2D%20q.z*q.z)%3B
-      const q0 = sensor.quaternion[3];
-      const q1 = sensor.quaternion[0];
-      const q2 = sensor.quaternion[1];
-      const q3 = sensor.quaternion[2];
-      var roll;
-      var pitch;
-      var yaw;
-      // watch out for division by 0
-      try {
-        roll = Math.atan2(
-          2.0 * (q3 * q2 + q0 * q1),
-          1.0 - 2.0 * (q1 * q1 + q2 * q2)
-        );
-      } catch {
-        roll = 0;
-      }
-
-      try {
-        pitch = Math.asin(2.0 * (q2 * q0 - q3 * q1));
-      } catch {
-        pitch = 0;
-      }
-
-      try {
-        yaw = Math.atan2(
-          2.0 * (q3 * q0 + q1 * q2),
-          -1.0 + 2.0 * (q0 * q0 + q1 * q1)
-        );
-      } catch {
-        yaw = 0;
-      }
-
-      console.log(roll, pitch, yaw);
-    });
-    sensor.addEventListener("error", (error) => {
+    this.sensor.addEventListener("reading", this.handleSensorReading);
+    this.sensor.addEventListener("error", (error) => {
       console.log(error);
     });
-    sensor.start();
+    this.sensor.start();
   };
 
   render() {
