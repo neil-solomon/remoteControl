@@ -37,11 +37,18 @@ export default class Controller extends React.Component {
       sliderPosition: (this.getControllerSize() - 25) / 2,
       size: this.getControllerSize(),
       password: "",
+      tiltMode: false,
     };
   }
 
   componentDidMount = () => {
     window.addEventListener("resize", this.updateSize);
+
+    if (this.sensor) {
+      this.sensor.addEventListener("error", (error) => {
+        console.log(error);
+      });
+    }
   };
 
   componentWillUnmount = () => {
@@ -53,10 +60,12 @@ export default class Controller extends React.Component {
     }
 
     window.removeEventListener("resize", this.updateSize);
-    this.sensor.removeEventListener("reading", this.handleSensorReading);
-    this.sensor.removeEventListener("error", (error) => {
-      console.log(error);
-    });
+    if (this.sensor) {
+      this.sensor.removeEventListener("reading", this.handleSensorReading);
+      this.sensor.removeEventListener("error", (error) => {
+        console.log(error);
+      });
+    }
   };
 
   componentDidUpdate = (prevProps, prevState) => {
@@ -145,24 +154,6 @@ export default class Controller extends React.Component {
     this.setState({ password: event.target.value });
   };
 
-  lockScreen = () => {
-    if (document.documentElement.requestFullscreen) {
-      document.documentElement.requestFullscreen();
-    } else if (document.documentElement.mozRequestFullScreen) {
-      document.documentElement.mozRequestFullScreen();
-    } else if (document.documentElement.webkitRequestFullscreen) {
-      document.documentElement.webkitRequestFullscreen();
-    } else if (document.documentElement.msRequestFullscreen) {
-      document.documentElement.msRequestFullscreen();
-    }
-
-    if (window.screen.orientation.type === "landscape-secondary") {
-      window.screen.orientation.lock("landscape-secondary");
-    } else {
-      window.screen.orientation.lock("landscape-primary");
-    }
-  };
-
   handleSensorReading = () => {
     // this.sensor.quaternion is [x,y,z,w]
     // https://en.wikipedia.org/wiki/Quaternion#Three-dimensional_and_four-dimensional_rotation_groups
@@ -200,27 +191,24 @@ export default class Controller extends React.Component {
     }
 
     console.log(roll, pitch, yaw);
+    this.setState({ joystickX: roll * 100, joystickY: pitch * 100 });
   };
 
-  useAccelerometer = () => {
-    alert(
-      "You have entered ACCELEROMETER MODE. " +
-        "Both of your thumbs must be touching the screen for motion to happen. " +
-        "Releasing either thumb at any time will stop all motion. " +
-        "Press the back button on your device to exit ACCELEROMETER MODE."
-    );
+  tiltModeStart = (event) => {
+    this.setState({ tiltMode: true });
 
-    this.lockScreen_timeout = setTimeout(this.lockScreen(), 100);
-
-    if (!this.sensor) {
-      return;
+    if (this.sensor) {
+      this.sensor.addEventListener("reading", this.handleSensorReading);
+      this.sensor.start();
     }
+  };
 
-    this.sensor.addEventListener("reading", this.handleSensorReading);
-    this.sensor.addEventListener("error", (error) => {
-      console.log(error);
-    });
-    this.sensor.start();
+  tiltModeEnd = (event) => {
+    this.setState({ tiltMode: false });
+    if (this.sensor) {
+      this.sensor.removeEventListener("reading", this.handleSensorReading);
+      this.sensor.end();
+    }
   };
 
   render() {
@@ -286,7 +274,9 @@ export default class Controller extends React.Component {
                 100
               ).toFixed(0)}
               batteryLevel={this.props.batteryLevel}
-              useAccelerometer={this.useAccelerometer}
+              sensor={this.sensor}
+              tiltModeStart={this.tiltModeStart}
+              tiltModeEnd={this.tiltModeEnd}
             />
           </div>
           <div className={style.joystickContainer}>

@@ -55,9 +55,11 @@ export default class ControllerConsole extends React.Component {
         <button
           className="Button"
           style={{ fontSize: ".75em", marginTop: 10 }}
-          onClick={this.props.useAccelerometer}
+          onTouchStart={this.props.tiltModeStart}
+          onTouchEnd={this.props.tiltModeEnd}
+          onTouchCancel={this.props.tiltModeEnd}
         >
-          Use Accelerometer
+          <div className={style.tiltButtonText}>Hold To Use Tilt</div>
         </button>
       </div>
     );

@@ -4,11 +4,6 @@
   font-size: 1.5em;
 }
 
-.accelButtonContainer {
-  margin-bottom: 10px;
-  font-size: 1em;
-}
-
 .value {
   display: inline-block;
   padding-left: 10px;
@@ -17,7 +12,7 @@
 
 .batteryContainer {
   margin-top: 5px;
-  margin-left: 50px;
+  margin-left: 60px;
   height: 35px;
   width: 50px;
   position: relative;
@@ -60,4 +55,12 @@
   font-size: 14px;
   font-weight: bold;
   color: rgb(76, 175, 80);
+}
+
+.tiltButtonText {
+  user-select: none;
+  padding-top: 10px;
+  padding-bottom: 10px;
+  padding-left: 30px;
+  padding-right: 30px;
 }
