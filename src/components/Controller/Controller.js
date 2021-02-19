@@ -199,35 +199,56 @@ export default class Controller extends React.Component {
   setNewControllerVals = (roll, pitch, yaw) => {
     console.log(roll, pitch, yaw);
 
-    const threshold = 0.2;
+    const threshold = 0.25;
 
-    var joystickY;
+    var new_joystickY;
     if (Math.abs(roll) < threshold) {
-      joystickY = this.yVel_to_joystickY(0);
+      new_joystickY = this.yVel_to_joystickY(0);
     } else if (roll < -1 - threshold) {
-      joystickY = this.yVel_to_joystickY(100);
+      new_joystickY = this.yVel_to_joystickY(100);
     } else if (roll > 1 + threshold) {
-      joystickY = this.yVel_to_joystickY(-99);
+      new_joystickY = this.yVel_to_joystickY(-100);
     } else if (roll > 0) {
-      joystickY = this.yVel_to_joystickY(-100 * (roll - threshold));
+      new_joystickY = this.yVel_to_joystickY(-100 * (roll - threshold));
     } else {
-      joystickY = this.yVel_to_joystickY(-100 * (roll + threshold));
+      new_joystickY = this.yVel_to_joystickY(-100 * (roll + threshold));
     }
 
-    var joystickX;
+    var new_joystickX;
     if (Math.abs(pitch) < threshold) {
-      joystickX = this.xVel_to_joystickX(0);
-    } else if (pitch < -1) {
-      joystickX = this.xVel_to_joystickX(-100);
-    } else if (pitch > 1) {
-      joystickX = this.xVel_to_joystickX(100);
+      new_joystickX = this.xVel_to_joystickX(0);
+    } else if (pitch < -1 - threshold) {
+      new_joystickX = this.xVel_to_joystickX(-100);
+    } else if (pitch > 1 + threshold) {
+      new_joystickX = this.xVel_to_joystickX(100);
     } else if (pitch > 0) {
-      joystickX = this.xVel_to_joystickX(100 * (pitch - threshold));
+      new_joystickX = this.xVel_to_joystickX(100 * (pitch - threshold));
     } else {
-      joystickX = this.xVel_to_joystickX(100 * (pitch + threshold));
+      new_joystickX = this.xVel_to_joystickX(100 * (pitch + threshold));
     }
 
-    this.setState({ joystickY, joystickX });
+    if (window.screen.orientation === "portrait-primary") {
+      // charging port on top
+      this.setState({ joystickY: new_joystickY, joystickX: new_joystickX });
+    } else if (window.screen.orientation === "portrait-secondary") {
+      // charging port on bottom
+      this.setState({
+        joystickY: -1 * new_joystickY,
+        joystickX: -1 * new_joystickX,
+      });
+    } else if (window.screen.orientation === "landscape-primary") {
+      // charging port on right
+      this.setState({
+        joystickY: new_joystickX,
+        joystickX: -1 * new_joystickY,
+      });
+    } else if (window.screen.orientation === "landscape-secondary") {
+      // charging port on left
+      this.setState({
+        joystickY: -1 * new_joystickX,
+        joystickX: new_joystickY,
+      });
+    }
   };
 
   joystickY_to_yVel = (joystickY) => {
@@ -301,6 +322,7 @@ export default class Controller extends React.Component {
   };
 
   render() {
+    console.log(window.screen.orientation.type);
     // if (window.innerWidth < window.innerHeight && window.innerWidth < 600) {
     //   return (
     //     <div className={style.rotateDeviceContainer} data-test="Controller">
