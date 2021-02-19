@@ -118,12 +118,14 @@ export default class ControllerJoystick extends React.Component {
   };
 
   stickToCenter = (stickLeft_prev, stickTop_prev) => {
+    console.log("stickToCenter", stickLeft_prev, stickTop_prev);
     if (!stickLeft_prev) {
       stickLeft_prev = this.state.stickLeft_prev;
     }
     if (!stickTop_prev) {
       stickTop_prev = this.state.stickTop_prev;
     }
+    console.log("stickToCenter", stickLeft_prev, stickTop_prev);
 
     this.setState({ stickToCenterDebounce: true });
     this.stickToCenterDebounce_timeout = setTimeout(() => {

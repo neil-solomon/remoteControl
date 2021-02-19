@@ -199,7 +199,7 @@ export default class Controller extends React.Component {
   setNewControllerVals = (roll, pitch, yaw) => {
     console.log(roll, pitch, yaw);
 
-    const threshold = 0.1;
+    const threshold = 0.2;
 
     var joystickY;
     if (Math.abs(roll) < threshold) {
@@ -207,11 +207,11 @@ export default class Controller extends React.Component {
     } else if (roll < -1 - threshold) {
       joystickY = this.yVel_to_joystickY(100);
     } else if (roll > 1 + threshold) {
-      joystickY = this.yVel_to_joystickY(-100);
+      joystickY = this.yVel_to_joystickY(-99);
     } else if (roll > 0) {
-      joystickY = this.yVel_to_joystickY(-100 * (roll + threshold));
-    } else {
       joystickY = this.yVel_to_joystickY(-100 * (roll - threshold));
+    } else {
+      joystickY = this.yVel_to_joystickY(-100 * (roll + threshold));
     }
 
     var joystickX;
@@ -222,9 +222,9 @@ export default class Controller extends React.Component {
     } else if (pitch > 1) {
       joystickX = this.xVel_to_joystickX(100);
     } else if (pitch > 0) {
-      joystickX = this.xVel_to_joystickX(100 * (pitch + threshold));
-    } else {
       joystickX = this.xVel_to_joystickX(100 * (pitch - threshold));
+    } else {
+      joystickX = this.xVel_to_joystickX(100 * (pitch + threshold));
     }
 
     this.setState({ joystickY, joystickX });
@@ -290,8 +290,8 @@ export default class Controller extends React.Component {
     this.setState({ tiltMode: false });
 
     this.joystickRef.current.stickToCenter(
-      this.props.joystickX,
-      this.props.joystickY
+      this.state.joystickX,
+      this.state.joystickY
     );
     this.sliderRef.current.carToCenter();
 
