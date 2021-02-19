@@ -190,8 +190,9 @@ export default class Controller extends React.Component {
       yaw = 0;
     }
 
+    console.log(q0, q1, q2, q3);
     console.log(roll, pitch, yaw);
-    this.setState({ joystickX: roll * 100, joystickY: pitch * 100 });
+    this.setState({ joystickY: roll * -10, joystickX: pitch * 10 });
   };
 
   tiltModeStart = (event) => {
@@ -207,7 +208,6 @@ export default class Controller extends React.Component {
     this.setState({ tiltMode: false });
     if (this.sensor) {
       this.sensor.removeEventListener("reading", this.handleSensorReading);
-      this.sensor.end();
     }
   };
 
