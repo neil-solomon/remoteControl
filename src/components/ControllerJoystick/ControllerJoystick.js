@@ -117,7 +117,14 @@ export default class ControllerJoystick extends React.Component {
     this.setState({ stickMotionEnabled: false });
   };
 
-  stickToCenter = () => {
+  stickToCenter = (stickLeft_prev, stickTop_prev) => {
+    if (!stickLeft_prev) {
+      stickLeft_prev = this.state.stickLeft_prev;
+    }
+    if (!stickTop_prev) {
+      stickTop_prev = this.state.stickTop_prev;
+    }
+
     this.setState({ stickToCenterDebounce: true });
     this.stickToCenterDebounce_timeout = setTimeout(() => {
       this.setState({ stickToCenterDebounce: false });
@@ -133,10 +140,8 @@ export default class ControllerJoystick extends React.Component {
     for (let i = 1; i < this.stickToCenterTimeouts.length; i++) {
       this.stickToCenterTimeouts[i - 1] = setTimeout(() => {
         this.props.updateJoystickVals(
-          this.state.stickLeft_prev +
-            (distX * i) / this.stickToCenterTimeouts.length,
-          this.state.stickTop_prev +
-            (distY * i) / this.stickToCenterTimeouts.length
+          stickLeft_prev + (distX * i) / this.stickToCenterTimeouts.length,
+          stickTop_prev + (distY * i) / this.stickToCenterTimeouts.length
         );
       }, i * this.props.debounceTime);
     }
