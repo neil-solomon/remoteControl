@@ -227,27 +227,32 @@ export default class Controller extends React.Component {
       new_joystickX = this.xVel_to_joystickX(100 * (pitch + threshold));
     }
 
-    if (window.screen.orientation === "portrait-primary") {
+    if (window.screen.orientation.type === "portrait-primary") {
       // charging port on top
       this.setState({ joystickY: new_joystickY, joystickX: new_joystickX });
-    } else if (window.screen.orientation === "portrait-secondary") {
+    } else if (window.screen.orientation.type === "portrait-secondary") {
       // charging port on bottom
       this.setState({
         joystickY: -1 * new_joystickY,
         joystickX: -1 * new_joystickX,
       });
-    } else if (window.screen.orientation === "landscape-primary") {
+    } else if (window.screen.orientation.type === "landscape-primary") {
       // charging port on right
       this.setState({
         joystickY: new_joystickX,
         joystickX: -1 * new_joystickY,
       });
-    } else if (window.screen.orientation === "landscape-secondary") {
+    } else if (window.screen.orientation.type === "landscape-secondary") {
       // charging port on left
       this.setState({
         joystickY: -1 * new_joystickX,
         joystickX: new_joystickY,
       });
+    } else {
+      console.log(
+        "window.screen.orientation.type not recognized",
+        window.screen.orientation.type
+      );
     }
   };
 
@@ -322,7 +327,6 @@ export default class Controller extends React.Component {
   };
 
   render() {
-    console.log(window.screen.orientation.type);
     // if (window.innerWidth < window.innerHeight && window.innerWidth < 600) {
     //   return (
     //     <div className={style.rotateDeviceContainer} data-test="Controller">
