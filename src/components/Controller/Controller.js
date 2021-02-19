@@ -193,7 +193,7 @@ export default class Controller extends React.Component {
       yaw = 0;
     }
 
-    this.setNewControllerVals();
+    this.setNewControllerVals(roll, pitch, yaw);
   };
 
   setNewControllerVals = (roll, pitch, yaw) => {
@@ -204,12 +204,14 @@ export default class Controller extends React.Component {
     var joystickY;
     if (Math.abs(roll) < threshold) {
       joystickY = 0;
-    } else if (roll < -1) {
+    } else if (roll < -1 - threshold) {
       joystickY = -100;
-    } else if (roll > 1) {
+    } else if (roll > 1 + threshold) {
       joystickY = 100;
+    } else if (roll > 0) {
+      joystickY = this.yVel_to_joystickY(100 * (roll + threshold));
     } else {
-      joystickY = this.yVel_to_joystickY(100 * roll);
+      joystickY = this.yVel_to_joystickY(100 * (roll - threshold));
     }
 
     var joystickX;
@@ -219,8 +221,10 @@ export default class Controller extends React.Component {
       joystickX = -100;
     } else if (pitch > 1) {
       joystickX = 100;
+    } else if (pitch > 0) {
+      joystickX = this.xVel_to_joystickX(100 * (pitch + threshold));
     } else {
-      joystickX = this.xVel_to_joystickX(100 * pitch);
+      joystickX = this.xVel_to_joystickX(100 * (pitch - threshold));
     }
 
     this.setState({ joystickY, joystickX });
