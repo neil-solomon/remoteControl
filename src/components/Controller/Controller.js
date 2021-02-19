@@ -193,9 +193,84 @@ export default class Controller extends React.Component {
       yaw = 0;
     }
 
-    console.log(q0, q1, q2, q3);
+    this.setNewControllerVals();
+  };
+
+  setNewControllerVals = (roll, pitch, yaw) => {
     console.log(roll, pitch, yaw);
-    this.setState({ joystickY: roll * -10, joystickX: pitch * 10 });
+
+    const threshold = 0.25;
+
+    var joystickY;
+    if (Math.abs(roll) < threshold) {
+      joystickY = 0;
+    } else if (roll < -1) {
+      joystickY = -100;
+    } else if (roll > 1) {
+      joystickY = 100;
+    } else {
+      joystickY = this.yVel_to_joystickY(100 * roll);
+    }
+
+    var joystickX;
+    if (Math.abs(pitch) < threshold) {
+      joystickX = 0;
+    } else if (pitch < -1) {
+      joystickX = -100;
+    } else if (pitch > 1) {
+      joystickX = 100;
+    } else {
+      joystickX = this.xVel_to_joystickX(100 * pitch);
+    }
+
+    this.setState({ joystickY, joystickX });
+  };
+
+  joystickY_to_yVel = (joystickY) => {
+    return (
+      ((this.state.size / 2 -
+        joystickY -
+        (this.state.size * this.stickToBaseRatio) / 2) /
+        (this.state.size * this.validRadiusToBaseRatio)) *
+      100
+    );
+  };
+
+  yVel_to_joystickY = (yVel) => {
+    return (
+      -1 *
+      ((this.state.size * this.validRadiusToBaseRatio * yVel) / 100 -
+        this.state.size / 2 +
+        (this.state.size * this.stickToBaseRatio) / 2)
+    );
+  };
+
+  joystickX_to_xVel = (joystickX) => {
+    return (
+      -1 *
+      (((this.state.size / 2 -
+        joystickX -
+        (this.state.size * this.stickToBaseRatio) / 2) /
+        (this.state.size * this.validRadiusToBaseRatio)) *
+        100)
+    );
+  };
+
+  xVel_to_joystickX = (xVel) => {
+    return (
+      (this.state.size * this.validRadiusToBaseRatio * xVel) / 100 +
+      this.state.size / 2 -
+      (this.state.size * this.stickToBaseRatio) / 2
+    );
+  };
+
+  sliderPosition_to_rotVel = (sliderPosition) => {
+    return (
+      -1 *
+      ((this.state.sliderPosition - (this.state.size - 25) / 2) /
+        ((this.state.size - 25) / 2)) *
+      100
+    );
   };
 
   tiltModeStart = (event) => {
@@ -260,26 +335,10 @@ export default class Controller extends React.Component {
           </div>
           <div className={style.consoleContainer}>
             <ControllerConsole
-              xVel={(
-                -1 *
-                ((this.state.size / 2 -
-                  this.state.joystickX -
-                  (this.state.size * this.stickToBaseRatio) / 2) /
-                  (this.state.size * this.validRadiusToBaseRatio)) *
-                100
-              ).toFixed(0)}
-              yVel={(
-                ((this.state.size / 2 -
-                  this.state.joystickY -
-                  (this.state.size * this.stickToBaseRatio) / 2) /
-                  (this.state.size * this.validRadiusToBaseRatio)) *
-                100
-              ).toFixed(0)}
-              rotVel={(
-                -1 *
-                ((this.state.sliderPosition - (this.state.size - 25) / 2) /
-                  ((this.state.size - 25) / 2)) *
-                100
+              xVel={this.joystickX_to_xVel(this.state.joystickX).toFixed(0)}
+              yVel={this.joystickY_to_yVel(this.state.joystickY).toFixed(0)}
+              rotVel={this.sliderPosition_to_rotVel(
+                this.state.sliderPosition
               ).toFixed(0)}
               batteryLevel={this.props.batteryLevel}
               sensor={this.sensor}
