@@ -12,6 +12,9 @@ export default class Controller extends React.Component {
   constructor(props) {
     super(props);
 
+    this.joystickRef = React.createRef();
+    this.sliderRef = React.createRef();
+
     this.controlsDebounceTime = 5; // millisecondss
     this.controlsToZeroTime = 100;
     this.stickToBaseRatio = 4 / 5;
@@ -206,6 +209,10 @@ export default class Controller extends React.Component {
 
   tiltModeEnd = (event) => {
     this.setState({ tiltMode: false });
+
+    this.joystickRef.current.stickToCenter();
+    this.sliderRef.current.carToCenter();
+
     if (this.sensor) {
       this.sensor.removeEventListener("reading", this.handleSensorReading);
     }
@@ -244,6 +251,7 @@ export default class Controller extends React.Component {
               toZeroTime={this.controlsToZeroTime}
               sliderPosition={this.state.sliderPosition}
               updateSliderPosition={this.updateSliderPosition}
+              ref={this.sliderRef}
             />
             <KeyboardIcon
               className={style.keyboardIcon}
@@ -293,6 +301,7 @@ export default class Controller extends React.Component {
               updateJoystickVals={this.updateJoystickVals}
               debounceTime={this.controlsDebounceTime}
               toZeroTime={this.controlsToZeroTime}
+              ref={this.joystickRef}
             />
           </div>
         </div>
