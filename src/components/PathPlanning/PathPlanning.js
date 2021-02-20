@@ -9,7 +9,7 @@ import { ReactComponent as FilesIcon } from "../../icons/folder.svg";
 export default class PathPlanning extends React.Component {
   constructor(props) {
     super(props);
-    window.localStorage.clear();
+
     this.matrix = React.createRef();
 
     this.state = {

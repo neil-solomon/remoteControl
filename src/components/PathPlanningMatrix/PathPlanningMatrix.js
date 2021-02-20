@@ -336,15 +336,23 @@ export default class PathPlanningMatrix extends React.Component {
           Math.sqrt(
             Math.pow(levels[i][j][0] - shortPath[0][0], 2) +
               Math.pow(levels[i][j][1] - shortPath[0][1], 2)
-          ) === 1 ||
-          (this.props.useDiagonal &&
-            Math.sqrt(
-              Math.pow(levels[i][j][0] - shortPath[0][0], 2) +
-                Math.pow(levels[i][j][1] - shortPath[0][1], 2)
-            ).toFixed(3) === 1.414)
+          ) === 1
         ) {
           shortPath.unshift([levels[i][j][0], levels[i][j][1]]);
           break;
+        }
+        if (this.props.useDiagonal) {
+          if (this.props.useWideBerth) {
+          }
+          if (
+            Math.sqrt(
+              Math.pow(levels[i][j][0] - shortPath[0][0], 2) +
+                Math.pow(levels[i][j][1] - shortPath[0][1], 2)
+            ).toFixed(3) === "1.414"
+          ) {
+            shortPath.unshift([levels[i][j][0], levels[i][j][1]]);
+            break;
+          }
         }
       }
     }

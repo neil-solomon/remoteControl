@@ -101,8 +101,8 @@ export default class Controller extends React.Component {
 
         data = [
           36, // motor command
-          this.state.joystickX + 150, // ensure that all values are between 50 and 250
-          this.state.joystickY + 150,
+          this.joystickX_to_xVel(this.state.joystickX) + 150, // ensure that all values are between 50 and 250
+          this.joystickY_to_yVel(this.state.joystickY) + 150,
           this.state.sliderPosition + 150,
         ];
         this.props.sendToBluetooth(data);
@@ -110,11 +110,11 @@ export default class Controller extends React.Component {
 
       // send motor stop command
       if (
-        this.state.joystickX === 0 &&
-        this.state.joystickY === 0 &&
+        this.joystickX_to_xVel(this.state.joystickX) === 0 &&
+        this.joystickY_to_yVel(this.state.joystickY) === 0 &&
         this.state.sliderPosition === 0 &&
-        (prevState.joystickX !== 0 ||
-          prevState.joystickY !== 0 ||
+        (this.joystickX_to_xVel(prevState.joystickX) !== 0 ||
+          this.joystickY_to_yVel(prevState.joystickY) !== 0 ||
           prevState.sliderPosition !== 0)
       ) {
         data = [36, 150, 150, 150];
