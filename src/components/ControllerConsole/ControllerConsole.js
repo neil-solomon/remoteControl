@@ -29,7 +29,10 @@ export default class ControllerConsole extends React.Component {
             {this.props.rotVel}
           </div>
         </div>
-        <div className={style.batteryContainer}>
+        <div
+          className={style.batteryContainer}
+          style={{ marginLeft: this.props.sensor ? 60 : 30 }}
+        >
           <div className={style.batteryOuter}></div>
           <div
             className={style.batteryInner}
@@ -52,15 +55,17 @@ export default class ControllerConsole extends React.Component {
           </div>
           <div className={style.batteryTip}></div>
         </div>
-        <button
-          className="Button"
-          style={{ fontSize: ".75em", marginTop: 10 }}
-          onTouchStart={this.props.tiltModeStart}
-          onTouchEnd={this.props.tiltModeEnd}
-          onTouchCancel={this.props.tiltModeEnd}
-        >
-          <div className={style.tiltButtonText}>Hold To Use Tilt</div>
-        </button>
+        {this.props.sensor && (
+          <button
+            className="Button"
+            style={{ fontSize: ".75em", marginTop: 10 }}
+            onTouchStart={this.props.tiltModeStart}
+            onTouchEnd={this.props.tiltModeEnd}
+            onTouchCancel={this.props.tiltModeEnd}
+          >
+            <div className={style.tiltButtonText}>Hold To Use Tilt</div>
+          </button>
+        )}
       </div>
     );
   }

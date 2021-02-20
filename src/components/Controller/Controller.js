@@ -197,8 +197,6 @@ export default class Controller extends React.Component {
   };
 
   setNewControllerVals = (roll, pitch, yaw) => {
-    console.log("!", roll, pitch, yaw);
-
     const threshold = 0.25;
 
     var new_joystickY;
@@ -219,7 +217,6 @@ export default class Controller extends React.Component {
       // new_joystickY = this.yVel_to_joystickY(-100 * (roll + threshold));
     }
 
-    var new_joystickX;
     if (Math.abs(pitch) < threshold) {
       pitch = 0;
       // new_joystickX = this.xVel_to_joystickX(0);

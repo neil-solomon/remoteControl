@@ -522,6 +522,35 @@ export default class PathPlanningMatrix extends React.Component {
     window.removeEventListener("touchcancel", this.endTouchDrag);
   };
 
+  saveMatrix = () => {
+    const date = new Date();
+    const dateTime = (
+      date.toDateString() +
+      "_" +
+      date.toTimeString()
+    ).replaceAll(" ", "-");
+
+    var matrices = window.localStorage.getItem("matrices");
+    if (matrices) {
+      try {
+        matrices = JSON.parse(matrices);
+      } catch (error) {
+        console.log(error);
+        matrices = [];
+      }
+    } else {
+      matrices = [];
+    }
+
+    matrices.push({
+      dateTime: dateTime,
+      matrix: JSON.parse(JSON.stringify(this.state.matrix)),
+    });
+
+    console.log("PathPlanningMatrix.saveMatrix()", dateTime);
+    window.localStorage.setItem("matrices", JSON.stringify(matrices));
+  };
+
   render() {
     return (
       <div className={style.container}>

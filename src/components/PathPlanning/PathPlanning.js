@@ -3,11 +3,13 @@ import style from "./PathPlanning.module.css";
 import PathPlanningMenu from "../PathPlanningMenu";
 import PathPlanningMatrix from "../PathPlanningMatrix";
 import { ReactComponent as FindPathIcon } from "../../icons/route.svg";
+import { ReactComponent as SaveIcon } from "../../icons/diskette.svg";
+import { ReactComponent as FilesIcon } from "../../icons/folder.svg";
 
 export default class PathPlanning extends React.Component {
   constructor(props) {
     super(props);
-
+    window.localStorage.clear();
     this.matrix = React.createRef();
 
     this.state = {
@@ -45,6 +47,28 @@ export default class PathPlanning extends React.Component {
   toggle_wideBerth = () => {
     if (!this.state.useDiagonal) return;
     this.setState({ useWideBerth: !this.state.useWideBerth });
+  };
+
+  saveMatrix = () => {
+    this.matrix.current.saveMatrix();
+  };
+
+  openMatrices = () => {
+    var matrices = window.localStorage.getItem("matrices");
+    if (matrices) {
+      try {
+        matrices = JSON.parse(matrices);
+      } catch (error) {
+        console.log(error);
+        matrices = [];
+      }
+    } else {
+      matrices = [];
+    }
+
+    for (const matrix of matrices) {
+      console.log(matrix.dateTime);
+    }
   };
 
   render() {
@@ -85,6 +109,16 @@ export default class PathPlanning extends React.Component {
             />
             <span>Wide Berth</span>
           </div>
+        </div>
+        <div className={style.saveButton}>
+          <button className="Button" onClick={this.saveMatrix}>
+            <SaveIcon className={style.icon} />
+          </button>
+        </div>
+        <div className={style.filesButton}>
+          <button className="Button" onClick={this.openMatrices}>
+            <FilesIcon className={style.icon} />
+          </button>
         </div>
         <PathPlanningMatrix
           activeAction={this.state.activeAction}
