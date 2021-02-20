@@ -197,7 +197,7 @@ export default class Controller extends React.Component {
   };
 
   setNewControllerVals = (roll, pitch, yaw) => {
-    console.log(roll, pitch, yaw);
+    console.log("!", roll, pitch, yaw);
 
     const threshold = 0.25;
 
