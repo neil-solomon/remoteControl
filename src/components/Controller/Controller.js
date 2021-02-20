@@ -203,50 +203,63 @@ export default class Controller extends React.Component {
 
     var new_joystickY;
     if (Math.abs(roll) < threshold) {
-      new_joystickY = this.yVel_to_joystickY(0);
+      roll = 0;
+      // new_joystickY = this.yVel_to_joystickY(0);
     } else if (roll < -1 - threshold) {
-      new_joystickY = this.yVel_to_joystickY(100);
+      roll = -100;
+      // new_joystickY = this.yVel_to_joystickY(100);
     } else if (roll > 1 + threshold) {
-      new_joystickY = this.yVel_to_joystickY(-100);
+      roll = 100;
+      // new_joystickY = this.yVel_to_joystickY(-100);
     } else if (roll > 0) {
-      new_joystickY = this.yVel_to_joystickY(-100 * (roll - threshold));
+      roll = (roll - threshold) * 100;
+      // new_joystickY = this.yVel_to_joystickY(-100 * (roll - threshold));
     } else {
-      new_joystickY = this.yVel_to_joystickY(-100 * (roll + threshold));
+      roll = (roll + threshold) * 100;
+      // new_joystickY = this.yVel_to_joystickY(-100 * (roll + threshold));
     }
 
     var new_joystickX;
     if (Math.abs(pitch) < threshold) {
-      new_joystickX = this.xVel_to_joystickX(0);
+      pitch = 0;
+      // new_joystickX = this.xVel_to_joystickX(0);
     } else if (pitch < -1 - threshold) {
-      new_joystickX = this.xVel_to_joystickX(-100);
+      pitch = -100;
+      // new_joystickX = this.xVel_to_joystickX(-100);
     } else if (pitch > 1 + threshold) {
-      new_joystickX = this.xVel_to_joystickX(100);
+      pitch = 100;
+      // new_joystickX = this.xVel_to_joystickX(100);
     } else if (pitch > 0) {
-      new_joystickX = this.xVel_to_joystickX(100 * (pitch - threshold));
+      pitch = (pitch - threshold) * 100;
+      // new_joystickX = this.xVel_to_joystickX(100 * (pitch - threshold));
     } else {
-      new_joystickX = this.xVel_to_joystickX(100 * (pitch + threshold));
+      pitch = (pitch + threshold) * 100;
+      // new_joystickX = this.xVel_to_joystickX(100 * (pitch + threshold));
     }
 
     if (window.screen.orientation.type === "portrait-primary") {
       // charging port on top
-      this.setState({ joystickY: new_joystickY, joystickX: new_joystickX });
+      this.setState({
+        joystickY: this.yVel_to_joystickY(-1 * roll),
+        joystickX: this.xVel_to_joystickX(pitch),
+      });
     } else if (window.screen.orientation.type === "portrait-secondary") {
       // charging port on bottom
       this.setState({
-        joystickY: -1 * new_joystickY,
-        joystickX: -1 * new_joystickX,
+        joystickY: this.yVel_to_joystickY(roll),
+        joystickX: this.xVel_to_joystickX(-1 * pitch),
       });
     } else if (window.screen.orientation.type === "landscape-primary") {
       // charging port on right
       this.setState({
-        joystickY: new_joystickX,
-        joystickX: -1 * new_joystickY,
+        joystickY: this.yVel_to_joystickY(pitch),
+        joystickX: this.xVel_to_joystickX(roll),
       });
     } else if (window.screen.orientation.type === "landscape-secondary") {
       // charging port on left
       this.setState({
-        joystickY: -1 * new_joystickX,
-        joystickX: new_joystickY,
+        joystickY: this.yVel_to_joystickY(-1 * pitch),
+        joystickX: this.xVel_to_joystickX(-1 * roll),
       });
     } else {
       console.log(
