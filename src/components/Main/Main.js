@@ -20,6 +20,7 @@ export default class Main extends React.Component {
   }
 
   componentDidMount = () => {
+    console.log(process.env);
     window.addEventListener("beforeunload", this.disconnectBluetooth);
   };
 
