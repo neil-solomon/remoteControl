@@ -20,7 +20,6 @@ export default class Main extends React.Component {
   }
 
   componentDidMount = () => {
-    console.log(process.env, process.env.AWS_COMMIT_ID);
     window.addEventListener("beforeunload", this.disconnectBluetooth);
   };
 

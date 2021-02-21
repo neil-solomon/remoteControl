@@ -89,6 +89,9 @@ export default class Help extends React.Component {
               Material Palette
             </a>
           </div>
+          <div className={style.creditsItem}>
+            Software Version {process.env.REACT_APP_AWS_COMMIT_ID}
+          </div>
         </div>
       </div>
     );
