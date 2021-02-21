@@ -20,6 +20,7 @@ export default class Controller extends React.Component {
     this.stickToBaseRatio = 4 / 5;
     this.validRadiusToBaseRatio = 1 / 4;
 
+    this.sendCommandDebounceTime = 50;
     this.sendCommandDebounce = false;
     this.sendCommandDebounce_timeout = null;
     this.sendPassword_timeout = null;
@@ -72,58 +73,69 @@ export default class Controller extends React.Component {
   };
 
   componentDidUpdate = (prevProps, prevState) => {
-    if (this.props.bluetoothCharacteristic) {
-      var data;
-      // send password
-      if (!prevProps.bluetoothCharacteristic) {
-        data = this.state.password.split("").map((char, index) => {
-          return this.state.password.charCodeAt(index);
-        });
+    if (
+      this.props.bluetoothCharacteristic &&
+      !prevProps.bluetoothCharacteristic
+    ) {
+      this.sendPassword();
+    }
 
-        data.unshift(35); // password command
-        this.sendPassword_timeout = setTimeout(
-          () => this.props.sendToBluetooth(data),
-          1000
-        );
-      }
+    if (
+      parseInt(this.joystickX_to_xVel(this.state.joystickX)) !==
+        parseInt(this.joystickX_to_xVel(prevState.joystickX)) ||
+      parseInt(this.joystickY_to_yVel(this.state.joystickY)) !==
+        parseInt(this.joystickY_to_yVel(prevState.joystickY)) ||
+      parseInt(this.sliderPosition_to_rotVel(this.state.sliderPosition)) !==
+        parseInt(this.sliderPosition_to_rotVel(prevState.sliderPosition))
+    ) {
+      this.sendMotorCommand();
+    }
+  };
 
+  sendPassword = () => {
+    var data = this.state.password.split("").map((char, index) => {
+      return this.state.password.charCodeAt(index);
+    });
+
+    data.unshift(35); // password command
+    this.sendPassword_timeout = setTimeout(
+      () => this.props.sendToBluetooth(data),
+      1000
+    );
+  };
+
+  sendMotorCommand = () => {
+    var data;
+
+    if (!this.sendCommandDebounce) {
       // send motor motion command
-      if (
-        (this.state.joystickX !== prevState.joystickX ||
-          this.state.joystickY !== prevState.joystickY ||
-          this.state.sliderPosition !== prevState.sliderPosition) &&
-        !this.sendCommandDebounce
-      ) {
-        this.sendCommandDebounce = true;
-        this.sendCommandDebounce_timeout = setTimeout(() => {
-          this.sendCommandDebounce = false;
-        }, 100);
+      this.sendCommandDebounce = true;
+      this.sendCommandDebounce_timeout = setTimeout(() => {
+        this.sendCommandDebounce = false;
+      }, this.sendCommandDebounceTime);
 
-        data = [
-          36, // motor command
-          this.joystickX_to_xVel(this.state.joystickX) + 150, // ensure that all values are between 50 and 250
-          this.joystickY_to_yVel(this.state.joystickY) + 150,
-          this.state.sliderPosition + 150,
-        ];
-        this.props.sendToBluetooth(data);
-      }
+      data = [
+        36, // motor command
+        parseInt(this.joystickX_to_xVel(this.state.joystickX)) + 150, // ensure that all values are between 50 and 250
+        parseInt(this.joystickY_to_yVel(this.state.joystickY)) + 150,
+        parseInt(this.sliderPosition_to_rotVel(this.state.sliderPosition)) +
+          150,
+      ];
+      this.props.sendToBluetooth(data);
+    }
 
+    if (
+      parseInt(this.joystickX_to_xVel(this.state.joystickX)) === 0 &&
+      parseInt(this.joystickY_to_yVel(this.state.joystickY)) === 0 &&
+      parseInt(this.sliderPosition_to_rotVel(this.state.sliderPosition)) === 0
+    ) {
       // send motor stop command
-      if (
-        this.joystickX_to_xVel(this.state.joystickX) === 0 &&
-        this.joystickY_to_yVel(this.state.joystickY) === 0 &&
-        this.state.sliderPosition === 0 &&
-        (this.joystickX_to_xVel(prevState.joystickX) !== 0 ||
-          this.joystickY_to_yVel(prevState.joystickY) !== 0 ||
-          prevState.sliderPosition !== 0)
-      ) {
-        data = [36, 150, 150, 150];
-        for (let i = 0; i < this.motorStop_timeouts.length; i++) {
-          this.motorStop_timeouts[i] = setTimeout(
-            () => this.props.sendToBluetooth(data),
-            i * 50
-          );
-        }
+      data = [36, 150, 150, 150];
+      for (let i = 0; i < this.motorStop_timeouts.length; i++) {
+        this.motorStop_timeouts[i] = setTimeout(
+          () => this.props.sendToBluetooth(data),
+          (i + 1) * this.sendCommandDebounceTime
+        );
       }
     }
   };
@@ -307,7 +319,7 @@ export default class Controller extends React.Component {
   sliderPosition_to_rotVel = (sliderPosition) => {
     return (
       -1 *
-      ((this.state.sliderPosition - (this.state.size - 25) / 2) /
+      ((sliderPosition - (this.state.size - 25) / 2) /
         ((this.state.size - 25) / 2)) *
       100
     );
@@ -378,11 +390,11 @@ export default class Controller extends React.Component {
           </div>
           <div className={style.consoleContainer}>
             <ControllerConsole
-              xVel={this.joystickX_to_xVel(this.state.joystickX).toFixed(0)}
-              yVel={this.joystickY_to_yVel(this.state.joystickY).toFixed(0)}
-              rotVel={this.sliderPosition_to_rotVel(
-                this.state.sliderPosition
-              ).toFixed(0)}
+              xVel={parseInt(this.joystickX_to_xVel(this.state.joystickX))}
+              yVel={parseInt(this.joystickY_to_yVel(this.state.joystickY))}
+              rotVel={parseInt(
+                this.sliderPosition_to_rotVel(this.state.sliderPosition)
+              )}
               batteryLevel={this.props.batteryLevel}
               sensor={this.sensor}
               tiltModeStart={this.tiltModeStart}
