@@ -65,7 +65,11 @@ export default class PathPlanningMenu extends React.Component {
       <div className={style.container}>
         <button
           id="PathPlanning_button_0"
-          className={buttonStyle[0]}
+          className={
+            this.props.matrixGeneratingPath
+              ? style.button + " " + style.buttonDisabled
+              : buttonStyle[0]
+          }
           onMouseEnter={this.buttonMouseEnter}
           onMouseLeave={this.buttonMouseLeave}
           onClick={() => this.props.activeActionUpdate(0)}
@@ -74,7 +78,11 @@ export default class PathPlanningMenu extends React.Component {
         </button>
         <button
           id="PathPlanning_button_1"
-          className={buttonStyle[1]}
+          className={
+            this.props.matrixGeneratingPath
+              ? style.button + " " + style.buttonDisabled
+              : buttonStyle[1]
+          }
           onMouseEnter={this.buttonMouseEnter}
           onMouseLeave={this.buttonMouseLeave}
           onClick={() => this.props.activeActionUpdate(1)}
@@ -83,7 +91,11 @@ export default class PathPlanningMenu extends React.Component {
         </button>
         <button
           id="PathPlanning_button_2"
-          className={buttonStyle[2]}
+          className={
+            this.props.matrixGeneratingPath
+              ? style.button + " " + style.buttonDisabled
+              : buttonStyle[2]
+          }
           onMouseEnter={this.buttonMouseEnter}
           onMouseLeave={this.buttonMouseLeave}
           onClick={() => this.props.activeActionUpdate(2)}
@@ -92,7 +104,11 @@ export default class PathPlanningMenu extends React.Component {
         </button>
         <button
           id="PathPlanning_button_3"
-          className={buttonStyle[3]}
+          className={
+            this.props.matrixGeneratingPath
+              ? style.button + " " + style.buttonDisabled
+              : buttonStyle[3]
+          }
           onMouseEnter={this.buttonMouseEnter}
           onMouseLeave={this.buttonMouseLeave}
           onClick={() => this.props.activeActionUpdate(3)}

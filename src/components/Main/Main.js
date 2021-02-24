@@ -10,22 +10,44 @@ export default class Main extends React.Component {
   constructor(props) {
     super(props);
 
+    // window.localStorage.clear();
+
     this.state = {
       pageView: [true, false, false, false], // home, controller, pathPlanning, help
       contentContainerClassName: style.fadeIn,
       bluetoothDevice: null,
       bluetoothCharacteristic: null,
       batteryLevel: null,
+      savedMatrices: [],
     };
   }
 
   componentDidMount = () => {
+    this.getSavedMatrices();
     window.addEventListener("beforeunload", this.disconnectBluetooth);
   };
 
   componentWillUnmount = () => {
     this.disconnectBluetooth();
     window.removeEventListener("beforeunload", this.disconnectBluetooth);
+  };
+
+  getSavedMatrices = () => {
+    var matrices = window.localStorage.getItem("matrices");
+    if (matrices) {
+      try {
+        matrices = JSON.parse(matrices);
+      } catch (error) {
+        console.log(error);
+        matrices = {};
+      }
+    } else {
+      matrices = {};
+    }
+
+    console.log(Object.keys(matrices));
+    console.log(matrices);
+    this.setState({ savedMatrices: matrices });
   };
 
   changeMenu = (menu) => {
@@ -149,7 +171,12 @@ export default class Main extends React.Component {
               batteryLevel={this.state.batteryLevel}
             />
           )}
-          {this.state.pageView[2] && <PathPlanning />}
+          {this.state.pageView[2] && (
+            <PathPlanning
+              savedMatrices={this.state.savedMatrices}
+              getSavedMatrices={this.getSavedMatrices}
+            />
+          )}
           {this.state.pageView[3] && <Help />}
         </div>
       </div>

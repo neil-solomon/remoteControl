@@ -12,11 +12,20 @@ export default class PathPlanning extends React.Component {
 
     this.matrix = React.createRef();
 
+    this.getSavedMatrices_timeout = null;
+
     this.state = {
       activeAction: [false, false, false, false], // start, end, barrier, erase, findPath
       useDiagonal: false,
       useWideBerth: false,
+      saveMatrixName: "",
+      savedMatricesSelectIx: 0,
+      matrixGeneratingPath: false,
     };
+  }
+
+  componentWillUnmount() {
+    clearTimeout(this.getSavedMatrices_timeout);
   }
 
   activeActionUpdate = (index) => {
@@ -50,25 +59,49 @@ export default class PathPlanning extends React.Component {
   };
 
   saveMatrix = () => {
-    this.matrix.current.saveMatrix();
+    if (
+      this.state.matrixGeneratingPath ||
+      this.state.saveMatrixName.length === 0
+    )
+      return;
+
+    this.matrix.current.saveMatrix(this.state.saveMatrixName);
+    this.getSavedMatrices_timeout = setTimeout(this.props.getSavedMatrices, 50);
+    this.openMatrix_timeout = setTimeout(() => {
+      this.matrix.current.setNewMatrix(
+        this.state.saveMatrixName,
+        this.props.savedMatrices[this.state.saveMatrixName]
+      );
+      this.setState({
+        saveMatrixName: this.state.saveMatrixName,
+        savedMatricesSelectIx: this.state.saveMatrixName,
+      });
+    }, 100);
   };
 
-  openMatrices = () => {
-    var matrices = window.localStorage.getItem("matrices");
-    if (matrices) {
-      try {
-        matrices = JSON.parse(matrices);
-      } catch (error) {
-        console.log(error);
-        matrices = [];
-      }
-    } else {
-      matrices = [];
-    }
+  changeSaveMatrixName = (event) => {
+    const element = document.getElementById(event.target.id);
+    if (!element) return;
+    this.setState({ saveMatrixName: element.value });
+  };
 
-    for (const matrix of matrices) {
-      console.log(matrix.dateTime);
-    }
+  changeSavedMatricesSelect = (event) => {
+    this.setState({ savedMatricesSelectIx: event.target.value });
+  };
+
+  openMatrix = (matrixName) => {
+    if (this.state.matrixGeneratingPath) return;
+    const element = document.getElementById("savedMatricesSelect");
+    if (!element) return;
+    this.matrix.current.setNewMatrix(
+      element.value,
+      this.props.savedMatrices[element.value]
+    );
+    this.setState({ saveMatrixName: element.value });
+  };
+
+  updateMatrixGeneratingPath = (value) => {
+    this.setState({ matrixGeneratingPath: value });
   };
 
   render() {
@@ -76,11 +109,16 @@ export default class PathPlanning extends React.Component {
       <div className={style.container} data-test="PathPlanning">
         <div className={style.title}>Path Planning</div>
         <PathPlanningMenu
+          matrixGeneratingPath={this.state.matrixGeneratingPath}
           activeAction={this.state.activeAction}
           activeActionUpdate={this.activeActionUpdate}
         />
         <div className={style.findPathButton}>
-          <button className="Button" onClick={this.findShortestPath}>
+          <button
+            className="Button"
+            onClick={this.findShortestPath}
+            disabled={this.state.matrixGeneratingPath}
+          >
             <FindPathIcon className={style.icon} />
           </button>
         </div>
@@ -93,6 +131,7 @@ export default class PathPlanning extends React.Component {
               type="checkbox"
               checked={this.state.useDiagonal}
               readOnly={true}
+              disabled={this.state.matrixGeneratingPath}
             />
             <span>Diagonal</span>
           </div>
@@ -110,21 +149,52 @@ export default class PathPlanning extends React.Component {
             <span>Wide Berth</span>
           </div>
         </div>
-        <div className={style.saveButton}>
-          <button className="Button" onClick={this.saveMatrix}>
-            <SaveIcon className={style.icon} />
-          </button>
-        </div>
-        <div className={style.filesButton}>
-          <button className="Button" onClick={this.openMatrices}>
-            <FilesIcon className={style.icon} />
-          </button>
+        <div className={style.saveOpenButtons}>
+          <input
+            id="saveMatrixNameInput"
+            type="text"
+            value={this.state.saveMatrixName}
+            onChange={this.changeSaveMatrixName}
+            disabled={this.state.matrixGeneratingPath}
+          />
+          <div className={style.saveButton}>
+            <button
+              className="Button"
+              onClick={this.saveMatrix}
+              disabled={this.state.matrixGeneratingPath}
+            >
+              <SaveIcon className={style.icon} />
+            </button>
+          </div>
+          <select
+            id="savedMatricesSelect"
+            onChange={this.changeSavedMatricesSelect}
+            value={this.state.savedMatricesSelectIx}
+            disabled={this.state.matrixGeneratingPath}
+          >
+            {Object.keys(this.props.savedMatrices).map((matrixName) => (
+              <option key={matrixName} value={matrixName}>
+                {matrixName}
+              </option>
+            ))}
+          </select>
+          <div className={style.filesButton}>
+            <button
+              className="Button"
+              onClick={this.openMatrix}
+              disabled={this.state.matrixGeneratingPath}
+            >
+              <FilesIcon className={style.icon} />
+            </button>
+          </div>
         </div>
         <PathPlanningMatrix
           activeAction={this.state.activeAction}
           useDiagonal={this.state.useDiagonal}
           useWideBerth={this.state.useWideBerth}
           ref={this.matrix}
+          matrixGeneratingPath={this.state.matrixGeneratingPath}
+          updateMatrixGeneratingPath={this.updateMatrixGeneratingPath}
         />
       </div>
     );

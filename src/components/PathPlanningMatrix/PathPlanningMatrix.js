@@ -1,4 +1,5 @@
 import React from "react";
+import ControllerConsole from "../ControllerConsole/ControllerConsole";
 import style from "./PathPlanningMatrix.module.css";
 
 export default class PathPlanningMatrix extends React.Component {
@@ -24,7 +25,6 @@ export default class PathPlanningMatrix extends React.Component {
     this.touchDragDebounce_timeout = null;
 
     this.state = {
-      generatingPath: false,
       mouseDragActive: false,
       mouseDragDebounce: false,
       touchDragActive: false,
@@ -39,6 +39,7 @@ export default class PathPlanningMatrix extends React.Component {
           type: null, // start, end, barrier
         })
       ),
+      matrixName: "",
     };
   }
 
@@ -74,7 +75,7 @@ export default class PathPlanningMatrix extends React.Component {
   };
 
   cellTypeUpdate = (event) => {
-    if (this.state.generatingPath) return;
+    if (this.props.matrixGeneratingPath) return;
 
     var matrix = JSON.parse(JSON.stringify(this.state.matrix));
 
@@ -139,24 +140,27 @@ export default class PathPlanningMatrix extends React.Component {
     if (
       !this.state.startCell ||
       !this.state.endCell ||
-      this.state.generatingPath
+      this.props.matrixGeneratingPath
     )
       return;
 
     this.clearShortPath();
+
     this.findShortestPath_helper_timeout = setTimeout(
       this.findShortestPath_helper,
       this.animateInterval
     );
-    this.setState({ generatingPath: true });
+
+    this.props.updateMatrixGeneratingPath(true);
   };
 
   findShortestPath_helper = () => {
     var generateLevelsObj = this.findShortestPath_generateLevels();
     var reachedEnd = generateLevelsObj["reachedEnd"];
     var levels = generateLevelsObj["levels"];
+    console.log(levels);
     var shortPath = this.findShortestPath_generateShortPath(reachedEnd, levels);
-    console.log(levels, shortPath);
+    console.log(shortPath);
     this.animateLevels(levels);
 
     if (shortPath) {
@@ -166,11 +170,13 @@ export default class PathPlanningMatrix extends React.Component {
         this.animateInterval * levels.length
       );
       this.generatingPathDone_timeout = setTimeout(() => {
-        this.setState({ generatingPath: false, shortPath });
+        this.props.updateMatrixGeneratingPath(false);
+        this.setState({ shortPath });
       }, this.animateInterval * (levels.length + shortPath.length));
     } else {
       this.generatingPathDone_timeout = setTimeout(() => {
-        this.setState({ generatingPath: false, shortPath });
+        this.props.updateMatrixGeneratingPath(false);
+        this.setState({ shortPath });
       }, this.animateInterval * levels.length);
     }
   };
@@ -185,7 +191,7 @@ export default class PathPlanningMatrix extends React.Component {
     cellsVisited.add(JSON.stringify(this.state.startCell));
     var cell;
     var ix;
-
+    console.log(this.matrixHeight, this.matrixWidth);
     while (true) {
       nextLevel = [];
       ix = levels.length - 1;
@@ -530,7 +536,7 @@ export default class PathPlanningMatrix extends React.Component {
     window.removeEventListener("touchcancel", this.endTouchDrag);
   };
 
-  saveMatrix = () => {
+  saveMatrix = (matrixName) => {
     const date = new Date();
     const dateTime = (
       date.toDateString() +
@@ -544,24 +550,41 @@ export default class PathPlanningMatrix extends React.Component {
         matrices = JSON.parse(matrices);
       } catch (error) {
         console.log(error);
-        matrices = [];
+        matrices = {};
       }
     } else {
-      matrices = [];
+      matrices = {};
     }
 
-    matrices.push({
+    matrices[matrixName] = {
       dateTime: dateTime,
+      startCell: JSON.parse(JSON.stringify(this.state.startCell)),
+      endCell: JSON.parse(JSON.stringify(this.state.endCell)),
+      shortPath: JSON.parse(JSON.stringify(this.state.shortPath)),
       matrix: JSON.parse(JSON.stringify(this.state.matrix)),
-    });
+    };
 
-    console.log("PathPlanningMatrix.saveMatrix()", dateTime);
+    console.log(matrixName, dateTime);
     window.localStorage.setItem("matrices", JSON.stringify(matrices));
+  };
+
+  setNewMatrix = (matrixName, matrixData) => {
+    this.matrixHeight = matrixData.matrix.length;
+    this.matrixWidth = matrixData.matrix[0].length;
+
+    this.setState({
+      matrix: matrixData.matrix,
+      matrixName,
+      startCell: matrixData.startCell,
+      endCell: matrixData.endCell,
+      shortPath: matrixData.shortPath,
+    });
   };
 
   render() {
     return (
       <div className={style.container}>
+        {this.state.matrixName ? this.state.matrixName : "NEW MATRIX"}
         <div className={style.tableContainer}>
           <table align="center" cellSpacing={0} className={style.table}>
             <thead></thead>

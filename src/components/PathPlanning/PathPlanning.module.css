@@ -21,14 +21,17 @@
   width: 100px;
 }
 
+.saveOpenButtons {
+  transition: opacity 0.5s;
+  margin-top: 10px;
+}
+
 .saveButton {
   display: inline-block;
-  margin-left: 30px;
 }
 
 .filesButton {
   display: inline-block;
-  margin-left: 15px;
 }
 
 .checkboxContainer {
