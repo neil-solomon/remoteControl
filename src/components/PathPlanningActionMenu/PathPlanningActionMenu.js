@@ -1,11 +1,11 @@
 import React from "react";
-import style from "./PathPlanningMenu.module.css";
+import style from "./PathPlanningActionMenu.module.css";
 import { ReactComponent as StartIcon } from "../../icons/pin.svg";
 import { ReactComponent as EndIcon } from "../../icons/flag.svg";
 import { ReactComponent as BarrierIcon } from "../../icons/brickwall.svg";
 import { ReactComponent as EraseIcon } from "../../icons/eraser.svg";
 
-export default class PathPlanningMenu extends React.Component {
+export default class PathPlanningActionMenu extends React.Component {
   constructor(props) {
     super(props);
 

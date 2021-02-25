@@ -46,3 +46,17 @@
 .cellAnimatePath {
   background-color: rgb(76, 175, 80);
 }
+
+.matrixName {
+  font-weight: bold;
+  animation: fadeIn 0.25s;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}

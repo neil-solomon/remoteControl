@@ -584,7 +584,9 @@ export default class PathPlanningMatrix extends React.Component {
   render() {
     return (
       <div className={style.container}>
-        {this.state.matrixName ? this.state.matrixName : "NEW MATRIX"}
+        <div className={style.matrixName} key={this.state.matrixName}>
+          {this.state.matrixName ? this.state.matrixName : "- NEW PATH -"}
+        </div>
         <div className={style.tableContainer}>
           <table align="center" cellSpacing={0} className={style.table}>
             <thead></thead>

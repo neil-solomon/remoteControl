@@ -21,19 +21,6 @@
   width: 100px;
 }
 
-.saveOpenButtons {
-  transition: opacity 0.5s;
-  margin-top: 10px;
-}
-
-.saveButton {
-  display: inline-block;
-}
-
-.filesButton {
-  display: inline-block;
-}
-
 .checkboxContainer {
   transition: opacity 0.25s;
   user-select: none;

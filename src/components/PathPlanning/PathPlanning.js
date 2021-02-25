@@ -1,10 +1,9 @@
 import React from "react";
 import style from "./PathPlanning.module.css";
-import PathPlanningMenu from "../PathPlanningMenu";
+import PathPlanningActionMenu from "../PathPlanningActionMenu";
+import PathPlanningFileMenu from "../PathPlanningFileMenu";
 import PathPlanningMatrix from "../PathPlanningMatrix";
 import { ReactComponent as FindPathIcon } from "../../icons/route.svg";
-import { ReactComponent as SaveIcon } from "../../icons/diskette.svg";
-import { ReactComponent as FilesIcon } from "../../icons/folder.svg";
 
 export default class PathPlanning extends React.Component {
   constructor(props) {
@@ -89,7 +88,7 @@ export default class PathPlanning extends React.Component {
     this.setState({ savedMatricesSelectIx: event.target.value });
   };
 
-  openMatrix = (matrixName) => {
+  openMatrix = () => {
     if (this.state.matrixGeneratingPath) return;
     const element = document.getElementById("savedMatricesSelect");
     if (!element) return;
@@ -107,8 +106,8 @@ export default class PathPlanning extends React.Component {
   render() {
     return (
       <div className={style.container} data-test="PathPlanning">
-        <div className={style.title}>Path Planning</div>
-        <PathPlanningMenu
+        {/* <div className={style.title}>Path Planning</div> */}
+        <PathPlanningActionMenu
           matrixGeneratingPath={this.state.matrixGeneratingPath}
           activeAction={this.state.activeAction}
           activeActionUpdate={this.activeActionUpdate}
@@ -149,45 +148,16 @@ export default class PathPlanning extends React.Component {
             <span>Wide Berth</span>
           </div>
         </div>
-        <div className={style.saveOpenButtons}>
-          <input
-            id="saveMatrixNameInput"
-            type="text"
-            value={this.state.saveMatrixName}
-            onChange={this.changeSaveMatrixName}
-            disabled={this.state.matrixGeneratingPath}
-          />
-          <div className={style.saveButton}>
-            <button
-              className="Button"
-              onClick={this.saveMatrix}
-              disabled={this.state.matrixGeneratingPath}
-            >
-              <SaveIcon className={style.icon} />
-            </button>
-          </div>
-          <select
-            id="savedMatricesSelect"
-            onChange={this.changeSavedMatricesSelect}
-            value={this.state.savedMatricesSelectIx}
-            disabled={this.state.matrixGeneratingPath}
-          >
-            {Object.keys(this.props.savedMatrices).map((matrixName) => (
-              <option key={matrixName} value={matrixName}>
-                {matrixName}
-              </option>
-            ))}
-          </select>
-          <div className={style.filesButton}>
-            <button
-              className="Button"
-              onClick={this.openMatrix}
-              disabled={this.state.matrixGeneratingPath}
-            >
-              <FilesIcon className={style.icon} />
-            </button>
-          </div>
-        </div>
+        <PathPlanningFileMenu
+          saveMatrixName={this.state.saveMatrixName}
+          changeSaveMatrixName={this.changeSaveMatrixName}
+          changeSavedMatricesSelect={this.changeSavedMatricesSelect}
+          matrixGeneratingPath={this.state.matrixGeneratingPath}
+          savedMatricesSelectIx={this.state.savedMatricesSelectIx}
+          savedMatrices={this.props.savedMatrices}
+          saveMatrix={this.saveMatrix}
+          openMatrix={this.openMatrix}
+        />
         <PathPlanningMatrix
           activeAction={this.state.activeAction}
           useDiagonal={this.state.useDiagonal}
