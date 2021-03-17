@@ -75,3 +75,32 @@
     fill: rgb(69, 90, 100, 0.25);
   }
 }
+
+.light {
+  width: 35px;
+  height: 35px;
+  display: inline-block;
+  vertical-align: top;
+  margin-top: 0px;
+  margin-left: 0px;
+}
+
+.lightOff {
+  fill: rgb(69, 90, 100, 0.5);
+}
+
+.lightOn {
+  animation: lightOnGlow 1s infinite;
+}
+
+@keyframes lightOnGlow {
+  0% {
+    fill: rgb(69, 90, 100, 0.5);
+  }
+  50% {
+    fill: rgb(255, 0, 0);
+  }
+  100% {
+    fill: rgb(69, 90, 100, 0.5);
+  }
+}

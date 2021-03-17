@@ -11,6 +11,13 @@ export default class ControllerConsole extends React.Component {
   render() {
     return (
       <div className={style.container}>
+        <button
+          className="Button"
+          style={{ fontSize: ".75em", marginBottom: 10 }}
+          onClick={this.props.uvLightToggle}
+        >
+          {this.props.uvLight ? "Turn UV Off" : "Turn UV On"}
+        </button>
         <div>
           X-Vel:
           <div className={style.value} data-test="Console_xvel">
@@ -59,6 +66,8 @@ export default class ControllerConsole extends React.Component {
           <button
             className="Button"
             style={{ fontSize: ".75em", marginTop: 10 }}
+            onMouseDown={this.props.tiltModeStart}
+            onMouseUp={this.props.tiltModeEnd}
             onTouchStart={this.props.tiltModeStart}
             onTouchEnd={this.props.tiltModeEnd}
             onTouchCancel={this.props.tiltModeEnd}

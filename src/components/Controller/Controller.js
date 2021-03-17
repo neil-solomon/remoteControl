@@ -31,8 +31,8 @@ export default class Controller extends React.Component {
     this.sensor = null;
     try {
       this.sensor = new window.AbsoluteOrientationSensor(sensorOptions);
-    } catch {
-      console.log("AbsoluteOrientationSensor is not available");
+    } catch (error) {
+      console.log("AbsoluteOrientationSensor", error);
     }
 
     this.state = {
@@ -399,6 +399,8 @@ export default class Controller extends React.Component {
               sensor={this.sensor}
               tiltModeStart={this.tiltModeStart}
               tiltModeEnd={this.tiltModeEnd}
+              uvLightToggle={this.props.uvLightToggle}
+              uvLight={this.props.uvLight}
             />
           </div>
           <div className={style.joystickContainer}>

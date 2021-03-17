@@ -91,7 +91,8 @@ export default class PathPlanning extends React.Component {
   openMatrix = () => {
     if (this.state.matrixGeneratingPath) return;
     const element = document.getElementById("savedMatricesSelect");
-    if (!element) return;
+    if (!element || typeof element.value !== "number" || element.value < 0)
+      return;
     this.matrix.current.setNewMatrix(
       element.value,
       this.props.savedMatrices[element.value]

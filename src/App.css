@@ -1,4 +1,5 @@
 .Button {
+  outline: 3px solid rgb(76, 175, 80, 0);
   border-radius: 10px;
   color: rgb(69, 90, 100);
   border: 1px solid rgb(69, 90, 100);
@@ -11,7 +12,7 @@
   box-shadow: 0px 3px 5px rgb(69, 90, 100, 0.5),
     inset 0px 3px 5px rgb(69, 90, 100, 0);
   transition: color 0.25s, border 0.25s, box-shadow 0.25s,
-    background-color 0.25s;
+    background-color 0.25s, outline 0.25s;
 }
 .Button:hover:enabled {
   color: rgb(76, 175, 80);
@@ -30,4 +31,7 @@
   box-shadow: 0px 5px 5px rgb(69, 90, 100, 0),
     inset 0px 3px 5px rgb(69, 90, 100, 0);
   cursor: default;
+}
+.Button:focus {
+  outline: 3px solid rgb(76, 175, 80, 0.75);
 }

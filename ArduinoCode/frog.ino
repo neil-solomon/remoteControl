@@ -19,11 +19,14 @@ CytronMD motor2(PWM_DIR, 3, 23);
 CytronMD motor3(PWM_DIR, 4, 24);
 CytronMD motor4(PWM_DIR, 5, 25);
 CytronMD motors [] = {motor1, motor2, motor3, motor4};
+
 unsigned char bluetoothReceiveBuffer [128] = {NULL};
 int bluetoothReceiveBuffer_length = 0;
 unsigned long bluetoothConnectionTimer = 0;
 bool passwordReceived = false;
 int batteryLevel = 0;
+bool uvLight = false; // false is off, true is on
+int uvLightPin = 6;
 
 void setup() {
   // this function is called once when the Arduino boots up
@@ -55,6 +58,9 @@ void loop() {
     else if (bluetoothReceiveBuffer[0] == 37 && bluetoothReceiveBuffer[1] == 37 && bluetoothReceiveBuffer[2] == 37) {
       bluetooth_disconnect();
     }
+    else if (bluetoothReceiveBuffer[0] == 39 && bluetoothReceiveBuffer[1] == bluetoothReceiveBuffer[2] && bluetoothReceiveBuffer[2] == bluetoothReceiveBuffer[3]) {
+      setUvLight(bluetoothReceiveBuffer[1]);  
+    }
     else if (bluetoothReceiveBuffer[2] == 43) {
       handleBluetoothNotification();  
     }
@@ -64,9 +70,13 @@ void loop() {
     if (millis() - bluetoothConnectionTimer > 10000 && !passwordReceived) {
       Serial.println("password timeout ");
 //      Serial.println(bluetoothConnectionTimer);
-      bluetooth_disconnect();  
+      bluetooth_disconnect(); 
     }
     else if (millis() % 1000 == 0) {
+      sendUvLight();
+      delay(1);
+    }
+    else if (millis() % 10000 == 0) {
       readBatteryLevel();
       sendBatteryLevel();
       delay(1);
@@ -176,6 +186,7 @@ void handleBluetoothNotification() {
       passwordReceived = false;
       bluetoothConnectionTimer = 0;
       sendMotorVelocities(0, 0, 0);
+      setUvLight(1);
     }
   }
 }
@@ -185,6 +196,7 @@ void bluetooth_disconnect() {
   passwordReceived = false;
   bluetoothConnectionTimer = 0;
   sendMotorVelocities(0, 0, 0);
+  setUvLight(1);
   Serial1.write("AT");
   delay(100);
   while (Serial1.available()) {
@@ -207,16 +219,17 @@ void checkPassword() {
   }  
 }
 
-
 void sendMotorVelocities(int xVel, int yVel, int rotVel) {
   int motorVelocity = 0;
+  Serial.println("motors:");
   for (int i = 0; i < 4; i++) {
     motorVelocity = calculateMotorVelocity(i, xVel, yVel, rotVel);
     motors[i].setSpeed(motorVelocity);
-//    Serial.print("motor ");
-//    Serial.print(i+1);
-//    Serial.print(" : ");
-//    Serial.println(motorVelocity);
+    Serial.print(motorVelocity);
+    Serial.print("   ");
+    if (i == 1 || i == 3) {
+      Serial.println();
+    }
   }
 }
 
@@ -268,8 +281,31 @@ dischargeCurve[0] is the voltage corresponding to the battery being 0% charged, 
 }
 
 void sendBatteryLevel() {
-  Serial.print("sendBatteryLevel: ");
-  Serial.println(batteryLevel);
+  //Serial.print("sendBatteryLevel: ");
+  //Serial.println(batteryLevel);
   char data [] = {38, (char)batteryLevel};
   Serial1.write(data);  
+}
+
+void sendUvLight() {
+  //Serial.print("sendUvLight ");
+  //Serial.println(uvLight);
+  char data [] = {39, 1};
+  if (uvLight) {
+    data[1] = 2;  
+  }
+  Serial1.write(data);
+}
+
+void setUvLight(unsigned char value) {
+  if (value == 1) {
+    Serial.println("setUvLight OFF");
+    uvLight = false;
+    analogWrite(uvLightPin, 0);
+  }
+  else {
+    Serial.println("setUvLight ON");
+    uvLight = true;
+    analogWrite(uvLightPin, 255);
+  }
 }

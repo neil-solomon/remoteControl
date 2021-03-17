@@ -1,0 +1,44 @@
+Control UV lamps via a switch. Switch should be controlled by Arduino (5V) and pass power to the UV lamps (12V).
+https://www.circuitbasics.com/setting-up-a-5v-relay-on-the-arduino/#:~:text=Since%20the%20Arduino%20operates%20at,Arduino%20to%20control%20the%20relay.&text=Almost%20any%20sensor%20can%20be,to%20be%20from%20a%20sensor.
+https://www.amazon.com/Tolako-Arduino-Indicator-Channel-Official/dp/B00VRUAHLE
+
+Include rotation in tilt mode.
+
+Hide use tilt button when tilt in unavailable.
+
+Catch gatt server connection error. It says that bluetooth connects, but no data can be sent, so the password
+timeout eventually disconnects it.
+
+Add delete button to path planning menu.
+Debug path planning save/load.
+Make Controller playback path plannings.
+Debug diagonal-wide-berth path planning.
+See if localstorage can be used to manage path-plannings during offline use.
+
+Continue to test controlsDebounceTime and controlsToZeroTime. The best on my machine is 5, 100; but with 4x cpu throttle
+10, 50 is probably the best.
+
+PathPlanningMatrix touchDrag starts by activating the cell that the touch is over, but the cell 
+which is activated gets progresssively further ahead of the touch as the touch continues.
+
+Figure out how to run development on mobile.
+The issue is that bluetooth and sensor won't work on http, only https.
+So I need the react dev server to serve over https, which is easy with 'set HTTPS=true&&npm start'. But the cert is self-signed
+so chrome has an issue with it and it wont work on mobile.
+Serving https on localhost works, but this makes it not serve at local LAN or WAN ip; serving https on the WAN ip
+works on desktop but it wont open on mobile.
+
+setup() can be called from loop()
+use a return in loop() to reset loop()
+
+commands starts with number
+	passowrd 35
+	motors 36
+	disconnect 37
+	battery 38
+	uvLight 39
+
+
+
+
+

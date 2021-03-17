@@ -19,6 +19,7 @@ export default class Main extends React.Component {
       bluetoothCharacteristic: null,
       batteryLevel: null,
       savedMatrices: [],
+      uvLight: false,
     };
   }
 
@@ -129,8 +130,16 @@ export default class Main extends React.Component {
 
   updateCharacteristicValue = (eventValue, data) => {
     console.log("characteristicValueChanged", eventValue, data);
-    if (data.length > 1 && data[0] === 38) {
-      this.setState({ batteryLevel: data[1] });
+    if (data.length > 1) {
+      if (data[0] === 38) {
+        this.setState({ batteryLevel: data[1] });
+      } else if (data[0] === 39) {
+        if (data[1] === 1) {
+          this.setState({ uvLight: false });
+        } else if (data[1] === 2) {
+          this.setState({ uvLight: true });
+        }
+      }
     }
   };
 
@@ -149,12 +158,27 @@ export default class Main extends React.Component {
     }
   };
 
+  uvLightToggle = () => {
+    var data;
+
+    if (this.state.uvLight) {
+      console.log("UV off");
+      data = [39, 1, 1, 1]; // tell controller to turn off UV
+      this.sendToBluetooth(data);
+    } else {
+      console.log("UV on");
+      data = [39, 2, 2, 2]; // tell controller to turn on UV
+      this.sendToBluetooth(data);
+    }
+  };
+
   render() {
     return (
       <div className={style.container}>
         <Menu
           changeMenu={this.changeMenu}
           bluetoothCharacteristic={this.state.bluetoothCharacteristic}
+          uvLight={this.state.uvLight}
         />
         <div
           className={
@@ -169,6 +193,8 @@ export default class Main extends React.Component {
               bluetoothCharacteristic={this.state.bluetoothCharacteristic}
               bluetoothDevice={this.state.bluetoothDevice}
               batteryLevel={this.state.batteryLevel}
+              uvLightToggle={this.uvLightToggle}
+              uvLight={this.state.uvLight}
             />
           )}
           {this.state.pageView[2] && (
