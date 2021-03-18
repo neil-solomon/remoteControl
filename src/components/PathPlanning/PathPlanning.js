@@ -18,7 +18,7 @@ export default class PathPlanning extends React.Component {
       useDiagonal: false,
       useWideBerth: false,
       saveMatrixName: "",
-      savedMatricesSelectIx: 0,
+      savedMatricesSelectValue: "",
       matrixGeneratingPath: false,
     };
   }
@@ -57,6 +57,30 @@ export default class PathPlanning extends React.Component {
     this.setState({ useWideBerth: !this.state.useWideBerth });
   };
 
+  deleteMatrix = () => {
+    var matrixSelectElement = document.getElementById("savedMatricesSelect");
+    if (!matrixSelectElement || matrixSelectElement.value === "") return;
+    var matrixName = matrixSelectElement.value;
+
+    var matrices = window.localStorage.getItem("matrices");
+    if (matrices) {
+      try {
+        matrices = JSON.parse(matrices);
+      } catch (error) {
+        console.log(error);
+        matrices = {};
+      }
+    } else {
+      matrices = {};
+    }
+
+    delete matrices[matrixName];
+    window.localStorage.setItem("matrices", JSON.stringify(matrices));
+    this.setState({ saveMatrixName: "", savedMatricesSelectValue: "" });
+    this.matrix.current.setNewMatrix("", null);
+    this.getSavedMatrices_timeout = setTimeout(this.props.getSavedMatrices, 50);
+  };
+
   saveMatrix = () => {
     if (
       this.state.matrixGeneratingPath ||
@@ -71,9 +95,9 @@ export default class PathPlanning extends React.Component {
         this.state.saveMatrixName,
         this.props.savedMatrices[this.state.saveMatrixName]
       );
+      console.log(this.state.saveMatrixName);
       this.setState({
-        saveMatrixName: this.state.saveMatrixName,
-        savedMatricesSelectIx: this.state.saveMatrixName,
+        savedMatricesSelectValue: this.state.saveMatrixName,
       });
     }, 100);
   };
@@ -85,14 +109,13 @@ export default class PathPlanning extends React.Component {
   };
 
   changeSavedMatricesSelect = (event) => {
-    this.setState({ savedMatricesSelectIx: event.target.value });
+    this.setState({ savedMatricesSelectValue: event.target.value });
   };
 
   openMatrix = () => {
     if (this.state.matrixGeneratingPath) return;
     const element = document.getElementById("savedMatricesSelect");
-    if (!element || typeof element.value !== "number" || element.value < 0)
-      return;
+    if (!element || element.value === "") return;
     this.matrix.current.setNewMatrix(
       element.value,
       this.props.savedMatrices[element.value]
@@ -122,7 +145,7 @@ export default class PathPlanning extends React.Component {
             <FindPathIcon className={style.icon} />
           </button>
         </div>
-        <div className={style.findPathOptions}>
+        {/* <div className={style.findPathOptions}>
           <div
             className={style.checkboxContainer}
             onClick={this.toggle_useDiagonal}
@@ -148,16 +171,17 @@ export default class PathPlanning extends React.Component {
             />
             <span>Wide Berth</span>
           </div>
-        </div>
+        </div> */}
         <PathPlanningFileMenu
           saveMatrixName={this.state.saveMatrixName}
           changeSaveMatrixName={this.changeSaveMatrixName}
           changeSavedMatricesSelect={this.changeSavedMatricesSelect}
           matrixGeneratingPath={this.state.matrixGeneratingPath}
-          savedMatricesSelectIx={this.state.savedMatricesSelectIx}
+          savedMatricesSelectValue={this.state.savedMatricesSelectValue}
           savedMatrices={this.props.savedMatrices}
           saveMatrix={this.saveMatrix}
           openMatrix={this.openMatrix}
+          deleteMatrix={this.deleteMatrix}
         />
         <PathPlanningMatrix
           activeAction={this.state.activeAction}

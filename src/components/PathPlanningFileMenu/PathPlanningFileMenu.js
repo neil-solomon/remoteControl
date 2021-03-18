@@ -2,6 +2,7 @@ import React from "react";
 import style from "./PathPlanningFileMenu.module.css";
 import { ReactComponent as SaveIcon } from "../../icons/diskette.svg";
 import { ReactComponent as FilesIcon } from "../../icons/folder.svg";
+import { ReactComponent as DeleteIcon } from "../../icons/garbage.svg";
 
 export default class PathPlanningFileMenu extends React.Component {
   constructor(props) {
@@ -35,8 +36,9 @@ export default class PathPlanningFileMenu extends React.Component {
           <select
             id="savedMatricesSelect"
             onChange={this.props.changeSavedMatricesSelect}
-            value={this.props.savedMatricesSelectIx}
+            value={this.props.savedMatricesSelectValue}
             disabled={this.props.matrixGeneratingPath}
+            style={{ width: 100 }}
           >
             {Object.keys(this.props.savedMatrices).map((matrixName) => (
               <option key={matrixName} value={matrixName}>
@@ -52,6 +54,14 @@ export default class PathPlanningFileMenu extends React.Component {
             disabled={this.props.matrixGeneratingPath}
           >
             <FilesIcon className={style.icon} />
+          </button>
+          <button
+            className="Button"
+            onClick={this.props.deleteMatrix}
+            disabled={this.props.matrixGeneratingPath}
+            style={{ marginLeft: 5 }}
+          >
+            <DeleteIcon className={style.icon} />
           </button>
         </div>
       </div>

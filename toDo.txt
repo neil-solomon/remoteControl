@@ -9,8 +9,6 @@ Hide use tilt button when tilt in unavailable.
 Catch gatt server connection error. It says that bluetooth connects, but no data can be sent, so the password
 timeout eventually disconnects it. Also uncaught DOM exceptions contribute to this problem.
 
-Add delete button to path planning menu.
-Debug path planning save/load.
 Make Controller playback path plannings.
 Debug diagonal-wide-berth path planning.
 See if localstorage can be used to manage path-plannings during offline use.

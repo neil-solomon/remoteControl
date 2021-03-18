@@ -569,8 +569,17 @@ export default class PathPlanningMatrix extends React.Component {
   };
 
   setNewMatrix = (matrixName, matrixData) => {
-    this.matrixHeight = matrixData.matrix.length;
-    this.matrixWidth = matrixData.matrix[0].length;
+    if (!matrixData) {
+      matrixData = {};
+      matrixData.matrix = new Array(this.matrixHeight).fill(
+        new Array(this.matrixWidth).fill({
+          type: null, // start, end, barrier
+        })
+      );
+    } else {
+      this.matrixHeight = matrixData.matrix.length;
+      this.matrixWidth = matrixData.matrix[0].length;
+    }
 
     this.setState({
       matrix: matrixData.matrix,

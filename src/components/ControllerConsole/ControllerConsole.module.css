@@ -73,6 +73,7 @@
 
 .doorFrame {
   position: relative;
+  perspective: 200px;
   height: 52px;
   width: 30px;
   border: 5px solid rgb(69, 90, 100);
@@ -138,6 +139,7 @@
   border-radius: 5px;
   background-color: rgb(76, 175, 80);
   transition: all 1s;
+  /* animation: doorMotion 4s infinite; */
 }
 
 .doorOpen {
@@ -147,7 +149,7 @@
 
 .doorClosed {
   transform: rotate3d(0, 1, 0, -150deg);
-  left: -32px;
+  left: -33px;
 }
 
 @keyframes doorMotion {
@@ -157,7 +159,7 @@
   }
   50% {
     transform: rotate3d(0, 1, 0, -150deg);
-    left: -32px;
+    left: -33px;
   }
   100% {
     transform: rotate3d(0, 1, 0, 0deg);
