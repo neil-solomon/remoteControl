@@ -34,6 +34,11 @@ export default class Controller extends React.Component {
     } catch (error) {
       console.log("AbsoluteOrientationSensor", error);
     }
+    if (this.sensor) {
+      this.sensor.addEventListener("error", (error) => {
+        console.log(error);
+      });
+    }
 
     this.state = {
       joystickY: (this.getControllerSize() * (1 - this.stickToBaseRatio)) / 2,
@@ -47,12 +52,6 @@ export default class Controller extends React.Component {
 
   componentDidMount = () => {
     window.addEventListener("resize", this.updateSize);
-
-    if (this.sensor) {
-      this.sensor.addEventListener("error", (error) => {
-        console.log(error);
-      });
-    }
   };
 
   componentWillUnmount = () => {
@@ -210,6 +209,7 @@ export default class Controller extends React.Component {
 
   setNewControllerVals = (roll, pitch, yaw) => {
     const threshold = 0.25;
+    console.log("yaw", yaw);
 
     var new_joystickY;
     if (Math.abs(roll) < threshold) {
@@ -401,6 +401,7 @@ export default class Controller extends React.Component {
               tiltModeEnd={this.tiltModeEnd}
               uvLightToggle={this.props.uvLightToggle}
               uvLight={this.props.uvLight}
+              doorClosed={this.props.doorClosed}
             />
           </div>
           <div className={style.joystickContainer}>

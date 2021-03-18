@@ -20,6 +20,7 @@ export default class Main extends React.Component {
       batteryLevel: null,
       savedMatrices: [],
       uvLight: false,
+      doorClosed: false,
     };
   }
 
@@ -80,6 +81,9 @@ export default class Main extends React.Component {
           this.setState({
             bluetoothDevice: null,
             bluetoothCharacteristic: null,
+            batteryLevel: null,
+            uvLight: false,
+            doorClosed: false,
           });
         });
         this.setState({ bluetoothDevice });
@@ -139,6 +143,12 @@ export default class Main extends React.Component {
         } else if (data[1] === 2) {
           this.setState({ uvLight: true });
         }
+      } else if (data[0] === 40) {
+        if (data[1] === 1) {
+          this.setState({ doorClosed: true });
+        } else if (data[1] === 2) {
+          this.setState({ doorClosed: false });
+        }
       }
     }
   };
@@ -195,6 +205,7 @@ export default class Main extends React.Component {
               batteryLevel={this.state.batteryLevel}
               uvLightToggle={this.uvLightToggle}
               uvLight={this.state.uvLight}
+              doorClosed={this.state.doorClosed}
             />
           )}
           {this.state.pageView[2] && (

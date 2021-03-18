@@ -11,10 +11,28 @@ export default class ControllerConsole extends React.Component {
   render() {
     return (
       <div className={style.container}>
+        <div className={style.doorContainer}>
+          <div className={style.doorFrame}>
+            <div
+              className={
+                style.door +
+                " " +
+                (this.props.doorClosed ? style.doorClosed : style.doorOpen)
+              }
+            >
+              <div className={style.doorWindow1} />
+              <div className={style.doorWindow2} />
+              <div className={style.doorWindow3} />
+              <div className={style.doorWindow4} />
+              <div className={style.doorKnob} />
+            </div>
+          </div>
+        </div>
         <button
           className="Button"
-          style={{ fontSize: ".75em", marginBottom: 10 }}
+          style={{ fontSize: ".75em", marginTop: 20 }}
           onClick={this.props.uvLightToggle}
+          disabled={this.props.doorClosed}
         >
           {this.props.uvLight ? "Turn UV Off" : "Turn UV On"}
         </button>

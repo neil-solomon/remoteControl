@@ -24,17 +24,23 @@ unsigned char bluetoothReceiveBuffer [128] = {NULL};
 int bluetoothReceiveBuffer_length = 0;
 unsigned long bluetoothConnectionTimer = 0;
 bool passwordReceived = false;
-int batteryLevel = 0;
 bool uvLight = false; // false is off, true is on
-int uvLightPin = 6;
+int uvLightPin = 26;
+int doorOutPin = 27;
+int doorInPin = A0;
+int batteryInPin = A1;
+unsigned long millisNow; // use to capture the time at the beginning of each main loop
 
 void setup() {
-  // this function is called once when the Arduino boots up
+  /* this function is called once when the Arduino boots up */
   Serial.begin(serialRate);
   delay(100);
   
   Serial.println("setup...");
+  
   bluetooth_setup();
+  uv_setup();
+  door_setup();
 //  motors_setup();
 //  battery_setup();
   Serial.println("setup done");
@@ -43,8 +49,7 @@ void setup() {
 }
 
 void loop() {
-  // this function is called repeatedly while the Arduino is running  
-  
+  /* this function is called repeatedly while the Arduino is running */  
   bluetooth_receive();
   bluetooth_print();
 
@@ -65,23 +70,46 @@ void loop() {
       handleBluetoothNotification();  
     }
   } 
-
+  
+  millisNow = millis();
+  
   if (bluetoothConnectionTimer != 0) {
-    if (millis() - bluetoothConnectionTimer > 10000 && !passwordReceived) {
-      Serial.println("password timeout ");
-//      Serial.println(bluetoothConnectionTimer);
-      bluetooth_disconnect(); 
-    }
-    else if (millis() % 1000 == 0) {
-      sendUvLight();
-      delay(1);
-    }
-    else if (millis() % 10000 == 0) {
-      readBatteryLevel();
-      sendBatteryLevel();
-      delay(1);
+    if (!passwordReceived) {
+      if (millisNow - bluetoothConnectionTimer > 10000) {
+        Serial.print("password timeout ");
+        Serial.print(bluetoothConnectionTimer);
+        Serial.println(millisNow);
+        bluetooth_disconnect(); 
+      }
+    } 
+    else {
+      if (millisNow % 10000 == 0) {
+        sendBatteryLevel();
+        delay(1);
+      }
+      else if (millisNow % 2000 == 0) {
+        sendDoorStatus();
+        delay(1);
+      }
+      else if (millisNow % 1000 == 0) {
+        sendUvLight();
+        delay(1);
+      }
     }
   } 
+}
+
+void door_setup() {
+  Serial.println("  door_setup...");
+  pinMode(doorOutPin, OUTPUT);
+  pinMode(doorInPin, INPUT);
+  digitalWrite(doorOutPin, HIGH);
+}
+
+void uv_setup() {
+  Serial.println("  uv_setup...");
+  pinMode(uvLightPin, OUTPUT);
+  setUvLight(1);  
 }
 
 void motors_setup() {
@@ -89,7 +117,11 @@ void motors_setup() {
   This tests to ensure the motors are set up properly. Each motor is run forward then backwards.
 */
   Serial.println("  motors_setup...");
-
+  pinMode(2, OUTPUT);
+  pinMode(3, OUTPUT);
+  pinMode(4, OUTPUT);
+  pinMode(5, OUTPUT);
+  
   for (int i = 0; i < 4; i++) {
     motors[i].setSpeed(0);  
   }
@@ -121,8 +153,9 @@ void motors_setup() {
 }
 
 void battery_setup() {
+  /* I believe all we need to do is set the pin that the battery is connected to.*/
   Serial.println("  battery_setup...");
-  // I believe all we need to do is set the pin that the battery is connected to.
+  pinMode(batteryInPin, INPUT);
 }
 
 void bluetooth_setup() { 
@@ -176,13 +209,13 @@ void bluetooth_print() {
 void handleBluetoothNotification() {
   if (bluetoothReceiveBuffer_length == 7) {
     if (bluetoothReceiveBuffer[3] == 67 && bluetoothReceiveBuffer[4] == 79 && bluetoothReceiveBuffer[5] == 78 && bluetoothReceiveBuffer[6] == 78) {
-      // bluetooth connected
+      /* bluetooth connected */
       bluetoothConnectionTimer = millis();
       Serial.println("bluetooth connection ");
 //      Serial.println(bluetoothConnectionTimer);
     }
     else if (bluetoothReceiveBuffer[3] == 76 && bluetoothReceiveBuffer[4] == 79 && bluetoothReceiveBuffer[5] == 83 && bluetoothReceiveBuffer[6] == 84) {
-      // bluetooth disconnected
+      /* bluetooth disconnected */
       passwordReceived = false;
       bluetoothConnectionTimer = 0;
       sendMotorVelocities(0, 0, 0);
@@ -234,10 +267,10 @@ void sendMotorVelocities(int xVel, int yVel, int rotVel) {
 }
 
 double calculateMotorVelocity(int motorNumber, int xVel, int yVel, int rotVel) {
+  /* use matrix calculations to find velocity for each motor */
   double motorVelocity = 0;
 
   switch(motorNumber) {
-  // use matrix calculations to find velocity for each motor
     case 0:
       motorVelocity = (1/wheelRadius) * (yVel + lambda * xVel - beta * rotVel);
       break;
@@ -258,7 +291,7 @@ double calculateMotorVelocity(int motorNumber, int xVel, int yVel, int rotVel) {
   return normalizedMotorVelocity;
 }
 
-void readBatteryLevel() {
+void sendBatteryLevel() {
 /*
 We can have a wire running from the battery to one of the Arduino pins.
 We will need to place a voltage divider in this circuit to ensure that the battery voltage being read by the Arduino is within the range the Arduino can handle.
@@ -269,7 +302,8 @@ dischargeCurve[0] is the voltage corresponding to the battery being 0% charged, 
 */
 
   int dischargeCurve[] = {3, 3.1, 3.2, 3.3, 3.4, 3.5, 3.6, 3.7, 3.8, 3.9};
-  int batteryVoltage = analogRead(0);
+  int batteryVoltage = analogRead(batteryInPin);
+  int batteryLevel;
   
   int i = 0;
   while (i < 10 && batteryVoltage < dischargeCurve[i]) {
@@ -278,18 +312,14 @@ dischargeCurve[0] is the voltage corresponding to the battery being 0% charged, 
 
 //  batteryLevel = i; 
   batteryLevel = random(11);
-}
 
-void sendBatteryLevel() {
-  //Serial.print("sendBatteryLevel: ");
-  //Serial.println(batteryLevel);
   char data [] = {38, (char)batteryLevel};
   Serial1.write(data);  
 }
 
 void sendUvLight() {
-  //Serial.print("sendUvLight ");
-  //Serial.println(uvLight);
+//  Serial.print("sendUvLight ");
+//  Serial.println(uvLight);
   char data [] = {39, 1};
   if (uvLight) {
     data[1] = 2;  
@@ -301,11 +331,22 @@ void setUvLight(unsigned char value) {
   if (value == 1) {
     Serial.println("setUvLight OFF");
     uvLight = false;
-    analogWrite(uvLightPin, 0);
+    digitalWrite(uvLightPin, LOW);
   }
   else {
     Serial.println("setUvLight ON");
     uvLight = true;
-    analogWrite(uvLightPin, 255);
+    digitalWrite(uvLightPin, HIGH);
   }
+}
+
+void sendDoorStatus() {
+  int reading = analogRead(doorInPin);
+  char data [] = {40, 1};
+  if (reading > 1000) {
+    data[1] = 2;
+  }
+  Serial1.write(data);
+//  Serial.print("Door Status: ");
+//  Serial.println(reading);  
 }
