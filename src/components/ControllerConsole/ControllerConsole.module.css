@@ -1,6 +1,9 @@
 .container {
   text-align: center;
-  padding-top: 5vh;
+  padding-bottom: 30px;
+}
+
+.valueContainer {
   font-size: 1.5em;
 }
 
@@ -15,6 +18,7 @@
   height: 35px;
   width: 50px;
   position: relative;
+  margin-left: 65px;
 }
 
 .batteryOuter {

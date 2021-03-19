@@ -6,7 +6,7 @@ See if localstorage can be used to manage path-plannings during offline use.
 
 Make Controller playback path plannings.
 
-Include rotation in tilt mode.
+Debug/test rotation in tilt mode.
 
 Catch gatt server connection error. It says that bluetooth connects, but no data can be sent, so the password
 timeout eventually disconnects it.
@@ -31,18 +31,10 @@ works on desktop but it wont open on mobile.
 setup() can be called from loop()
 use a return in loop() to reset loop()
 
-commands starts with number
+commands to/from arduino starts with number
 	passowrd 35
 	motors 36
 	disconnect 37
 	battery 38
 	uvLight 39
 	door 40
-
-yaw
-	range of yaw is [-pi, pi]
-	The yaw seems to react slowly to phone rotation, it takes about 1 sec to settle on the new value
-
-
-
-

@@ -30,35 +30,32 @@ export default class ControllerConsole extends React.Component {
         </div>
         <button
           className="Button"
-          style={{ fontSize: ".75em", marginTop: 20 }}
+          style={{ marginTop: 15 }}
           onClick={this.props.uvLightToggle}
           disabled={this.props.doorClosed}
         >
           {this.props.uvLight ? "Turn UV Off" : "Turn UV On"}
         </button>
-        <div>
+        <div className={style.valueContainer}>
           X-Vel:
           <div className={style.value} data-test="Console_xvel">
             {this.props.xVel}
           </div>
         </div>
-        <div>
+        <div className={style.valueContainer}>
           Y-Vel:
           <div className={style.value} data-test="Console_yvel">
             {this.props.yVel}
           </div>
         </div>
-        <div>
+        <div className={style.valueContainer}>
           Rot-Vel:
           <div className={style.value} data-test="Console_rotvel">
             {this.props.rotVel}
           </div>
         </div>
-        <div
-          className={style.batteryContainer}
-          style={{ marginLeft: this.props.sensor ? 60 : 30 }}
-        >
-          <div className={style.batteryOuter}></div>
+        <div className={style.batteryContainer}>
+          <div className={style.batteryOuter} />
           <div
             className={style.batteryInner}
             style={{
@@ -83,7 +80,7 @@ export default class ControllerConsole extends React.Component {
         {this.props.sensor && (
           <button
             className="Button"
-            style={{ fontSize: ".75em", marginTop: 10 }}
+            style={{ marginTop: 5 }}
             onMouseDown={this.props.tiltModeStart}
             onMouseUp={this.props.tiltModeEnd}
             onTouchStart={this.props.tiltModeStart}

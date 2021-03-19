@@ -44,7 +44,7 @@ export default class Controller extends React.Component {
       joystickY: (this.getControllerSize() * (1 - this.stickToBaseRatio)) / 2,
       joystickX: (this.getControllerSize() * (1 - this.stickToBaseRatio)) / 2,
       sliderPosition: (this.getControllerSize() - 25) / 2,
-      yawOffset: 0,
+      yawOffset: null,
       size: this.getControllerSize(),
       password: "",
       tiltMode: false,
@@ -280,13 +280,13 @@ export default class Controller extends React.Component {
       this.setState({ yawOffset: yaw });
     } else {
       var rotationChange = yaw - this.state.yawOffset;
-      if (Math.abs(rotationChange) < threshold) {
+      if (Math.abs(rotationChange) < threshold / 2) {
         rotationChange = 0;
       } else {
         if (rotationChange < 0) {
-          rotationChange += threshold;
+          rotationChange += threshold / 2;
         } else {
-          rotationChange -= threshold;
+          rotationChange -= threshold / 2;
         }
       }
       if (rotationChange > Math.PI) {
@@ -409,14 +409,6 @@ export default class Controller extends React.Component {
           updatePassword={this.updatePassword}
           password={this.state.password}
         />
-        <div>
-          <input
-            type="number"
-            onChange={(event) => {
-              this.setNewControllerVals(0, 0, event.target.value);
-            }}
-          />
-        </div>
         <div
           className={style.controlsContainer}
           style={{ height: this.state.size + 100 }}
