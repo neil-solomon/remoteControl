@@ -44,6 +44,7 @@ export default class Controller extends React.Component {
       joystickY: (this.getControllerSize() * (1 - this.stickToBaseRatio)) / 2,
       joystickX: (this.getControllerSize() * (1 - this.stickToBaseRatio)) / 2,
       sliderPosition: (this.getControllerSize() - 25) / 2,
+      yawOffset: 0,
       size: this.getControllerSize(),
       password: "",
       tiltMode: false,
@@ -209,9 +210,7 @@ export default class Controller extends React.Component {
 
   setNewControllerVals = (roll, pitch, yaw) => {
     const threshold = 0.25;
-    console.log("yaw", yaw);
 
-    var new_joystickY;
     if (Math.abs(roll) < threshold) {
       roll = 0;
       // new_joystickY = this.yVel_to_joystickY(0);
@@ -276,6 +275,40 @@ export default class Controller extends React.Component {
         window.screen.orientation.type
       );
     }
+
+    if (!this.state.yawOffset) {
+      this.setState({ yawOffset: yaw });
+    } else {
+      var rotationChange = yaw - this.state.yawOffset;
+      if (Math.abs(rotationChange) < threshold) {
+        rotationChange = 0;
+      } else {
+        if (rotationChange < 0) {
+          rotationChange += threshold;
+        } else {
+          rotationChange -= threshold;
+        }
+      }
+      if (rotationChange > Math.PI) {
+        rotationChange -= 2 * Math.PI;
+      } else if (rotationChange < -1 * Math.PI) {
+        rotationChange += 2 * Math.PI;
+      }
+      const rotationChangeScaled = (rotationChange / Math.PI) * 100;
+      this.setState({
+        sliderPosition: this.rotVel_to_sliderPosition(rotationChangeScaled),
+      });
+      console.log(
+        "yaw",
+        yaw,
+        "yawOffset",
+        this.state.yawOffset,
+        "rotationChange",
+        rotationChange,
+        "rotationChangeScaled",
+        rotationChangeScaled
+      );
+    }
   };
 
   joystickY_to_yVel = (joystickY) => {
@@ -325,6 +358,13 @@ export default class Controller extends React.Component {
     );
   };
 
+  rotVel_to_sliderPosition = (rotVel) => {
+    return (
+      (rotVel / -100) * ((this.state.size - 25) / 2) +
+      (this.state.size - 25) / 2
+    );
+  };
+
   tiltModeStart = (event) => {
     this.setState({ tiltMode: true });
 
@@ -335,7 +375,7 @@ export default class Controller extends React.Component {
   };
 
   tiltModeEnd = (event) => {
-    this.setState({ tiltMode: false });
+    this.setState({ tiltMode: false, yawOffset: null });
 
     this.joystickRef.current.stickToCenter(
       this.state.joystickX,
@@ -369,6 +409,14 @@ export default class Controller extends React.Component {
           updatePassword={this.updatePassword}
           password={this.state.password}
         />
+        <div>
+          <input
+            type="number"
+            onChange={(event) => {
+              this.setNewControllerVals(0, 0, event.target.value);
+            }}
+          />
+        </div>
         <div
           className={style.controlsContainer}
           style={{ height: this.state.size + 100 }}
