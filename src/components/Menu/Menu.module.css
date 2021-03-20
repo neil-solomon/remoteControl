@@ -10,13 +10,14 @@
 }
 
 .title {
+  outline: 2px solid rgb(76, 175, 80, 0);
   display: inline-block;
   vertical-align: top;
   font-weight: bold;
   font-size: 2em;
-  padding-top: 3px;
-  padding-left: 10px;
   cursor: pointer;
+  margin-left: 20px;
+  margin-top: 2px;
   color: rgb(76, 175, 80);
   /* color: rgb(96, 125, 139); */
   /* color: white; */
@@ -24,12 +25,16 @@
     1px -1px 0px rgb(76, 175, 80), -1px -1px 0px rgb(76, 175, 80); */
   text-shadow: 1px 1px 0px rgb(69, 90, 100), -1px 1px 0px rgb(69, 90, 100),
     1px -1px 0px rgb(69, 90, 100), -1px -1px 0px rgb(69, 90, 100);
+  transition: outline 0.25s;
+}
+.title:focus {
+  outline: 2px solid rgb(76, 175, 80, 1);
 }
 
 .menuIcons {
   display: inline-block;
   margin-top: 7px;
-  margin-left: calc(100vw - 285px);
+  margin-left: calc(100vw - 320px);
 }
 
 .icon {
@@ -41,52 +46,32 @@
   cursor: pointer;
   display: inline-block;
   fill: rgb(69, 90, 100);
-  transition: fill 0.25s;
+  outline: 2px solid rgb(76, 175, 80, 0);
+  transition: fill 0.25s, outline 0.25s;
 }
 .icon:hover {
   fill: rgb(76, 175, 80);
 }
+.icon:focus {
+  outline: 2px solid rgb(76, 175, 80, 1);
+}
 
-.bluetooth {
-  width: 30px;
-  height: 30px;
+.alertIcons {
   display: inline-block;
   vertical-align: top;
-  margin-top: 3px;
-  margin-left: 0px;
-}
-
-.bluetoothDisconnected {
-  fill: rgb(69, 90, 100, 0.25);
-}
-
-.bluetoothConnected {
-  animation: bluetoothConnectedGlow 2s infinite;
-}
-
-@keyframes bluetoothConnectedGlow {
-  0% {
-    fill: rgb(69, 90, 100, 0.25);
-  }
-  50% {
-    fill: rgb(76, 175, 80, 0.75);
-  }
-  100% {
-    fill: rgb(69, 90, 100, 0.25);
-  }
+  margin-left: 5px;
+  margin-top: -5px;
 }
 
 .light {
-  width: 35px;
-  height: 35px;
-  display: inline-block;
-  vertical-align: top;
-  margin-top: 0px;
-  margin-left: 0px;
+  display: block;
+  width: 20px;
+  height: 20px;
+  margin-bottom: 5px;
 }
 
 .lightOff {
-  fill: rgb(69, 90, 100, 0.5);
+  fill: rgb(69, 90, 100);
 }
 
 .lightOn {
@@ -95,12 +80,143 @@
 
 @keyframes lightOnGlow {
   0% {
-    fill: rgb(69, 90, 100, 0.5);
+    fill: rgb(69, 90, 100);
   }
   50% {
     fill: rgb(255, 0, 0);
   }
   100% {
-    fill: rgb(69, 90, 100, 0.5);
+    fill: rgb(69, 90, 100);
+  }
+}
+
+.bluetooth {
+  display: block;
+  width: 18px;
+  height: 18px;
+}
+
+.bluetoothOff {
+  fill: rgb(69, 90, 100, 0.75);
+}
+
+.bluetoothOn {
+  animation: bluetoothOnGlow 1s infinite;
+}
+
+@keyframes bluetoothOnGlow {
+  0% {
+    fill: rgb(69, 90, 100, 0.75);
+  }
+  50% {
+    /* fill: rgb(0, 255, 0); */
+    fill: rgb(76, 215, 80);
+  }
+  100% {
+    fill: rgb(69, 90, 100, 0.75);
+  }
+}
+
+.doorContainer {
+  display: inline-block;
+  vertical-align: top;
+  margin-top: -18px;
+  transform: scale(0.3);
+}
+
+.doorFrame {
+  position: relative;
+  perspective: 200px;
+  height: 53px;
+  width: 30px;
+  border: 3px solid rgb(69, 90, 100);
+  border-radius: 5px;
+}
+
+.doorKnob {
+  position: absolute;
+  top: 28px;
+  left: 23px;
+  border-radius: 100%;
+  height: 5px;
+  width: 5px;
+  background-color: rgb(69, 90, 100);
+}
+
+.doorWindow1 {
+  position: absolute;
+  top: 5px;
+  left: 6px;
+  height: 7px;
+  width: 6px;
+  background-color: rgb(207, 216, 220);
+  border: 2px solid rgb(96, 125, 139);
+}
+
+.doorWindow2 {
+  position: absolute;
+  top: 5px;
+  left: 15px;
+  height: 7px;
+  width: 6px;
+  background-color: rgb(207, 216, 220);
+  border: 2px solid rgb(96, 125, 139);
+}
+
+.doorWindow3 {
+  position: absolute;
+  top: 14px;
+  left: 6px;
+  height: 7px;
+  width: 6px;
+  background-color: rgb(207, 216, 220);
+  border: 2px solid rgb(96, 125, 139);
+}
+
+.doorWindow4 {
+  position: absolute;
+  top: 14px;
+  left: 15px;
+  height: 7px;
+  width: 6px;
+  background-color: rgb(207, 216, 220);
+  border: 2px solid rgb(96, 125, 139);
+}
+
+.door {
+  position: absolute;
+  top: -1px;
+  height: 50px;
+  width: 30px;
+  border: 3px solid rgb(69, 90, 100);
+  border-radius: 5px;
+  transition: all 1s;
+  /* animation: doorMotion 4s infinite; */
+}
+
+.doorClosed {
+  background-color: rgb(207, 216, 220);
+  transform: rotate3d(0, 1, 0, 0deg);
+  left: -3px;
+}
+
+.doorOpen {
+  background-color: rgb(76, 175, 80);
+  transform: rotate3d(0, 1, 0, -150deg);
+  left: -33px;
+}
+
+@keyframes doorMotion {
+  0% {
+    transform: rotate3d(0, 1, 0, 0deg);
+    left: -3px;
+  }
+  50% {
+    transform: rotate3d(0, 1, 0, -150deg);
+    left: -35px;
+  }
+  100% {
+    transform: rotate3d(0, 1, 0, 0deg);
+    left: -3px;
   }
 }

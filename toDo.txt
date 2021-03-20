@@ -2,9 +2,12 @@ Control UV lamps via a switch. Switch should be controlled by Arduino (5V) and p
 https://www.circuitbasics.com/setting-up-a-5v-relay-on-the-arduino/#:~:text=Since%20the%20Arduino%20operates%20at,Arduino%20to%20control%20the%20relay.&text=Almost%20any%20sensor%20can%20be,to%20be%20from%20a%20sensor.
 https://www.amazon.com/Tolako-Arduino-Indicator-Channel-Official/dp/B00VRUAHLE
 
-See if localstorage can be used to manage path-plannings during offline use.
+Make a connect page that has bluetooth connect, uv button, and battery.
+Get rid of the help page and put its content on the home page.
 
 Make Controller playback path plannings.
+
+See if localstorage can be used to manage path-plannings during offline use.
 
 Debug/test rotation in tilt mode.
 

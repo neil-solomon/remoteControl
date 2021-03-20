@@ -23,7 +23,7 @@
   width: auto;
   max-width: calc(100vw - 100px);
   transition: opacity 0.5s;
-  box-shadow: 0px 15px 15px rgb(0, 0, 0, 0.5);
+  box-shadow: 0px 5px 15px rgb(0, 0, 0, 0.5);
   border: 2px solid rgb(76, 175, 80);
   border-radius: 10px;
   margin-top: 5px;

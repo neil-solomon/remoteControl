@@ -1,10 +1,9 @@
 .Button {
-  outline: 3px solid rgb(76, 175, 80, 0);
+  outline: 2px solid rgb(76, 175, 80, 0);
   border-radius: 10px;
   color: rgb(69, 90, 100);
   border: 1px solid rgb(69, 90, 100);
   background-color: white;
-  font-size: 1.25em;
   padding-top: 3px;
   padding-bottom: 3px;
   padding-right: 10px;
@@ -33,5 +32,5 @@
   cursor: default;
 }
 .Button:focus {
-  outline: 3px solid rgb(76, 175, 80, 0.75);
+  outline: 2px solid rgb(76, 175, 80, 1);
 }

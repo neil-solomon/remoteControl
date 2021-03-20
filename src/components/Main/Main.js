@@ -145,9 +145,9 @@ export default class Main extends React.Component {
         }
       } else if (data[0] === 40) {
         if (data[1] === 1) {
-          this.setState({ doorClosed: true });
-        } else if (data[1] === 2) {
           this.setState({ doorClosed: false });
+        } else if (data[1] === 2) {
+          this.setState({ doorClosed: true });
         }
       }
     }
@@ -189,23 +189,31 @@ export default class Main extends React.Component {
           changeMenu={this.changeMenu}
           bluetoothCharacteristic={this.state.bluetoothCharacteristic}
           uvLight={this.state.uvLight}
+          doorClosed={this.state.doorClosed}
         />
         <div
           className={
             style.contentContainer + " " + this.state.contentContainerClassName
           }
         >
-          {this.state.pageView[0] && <Home />}
+          {this.state.pageView[0] && (
+            <Home
+              connectBluetooth={this.connectBluetooth}
+              bluetoothCharacteristic={this.state.bluetoothCharacteristic}
+              bluetoothDevice={this.state.bluetoothDevice}
+              sendToBluetooth={this.sendToBluetooth}
+              uvLight={this.state.uvLight}
+              uvLightToggle={this.uvLightToggle}
+              doorClosed={this.state.doorClosed}
+              batteryLevel={this.state.batteryLevel}
+            />
+          )}
           {this.state.pageView[1] && (
             <Controller
               sendToBluetooth={this.sendToBluetooth}
               connectBluetooth={this.connectBluetooth}
               bluetoothCharacteristic={this.state.bluetoothCharacteristic}
               bluetoothDevice={this.state.bluetoothDevice}
-              batteryLevel={this.state.batteryLevel}
-              uvLightToggle={this.uvLightToggle}
-              uvLight={this.state.uvLight}
-              doorClosed={this.state.doorClosed}
             />
           )}
           {this.state.pageView[2] && (

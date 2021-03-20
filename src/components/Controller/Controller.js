@@ -2,9 +2,7 @@ import React from "react";
 import style from "./Controller.module.css";
 import ControllerJoystick from "../ControllerJoystick";
 import ControllerSlider from "../ControllerSlider";
-import ControllerBluetoothConnect from "../ControllerBluetoothConnect";
 import ControllerConsole from "../ControllerConsole";
-import { ReactComponent as SmartphoneIcon } from "../../icons/smartphone.svg";
 import { ReactComponent as KeyboardIcon } from "../../icons/keyboard-key.svg";
 import { ReactComponent as MouseIcon } from "../../icons/mouse.svg";
 
@@ -23,7 +21,6 @@ export default class Controller extends React.Component {
     this.sendCommandDebounceTime = 50;
     this.sendCommandDebounce = false;
     this.sendCommandDebounce_timeout = null;
-    this.sendPassword_timeout = null;
     this.motorStop_timeouts = [null, null, null, null, null]; // send the motor stop command several times to ensure that the command is received
     this.lockScreen_timeout = null;
 
@@ -46,7 +43,6 @@ export default class Controller extends React.Component {
       sliderPosition: (this.getControllerSize() - 25) / 2,
       yawOffset: null,
       size: this.getControllerSize(),
-      password: "",
       tiltMode: false,
     };
   }
@@ -58,7 +54,6 @@ export default class Controller extends React.Component {
   componentWillUnmount = () => {
     clearTimeout(this.lockScreen_timeout);
     clearTimeout(this.sendCommandDebounce_timeout);
-    clearTimeout(this.sendPassword_timeout);
     for (const timeout of this.motorStop_timeouts) {
       clearTimeout(timeout);
     }
@@ -74,13 +69,6 @@ export default class Controller extends React.Component {
 
   componentDidUpdate = (prevProps, prevState) => {
     if (
-      this.props.bluetoothCharacteristic &&
-      !prevProps.bluetoothCharacteristic
-    ) {
-      this.sendPassword();
-    }
-
-    if (
       parseInt(this.joystickX_to_xVel(this.state.joystickX)) !==
         parseInt(this.joystickX_to_xVel(prevState.joystickX)) ||
       parseInt(this.joystickY_to_yVel(this.state.joystickY)) !==
@@ -90,18 +78,6 @@ export default class Controller extends React.Component {
     ) {
       this.sendMotorCommand();
     }
-  };
-
-  sendPassword = () => {
-    var data = this.state.password.split("").map((char, index) => {
-      return this.state.password.charCodeAt(index);
-    });
-
-    data.unshift(35); // password command
-    this.sendPassword_timeout = setTimeout(
-      () => this.props.sendToBluetooth(data),
-      1000
-    );
   };
 
   sendMotorCommand = () => {
@@ -163,10 +139,6 @@ export default class Controller extends React.Component {
 
   updateJoystickVals = (joystickX, joystickY) => {
     this.setState({ joystickX, joystickY });
-  };
-
-  updatePassword = (event) => {
-    this.setState({ password: event.target.value });
   };
 
   handleSensorReading = () => {
@@ -389,26 +361,8 @@ export default class Controller extends React.Component {
   };
 
   render() {
-    // if (window.innerWidth < window.innerHeight && window.innerWidth < 600) {
-    //   return (
-    //     <div className={style.rotateDeviceContainer} data-test="Controller">
-    //       Rotate Device
-    //       <div className={style.rotateDeviceIconContainer}>
-    //         <SmartphoneIcon className={style.rotateDeviceIcon} />
-    //       </div>
-    //     </div>
-    //   );
-    // }
-
     return (
       <div className={style.container} data-test="Controller">
-        <ControllerBluetoothConnect
-          connectBluetooth={this.props.connectBluetooth}
-          bluetoothCharacteristic={this.props.bluetoothCharacteristic}
-          bluetoothDevice={this.props.bluetoothDevice}
-          updatePassword={this.updatePassword}
-          password={this.state.password}
-        />
         <div
           className={style.controlsContainer}
           style={{ height: this.state.size + 100 }}
@@ -435,13 +389,9 @@ export default class Controller extends React.Component {
               rotVel={parseInt(
                 this.sliderPosition_to_rotVel(this.state.sliderPosition)
               )}
-              batteryLevel={this.props.batteryLevel}
-              sensor={this.sensor}
               tiltModeStart={this.tiltModeStart}
               tiltModeEnd={this.tiltModeEnd}
-              uvLightToggle={this.props.uvLightToggle}
-              uvLight={this.props.uvLight}
-              doorClosed={this.props.doorClosed}
+              size={this.state.size}
             />
           </div>
           <div className={style.joystickContainer}>

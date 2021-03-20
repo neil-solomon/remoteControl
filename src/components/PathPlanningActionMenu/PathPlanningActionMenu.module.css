@@ -11,7 +11,7 @@
 }
 
 .button {
-  outline: 3px solid rgb(76, 175, 80, 0);
+  outline: 2px solid rgb(76, 175, 80, 0);
   margin-left: 15px;
   margin-right: 15px;
   border-radius: 10px;
@@ -29,7 +29,7 @@
     background-color 0.25s, outline 0.25s;
 }
 .button:focus {
-  outline: 3px solid rgb(76, 175, 80, 0.75);
+  outline: 2px solid rgb(76, 175, 80, 1);
 }
 
 .buttonHover {
