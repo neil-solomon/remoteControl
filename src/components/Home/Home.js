@@ -22,8 +22,9 @@ export default class Home extends React.Component {
     return (
       <div className={style.container} data-test="Home">
         <div className={style.title}>FROG</div>
-        <div>Fantastic Robotic Omni-directonal Ground-transport</div>
-
+        <div className={style.subTitle}>
+          Fantastic Robotic Omni-directonal Ground-transport
+        </div>
         <div className={style.addToHomeScreen}>
           <div className={style.homeScreenTitle}>
             Add Frog Robotics to your home screen for offline use!
@@ -72,7 +73,7 @@ export default class Home extends React.Component {
               www.flaticon.com
             </a>
           </div>
-          <div className={style.creditsItem}>
+          {/* <div className={style.creditsItem}>
             Project bootstrapped with{" "}
             <a
               href="https://reactjs.org/docs/create-a-new-react-app.html#create-react-app"
@@ -81,7 +82,7 @@ export default class Home extends React.Component {
             >
               create-react-app
             </a>
-          </div>
+          </div> */}
           <div className={style.creditsItem}>
             Color style from{" "}
             <a

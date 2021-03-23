@@ -1,16 +1,13 @@
 .container {
   text-align: center;
   margin-top: 50px;
+  font-size: 1.5em;
 }
 
 .bluetoothContainer {
   text-align: center;
   margin-top: 50px;
   animation: fadeIn 0.25s forwards;
-}
-
-.noChrome {
-  font-size: 1.25em;
 }
 
 .bluetoothMenu {
@@ -24,16 +21,16 @@
 }
 
 .message {
-  font-size: 1em;
+  margin-bottom: 35px;
   animation: fadeIn 0.25s forwards;
 }
 
 .iconContainer {
-  width: 30px;
-  height: 30px;
+  width: 50px;
+  height: 50px;
   position: relative;
-  margin-left: calc(50vw - 15px);
-  margin-bottom: 10px;
+  margin-left: calc(50vw - 25px);
+  margin-bottom: 25px;
 }
 
 .icon {
@@ -41,8 +38,8 @@
   top: 5px;
   left: 0px;
   z-index: 2;
-  height: 30px;
-  width: 30px;
+  height: 50px;
+  width: 50px;
   transition: fill 0.5s;
 }
 
@@ -51,8 +48,8 @@
   top: 10px;
   left: 6px;
   z-index: 1;
-  height: 30px;
-  width: 30px;
+  height: 50px;
+  width: 50px;
   fill: rgb(0, 0, 0, 0.2);
   filter: blur(2px);
 }
@@ -71,12 +68,12 @@
 }
 
 .batteryContainer {
-  margin-top: 20px;
+  margin-top: 50px;
   height: 35px;
   width: 50px;
   position: relative;
   margin-left: calc(50vw - 40px);
-  transform: scale(1.25);
+  transform: scale(1.5);
 }
 
 .batteryOuter {

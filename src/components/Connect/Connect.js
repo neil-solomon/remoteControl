@@ -65,7 +65,7 @@ export default class Connect extends React.Component {
             <div className={style.noChrome}>
               Your browser does not support bluetooth connectivity.
             </div>
-            <div className={style.noChrome}>
+            <div>
               Use{" "}
               <a href="https://www.google.com/chrome/?brand=JJTC&geo=US&gclid=CjwKCAiA6aSABhApEiwA6Cbm_8WGhVRyUDMNyE-JXnX_gpYsTmQ88WiH7sDQ6HPqhcqzot4e72v-QRoCrXQQAvD_BwE&gclsrc=aw.ds">
                 Chrome

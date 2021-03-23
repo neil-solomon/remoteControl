@@ -1,12 +1,11 @@
 .container {
   text-align: center;
-  font-size: 1.5em;
   margin-top: 50px;
 }
 
 .title {
   font-weight: bold;
-  font-size: 1.5em;
+  font-size: 3em;
   color: rgb(76, 175, 80);
   /* color: rgb(96, 125, 139); */
   /* color: white; */
@@ -16,9 +15,17 @@
     1px -1px 0px rgb(69, 90, 100), -1px -1px 0px rgb(69, 90, 100);
 }
 
+.subTitle {
+  font-size: 1.75em;
+}
+
 .homeScreenTitle {
   font-size: 1.25em;
   margin-bottom: 10px;
+}
+
+.addToHomeScreen {
+  margin-top: 100px;
 }
 
 .addToHomeScreenItem {

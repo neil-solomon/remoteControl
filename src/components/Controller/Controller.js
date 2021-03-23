@@ -360,7 +360,13 @@ export default class Controller extends React.Component {
 
   render() {
     return (
-      <div className={style.container} data-test="Controller">
+      <div
+        className={style.container}
+        style={{
+          marginTop: window.innerWidth > 800 ? this.state.size / 3 : 0,
+        }}
+        data-test="Controller"
+      >
         <div
           className={style.controlsContainer}
           style={{ height: this.state.size + 100 }}
