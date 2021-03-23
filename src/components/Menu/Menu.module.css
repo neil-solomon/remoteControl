@@ -34,7 +34,7 @@
 .menuIcons {
   display: inline-block;
   margin-top: 7px;
-  margin-left: calc(100vw - 320px);
+  margin-left: calc(100vw - 335px);
 }
 
 .icon {
@@ -59,7 +59,7 @@
 .alertIcons {
   display: inline-block;
   vertical-align: top;
-  margin-left: 5px;
+  margin-left: 20px;
   margin-top: -5px;
 }
 

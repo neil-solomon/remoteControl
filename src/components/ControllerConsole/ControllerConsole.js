@@ -28,8 +28,8 @@ export default class ControllerConsole extends React.Component {
         </div>
         <div className={style.valueContainer}>
           Z-Vel:
-          <div className={style.value} data-test="Console_rotvel">
-            {this.props.rotVel}
+          <div className={style.value} data-test="Console_zVel">
+            {this.props.zVel}
           </div>
         </div>
         <button

@@ -1,7 +1,7 @@
 import React from "react";
 import style from "./Menu.module.css";
-import { ReactComponent as QuestionIcon } from "../../icons/question.svg";
-import { ReactComponent as ControllerIcon } from "../../icons/video-game.svg";
+import { ReactComponent as ConnectIcon } from "../../icons/antenna.svg";
+import { ReactComponent as ControllerIcon } from "../../icons/gamepad.svg";
 import { ReactComponent as MazeIcon } from "../../icons/out-of-the-maze.svg";
 import { ReactComponent as LightIcon } from "../../icons/alarm.svg";
 import { ReactComponent as BluetoothIcon } from "../../icons/bluetooth-signal.svg";
@@ -25,23 +25,23 @@ export default class Menu extends React.Component {
           FROG
         </div>
         <div className={style.menuIcons}>
+          <ConnectIcon
+            className={style.icon}
+            onClick={() => this.props.changeMenu(1)}
+            data-test="Menu_connectIcon"
+            tabIndex="1"
+          />
           <ControllerIcon
             className={style.icon}
-            style={{ marginRight: 5 }}
-            onClick={() => this.props.changeMenu(1)}
+            style={{ marginRight: 5, height: 40, width: 40 }}
+            onClick={() => this.props.changeMenu(2)}
             data-test="Menu_controllerIcon"
-            tabIndex="1"
+            tabIndex="2"
           />
           <MazeIcon
             className={style.icon}
-            onClick={() => this.props.changeMenu(2)}
-            data-test="Menu_mazeIcon"
-            tabIndex="2"
-          />
-          <QuestionIcon
-            className={style.icon}
             onClick={() => this.props.changeMenu(3)}
-            data-test="Menu_questionIcon"
+            data-test="Menu_mazeIcon"
             tabIndex="3"
           />
           <div className={style.alertIcons}>

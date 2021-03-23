@@ -73,8 +73,8 @@ export default class Controller extends React.Component {
         parseInt(this.joystickX_to_xVel(prevState.joystickX)) ||
       parseInt(this.joystickY_to_yVel(this.state.joystickY)) !==
         parseInt(this.joystickY_to_yVel(prevState.joystickY)) ||
-      parseInt(this.sliderPosition_to_rotVel(this.state.sliderPosition)) !==
-        parseInt(this.sliderPosition_to_rotVel(prevState.sliderPosition))
+      parseInt(this.sliderPosition_to_zVel(this.state.sliderPosition)) !==
+        parseInt(this.sliderPosition_to_zVel(prevState.sliderPosition))
     ) {
       this.sendMotorCommand();
     }
@@ -94,8 +94,7 @@ export default class Controller extends React.Component {
         36, // motor command
         parseInt(this.joystickX_to_xVel(this.state.joystickX)) + 150, // ensure that all values are between 50 and 250
         parseInt(this.joystickY_to_yVel(this.state.joystickY)) + 150,
-        parseInt(this.sliderPosition_to_rotVel(this.state.sliderPosition)) +
-          150,
+        parseInt(this.sliderPosition_to_zVel(this.state.sliderPosition)) + 150,
       ];
       this.props.sendToBluetooth(data);
     }
@@ -103,7 +102,7 @@ export default class Controller extends React.Component {
     if (
       parseInt(this.joystickX_to_xVel(this.state.joystickX)) === 0 &&
       parseInt(this.joystickY_to_yVel(this.state.joystickY)) === 0 &&
-      parseInt(this.sliderPosition_to_rotVel(this.state.sliderPosition)) === 0
+      parseInt(this.sliderPosition_to_zVel(this.state.sliderPosition)) === 0
     ) {
       // send motor stop command
       data = [36, 150, 150, 150];
@@ -268,7 +267,7 @@ export default class Controller extends React.Component {
       }
       const rotationChangeScaled = (rotationChange / Math.PI) * 100;
       this.setState({
-        sliderPosition: this.rotVel_to_sliderPosition(rotationChangeScaled),
+        sliderPosition: this.zVel_to_sliderPosition(rotationChangeScaled),
       });
       console.log(
         "yaw",
@@ -321,7 +320,7 @@ export default class Controller extends React.Component {
     );
   };
 
-  sliderPosition_to_rotVel = (sliderPosition) => {
+  sliderPosition_to_zVel = (sliderPosition) => {
     return (
       -1 *
       ((sliderPosition - (this.state.size - 25) / 2) /
@@ -330,10 +329,9 @@ export default class Controller extends React.Component {
     );
   };
 
-  rotVel_to_sliderPosition = (rotVel) => {
+  zVel_to_sliderPosition = (zVel) => {
     return (
-      (rotVel / -100) * ((this.state.size - 25) / 2) +
-      (this.state.size - 25) / 2
+      (zVel / -100) * ((this.state.size - 25) / 2) + (this.state.size - 25) / 2
     );
   };
 
@@ -386,8 +384,8 @@ export default class Controller extends React.Component {
             <ControllerConsole
               xVel={parseInt(this.joystickX_to_xVel(this.state.joystickX))}
               yVel={parseInt(this.joystickY_to_yVel(this.state.joystickY))}
-              rotVel={parseInt(
-                this.sliderPosition_to_rotVel(this.state.sliderPosition)
+              zVel={parseInt(
+                this.sliderPosition_to_zVel(this.state.sliderPosition)
               )}
               tiltModeStart={this.tiltModeStart}
               tiltModeEnd={this.tiltModeEnd}

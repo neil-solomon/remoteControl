@@ -1,186 +1,101 @@
 import React from "react";
 import style from "./Home.module.css";
-import { ReactComponent as BluetoothIcon } from "../../icons/bluetooth-signal.svg";
+import addToHome_desktop from "../../images/addToHome_desktop.png";
+import addToHome_mobile from "../../images/addToHome_mobile.png";
 
 export default class Home extends React.Component {
   constructor(props) {
     super(props);
 
-    this.sendPassword_timeout = null;
-
     this.state = {
-      password: "",
+      imageStyle: [style.hidden, style.hidden],
     };
   }
 
-  componentDidUpdate = (prevProps, prevState) => {
-    if (
-      this.props.bluetoothCharacteristic &&
-      !prevProps.bluetoothCharacteristic
-    ) {
-      this.sendPassword();
-    }
-  };
-
-  componentWillUnmount = () => {
-    clearTimeout(this.sendPassword_timeout);
-  };
-
-  updatePassword = (event) => {
-    this.setState({ password: event.target.value });
-  };
-
-  sendPassword = () => {
-    var data = this.state.password.split("").map((char, index) => {
-      return this.state.password.charCodeAt(index);
-    });
-
-    data.unshift(35); // password command
-    this.sendPassword_timeout = setTimeout(
-      () => this.props.sendToBluetooth(data),
-      1000
-    );
-  };
-
-  connectButtonClick = (event) => {
-    event.target.blur();
-    this.props.connectBluetooth();
+  showImage = (index) => {
+    var imageStyle = JSON.parse(JSON.stringify(this.state.imageStyle));
+    imageStyle[index] = style.visible;
+    this.setState({ imageStyle });
   };
 
   render() {
-    var bluetoothIconColor = style.red;
-    if (this.props.bluetoothDevice && !this.props.bluetoothCharacteristic) {
-      bluetoothIconColor = style.yellow;
-    } else if (
-      this.props.bluetoothDevice &&
-      this.props.bluetoothCharacteristic
-    ) {
-      bluetoothIconColor = style.green;
-    }
-
     return (
       <div className={style.container} data-test="Home">
         <div className={style.title}>FROG</div>
         <div>Fantastic Robotic Omni-directonal Ground-transport</div>
-        {!navigator.bluetooth && (
-          <div className={style.bluetoothContainer}>
-            <div className={style.noChrome}>
-              Your browser does not support bluetooth connectivity.
-            </div>
-            <div className={style.noChrome}>
-              Use{" "}
-              <a href="https://www.google.com/chrome/?brand=JJTC&geo=US&gclid=CjwKCAiA6aSABhApEiwA6Cbm_8WGhVRyUDMNyE-JXnX_gpYsTmQ88WiH7sDQ6HPqhcqzot4e72v-QRoCrXQQAvD_BwE&gclsrc=aw.ds">
-                Chrome
-              </a>{" "}
-              instead.
-            </div>
+
+        <div className={style.addToHomeScreen}>
+          <div className={style.homeScreenTitle}>
+            Add Frog Robotics to your home screen for offline use!
           </div>
-        )}
-        {navigator.bluetooth && (
-          <div className={style.bluetoothContainer}>
-            <div className={style.iconContainer}>
-              <BluetoothIcon
-                className={style.icon + " " + bluetoothIconColor}
+          <div className={style.addToHomeScreenItem}>
+            <div>
+              <strong>Mobile</strong>
+            </div>
+            <div>Settings &gt; Add to Home Screen</div>
+            <div className={style.imageContainer}>
+              <img
+                src={addToHome_mobile}
+                alt="addToHome_mobile"
+                className={style.image + " " + this.state.imageStyle[0]}
+                onLoad={() => this.showImage(0)}
               />
-              <BluetoothIcon className={style.iconShadow} />
-            </div>
-            <div
-              className={style.message}
-              key={
-                "bluetoothMessage_" +
-                (this.props.bluetoothDevice ? "1" : "0") +
-                (this.props.bluetoothCharacteristic ? "1" : "0")
-              }
-            >
-              {!this.props.bluetoothDevice && <>Enter PIN To Connect</>}
-              {this.props.bluetoothDevice &&
-                !this.props.bluetoothCharacteristic && (
-                  <>Connecting to {this.props.bluetoothDevice.name} ... </>
-                )}
-              {this.props.bluetoothDevice &&
-                this.props.bluetoothCharacteristic && (
-                  <>Connected to {this.props.bluetoothDevice.name} !</>
-                )}
-            </div>
-            <div
-              className={style.bluetoothMenu}
-              key={
-                "bluetoothMenu" +
-                this.props.bluetoothDevice +
-                "_" +
-                this.props.bluetoothCharacteristic
-              }
-            >
-              {!this.props.bluetoothDevice && (
-                <>
-                  <input
-                    type="password"
-                    placeholder="PIN"
-                    onChange={this.updatePassword}
-                    className={style.passwordInput}
-                    data-test="BluetoothConnect_input"
-                    id="BluetoothConnect_input"
-                    maxLength={4}
-                    size={4}
-                  ></input>
-                  <button
-                    id="BluetoothConnect_connectButton"
-                    className="Button"
-                    style={{ fontSize: "1em" }}
-                    onClick={this.connectButtonClick}
-                    disabled={this.state.password.length !== 4}
-                    data-test="BluetoothConnect_button"
-                  >
-                    connect
-                  </button>
-                </>
-              )}
-              {this.props.bluetoothCharacteristic && (
-                <>
-                  <button
-                    className="Button"
-                    style={{ fontSize: "1em" }}
-                    onClick={this.props.uvLightToggle}
-                    disabled={!this.props.doorClosed}
-                  >
-                    <div style={{ width: 200 }}>
-                      {this.props.uvLight &&
-                        this.props.doorClosed &&
-                        "Turn UV Off"}
-                      {!this.props.uvLight &&
-                        this.props.doorClosed &&
-                        "Turn UV On"}
-                      {!this.props.doorClosed && "Door Is Open"}
-                    </div>
-                  </button>
-                  <div className={style.batteryContainer}>
-                    <div className={style.batteryOuter} />
-                    <div
-                      className={style.batteryInner}
-                      style={{
-                        width:
-                          this.props.batteryLevel !== null
-                            ? this.props.batteryLevel * 5.75
-                            : 57.5,
-                      }}
-                    ></div>
-                    <div
-                      className={style.batteryNumber}
-                      style={{
-                        left: this.props.batteryLevel === 10 ? 20 : 24,
-                      }}
-                    >
-                      {this.props.batteryLevel !== null
-                        ? this.props.batteryLevel * 10 + "%"
-                        : "90%"}
-                    </div>
-                    <div className={style.batteryTip}></div>
-                  </div>
-                </>
-              )}
             </div>
           </div>
-        )}
+          <div className={style.addToHomeScreenItem}>
+            <div>
+              <strong>Desktop</strong>
+            </div>
+            <div>Settings &gt; More Tools &gt; Create Shortcut</div>
+            <div className={style.imageContainer}>
+              <img
+                src={addToHome_desktop}
+                alt="addToHome_desktop"
+                className={style.image + " " + this.state.imageStyle[1]}
+                onLoad={() => this.showImage(1)}
+              />
+            </div>
+          </div>
+        </div>
+        <div className={style.credits}>
+          <div className={style.creditsItem}>
+            Icons made by{" "}
+            <a
+              href="https://www.flaticon.com/authors/freepik"
+              title="Freepik"
+              target="blank"
+            >
+              Freepik
+            </a>{" "}
+            from{" "}
+            <a href="https://www.flaticon.com/" title="Flaticon" target="blank">
+              www.flaticon.com
+            </a>
+          </div>
+          <div className={style.creditsItem}>
+            Project bootstrapped with{" "}
+            <a
+              href="https://reactjs.org/docs/create-a-new-react-app.html#create-react-app"
+              title="create-react-app"
+              target="blank"
+            >
+              create-react-app
+            </a>
+          </div>
+          <div className={style.creditsItem}>
+            Color style from{" "}
+            <a
+              href="https://www.materialpalette.com/"
+              title="MaterialPalette"
+              target="blank"
+            >
+              Material Palette
+            </a>
+          </div>
+          <div className={style.creditsItem}>
+            Software Version {process.env.REACT_APP_AWS_COMMIT_ID}
+          </div>
+        </div>
       </div>
     );
   }

@@ -1,0 +1,128 @@
+.container {
+  text-align: center;
+  margin-top: 50px;
+}
+
+.bluetoothContainer {
+  text-align: center;
+  margin-top: 50px;
+  animation: fadeIn 0.25s forwards;
+}
+
+.noChrome {
+  font-size: 1.25em;
+}
+
+.bluetoothMenu {
+  margin-top: 10px;
+  animation: fadeIn 0.25s;
+}
+
+.passwordInput {
+  font-size: 1em;
+  margin-right: 10px;
+}
+
+.message {
+  font-size: 1em;
+  animation: fadeIn 0.25s forwards;
+}
+
+.iconContainer {
+  width: 30px;
+  height: 30px;
+  position: relative;
+  margin-left: calc(50vw - 15px);
+  margin-bottom: 10px;
+}
+
+.icon {
+  position: absolute;
+  top: 5px;
+  left: 0px;
+  z-index: 2;
+  height: 30px;
+  width: 30px;
+  transition: fill 0.5s;
+}
+
+.iconShadow {
+  position: absolute;
+  top: 10px;
+  left: 6px;
+  z-index: 1;
+  height: 30px;
+  width: 30px;
+  fill: rgb(0, 0, 0, 0.2);
+  filter: blur(2px);
+}
+
+.red {
+  fill: rgb(255, 0, 0);
+}
+
+.yellow {
+  fill: rgb(255, 255, 0);
+}
+
+.green {
+  /* fill: rgb(0, 225, 0); */
+  fill: rgb(76, 200, 80);
+}
+
+.batteryContainer {
+  margin-top: 20px;
+  height: 35px;
+  width: 50px;
+  position: relative;
+  margin-left: calc(50vw - 40px);
+  transform: scale(1.25);
+}
+
+.batteryOuter {
+  position: absolute;
+  top: 0px;
+  left: 0px;
+  border: 4px solid rgb(69, 90, 100);
+  border-radius: 10px;
+  width: 65px;
+  height: 25px;
+}
+
+.batteryTip {
+  position: absolute;
+  height: 15px;
+  width: 8px;
+  top: 8px;
+  left: 70px;
+  border-radius: 4px;
+  background-color: rgb(69, 90, 100);
+}
+
+.batteryInner {
+  position: absolute;
+  top: 7px;
+  left: 7px;
+  border-radius: 4px;
+  height: 18px;
+  background-color: rgb(69, 90, 100);
+  transition: width 0.5s;
+}
+
+.batteryNumber {
+  position: absolute;
+  text-align: center;
+  top: 6px;
+  font-size: 14px;
+  font-weight: bold;
+  color: rgb(76, 175, 80);
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}

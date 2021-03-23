@@ -4,7 +4,7 @@ import Menu from "../Menu";
 import Home from "../Home";
 import Controller from "../Controller";
 import PathPlanning from "../PathPlanning";
-import Help from "../Help";
+import Connect from "../Connect";
 
 export default class Main extends React.Component {
   constructor(props) {
@@ -13,7 +13,7 @@ export default class Main extends React.Component {
     // window.localStorage.clear();
 
     this.state = {
-      pageView: [true, false, false, false], // home, controller, pathPlanning, help
+      pageView: [true, false, false, false], // home, connect, controller, pathPlanning
       contentContainerClassName: style.fadeIn,
       bluetoothDevice: null,
       bluetoothCharacteristic: null,
@@ -196,8 +196,9 @@ export default class Main extends React.Component {
             style.contentContainer + " " + this.state.contentContainerClassName
           }
         >
-          {this.state.pageView[0] && (
-            <Home
+          {this.state.pageView[0] && <Home />}
+          {this.state.pageView[1] && (
+            <Connect
               connectBluetooth={this.connectBluetooth}
               bluetoothCharacteristic={this.state.bluetoothCharacteristic}
               bluetoothDevice={this.state.bluetoothDevice}
@@ -208,7 +209,7 @@ export default class Main extends React.Component {
               batteryLevel={this.state.batteryLevel}
             />
           )}
-          {this.state.pageView[1] && (
+          {this.state.pageView[2] && (
             <Controller
               sendToBluetooth={this.sendToBluetooth}
               connectBluetooth={this.connectBluetooth}
@@ -216,13 +217,12 @@ export default class Main extends React.Component {
               bluetoothDevice={this.state.bluetoothDevice}
             />
           )}
-          {this.state.pageView[2] && (
+          {this.state.pageView[3] && (
             <PathPlanning
               savedMatrices={this.state.savedMatrices}
               getSavedMatrices={this.getSavedMatrices}
             />
           )}
-          {this.state.pageView[3] && <Help />}
         </div>
       </div>
     );
