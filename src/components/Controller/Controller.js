@@ -23,6 +23,7 @@ export default class Controller extends React.Component {
     this.sendCommandDebounce_timeout = null;
     this.motorStop_timeouts = [null, null, null, null, null]; // send the motor stop command several times to ensure that the command is received
     this.lockScreen_timeout = null;
+    this.handleDirectionCommands_timeouts = [];
 
     const sensorOptions = { frequency: 10, referenceFrame: "device" };
     this.sensor = null;
@@ -55,6 +56,9 @@ export default class Controller extends React.Component {
     clearTimeout(this.lockScreen_timeout);
     clearTimeout(this.sendCommandDebounce_timeout);
     for (const timeout of this.motorStop_timeouts) {
+      clearTimeout(timeout);
+    }
+    for (const timeout of this.handleDirectionCommands_timeouts) {
       clearTimeout(timeout);
     }
 
@@ -358,6 +362,67 @@ export default class Controller extends React.Component {
     }
   };
 
+  handleDirectionCommands = (commands) => {
+    /**
+     * commands is an array where each entry is a 2-element array.
+     * commands[i][0] is direction, commands[i][1] is duration.
+     */
+    if (!(commands instanceof Array) || commands.length === 0) {
+      return;
+    }
+
+    this.handleDirectionCommands_timeouts = new Array(commands.length + 1);
+    var durationCounter = 0;
+    var yVel = 0;
+    var xVel = 0;
+
+    for (let i = 0; i < commands.length; i++) {
+      if (!commands[i][0] || !commands[i][1]) {
+        continue;
+      }
+
+      switch (commands[i][0]) {
+        case 1:
+          yVel = 100;
+          xVel = 0;
+          break;
+        case 2:
+          yVel = -100;
+          xVel = 0;
+          break;
+        case 3:
+          yVel = 0;
+          xVel = -100;
+          break;
+        case 4:
+          yVel = 0;
+          xVel = 100;
+          break;
+        default:
+          break;
+      }
+      const durationCounterCurrent = durationCounter;
+
+      this.handleDirectionCommands_timeouts[i] = setTimeout(() => {
+        this.setState({
+          joystickY: this.yVel_to_joystickY(yVel),
+          joystickX: this.xVel_to_joystickX(xVel),
+        });
+      }, durationCounter * 1000);
+
+      durationCounter += commands[i][1];
+    }
+
+    this.handleDirectionCommands_timeouts[
+      this.handleDirectionCommands_timeouts.length - 1
+    ] = setTimeout(() => {
+      this.joystickRef.current.stickToCenter(
+        this.xVel_to_joystickX(xVel),
+        this.yVel_to_joystickY(yVel)
+      );
+    }, durationCounter * 1000);
+  };
+
   render() {
     return (
       <div
@@ -396,6 +461,7 @@ export default class Controller extends React.Component {
               tiltModeStart={this.tiltModeStart}
               tiltModeEnd={this.tiltModeEnd}
               size={this.state.size}
+              handleDirectionCommands={this.handleDirectionCommands}
             />
           </div>
           <div className={style.joystickContainer}>

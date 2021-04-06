@@ -16,7 +16,9 @@ export default class ControllerConsole extends React.Component {
         className={style.container}
         style={{ marginTop: Math.max(this.props.size - 275, 0) }}
       >
-        <ControllerConsoleSpeech />
+        <ControllerConsoleSpeech
+          handleDirectionCommands={this.props.handleDirectionCommands}
+        />
         <div className={style.valueContainer}>
           X-Vel:
           <div className={style.value} data-test="Console_xvel">

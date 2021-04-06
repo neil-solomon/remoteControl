@@ -202,11 +202,11 @@ export default class ControllerJoystick extends React.Component {
       this.props.baseSize * this.props.validRadiusToBaseRatio
     ) {
       /* 
-            The region of valid positions is a circle with radius baseSize/4.
-            When the new stick position is out of bounds, make the new stick position the point
-            on the edge of the circle clostest to the mouse position. This is the point on the 
-            circle which intersects the line formed by the mouse and the center of the circle.
-            */
+        The region of valid positions is a circle with radius baseSize/4.
+        When the new stick position is out of bounds, make the new stick position the point
+        on the edge of the circle clostest to the mouse position. This is the point on the 
+        circle which intersects the line formed by the mouse and the center of the circle.
+      */
       var newStickCenterX =
         newStickLeft +
         (this.props.baseSize * this.props.stickToBaseRatio) / 2 -

@@ -25,56 +25,100 @@ const ControllerConsoleSpeech = (props) => {
   const stopListening = () => {
     console.log("transcript:", transcript);
     SpeechRecognition.stopListening();
-    getcommand(transcript);
+    const commands = getCommands(transcript);
+    props.handleDirectionCommands(commands);
     resetTranscript();
-    setTimeout(() => resetTranscript(), 100);
+    setTimeout(() => resetTranscript(), 100); // sometimes this needs to be called twice to actually work
   };
 
-  const getcommand = (transcript) => {
-    var direction = null;
-    var distance = null;
+  const getCommands = (transcript) => {
+    var commands = [];
+    var commandDirection = null;
+    var commandDuration = null;
 
-    if (transcript.includes("forward")) {
-      direction = "forward";
-    } else if (transcript.includes("backward")) {
-      direction = "backward";
-    } else if (transcript.includes("left")) {
-      direction = "left";
-    } else if (transcript.includes("right")) {
-      direction = "right";
-    }
+    for (const word of transcript.split(" ")) {
+      switch (word.toLowerCase()) {
+        case "forward":
+        case "forwards":
+        case "front":
+        case "up":
+        case "north":
+          commandDirection = 1;
+          commandDuration = null;
+          break;
+        case "backward":
+        case "backwards":
+        case "back":
+        case "down":
+        case "south":
+          commandDirection = 2;
+          commandDuration = null;
+          break;
+        case "left":
+        case "east":
+          commandDirection = 3;
+          commandDuration = null;
+          break;
+        case "right":
+        case "west":
+          commandDirection = 4;
+          commandDuration = null;
+          break;
+        case "one":
+        case "won":
+        case "1":
+          commandDuration = 1;
+          break;
+        case "two":
+        case "to":
+        case "2":
+          commandDuration = 2;
+          break;
+        case "three":
+        case "tree":
+        case "3":
+          commandDuration = 3;
+          break;
+        case "four":
+        case "for":
+        case "4":
+          commandDuration = 4;
+          break;
+        case "five":
+        case "5":
+          commandDuration = 5;
+          break;
+        case "six":
+        case "sex":
+        case "6":
+          commandDuration = 6;
+          break;
+        case "seven":
+        case "7":
+          commandDuration = 7;
+          break;
+        case "eight":
+        case "ate":
+        case "8":
+          commandDuration = 8;
+          break;
+        case "nine":
+        case "9":
+          commandDuration = 9;
+          break;
+        default:
+          break;
+      }
 
-    if (transcript.includes("one")) {
-      distance = 1;
-    } else if (transcript.includes("two")) {
-      distance = 2;
-    } else if (transcript.includes("three")) {
-      distance = 3;
-    } else if (transcript.includes("four")) {
-      distance = 4;
-    } else if (transcript.includes("five")) {
-      distance = 5;
-    } else if (transcript.includes("six")) {
-      distance = 6;
-    } else if (transcript.includes("seven")) {
-      distance = 7;
-    } else if (transcript.includes("eight")) {
-      distance = 8;
-    } else if (transcript.includes("nine")) {
-      distance = 9;
-    }
-
-    if (distance === null) {
-      transcript = transcript.split(" ");
-      for (let i = 0; i < transcript.length; i++) {
-        console.log("!", transcript[i]);
-        if (!isNaN(parseInt(transcript[i])) && parseInt(transcript[i]) !== 0) {
-          distance = parseInt(transcript[i]);
-        }
+      if (commandDirection && commandDuration) {
+        commands.push([commandDirection, commandDuration]);
+        commandDirection = null;
+        commandDuration = null;
       }
     }
 
-    console.log("command:", direction, distance);
+    console.log("parsed commands:", commands);
+    return commands;
   };
 
   return (
