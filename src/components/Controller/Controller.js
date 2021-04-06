@@ -14,7 +14,7 @@ export default class Controller extends React.Component {
     this.sliderRef = React.createRef();
 
     this.controlsDebounceTime = 5; // millisecondss
-    this.controlsToZeroTime = 100;
+    this.controlsToZeroTime = 50;
     this.stickToBaseRatio = 4 / 5;
     this.validRadiusToBaseRatio = 1 / 4;
 

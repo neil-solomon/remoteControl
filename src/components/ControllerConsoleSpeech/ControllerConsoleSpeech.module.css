@@ -1,0 +1,18 @@
+.icon {
+  margin-top: 10px;
+  width: 35px;
+  height: 35px;
+  fill: rgb(69, 90, 100);
+}
+
+.speechText {
+  display: inline-block;
+  vertical-align: top;
+  margin-top: 5px;
+  padding-top: 15px;
+  padding-bottom: 15px;
+}
+
+.container {
+  margin-bottom: 15px;
+}

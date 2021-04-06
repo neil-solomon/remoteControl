@@ -1,5 +1,7 @@
 import React from "react";
 import style from "./ControllerConsole.module.css";
+import ControllerConsoleSpeech from "../ControllerConsoleSpeech";
+import { ReactComponent as TiltIcon } from "../../icons/rotate-smartphone.svg";
 
 export default class ControllerConsole extends React.Component {
   constructor(props) {
@@ -12,8 +14,9 @@ export default class ControllerConsole extends React.Component {
     return (
       <div
         className={style.container}
-        style={{ marginTop: Math.max(this.props.size - 225, 0) }}
+        style={{ marginTop: Math.max(this.props.size - 275, 0) }}
       >
+        <ControllerConsoleSpeech />
         <div className={style.valueContainer}>
           X-Vel:
           <div className={style.value} data-test="Console_xvel">
@@ -41,6 +44,7 @@ export default class ControllerConsole extends React.Component {
           onTouchEnd={this.props.tiltModeEnd}
           onTouchCancel={this.props.tiltModeEnd}
         >
+          <TiltIcon className={style.icon} />
           <div className={style.tiltButtonText}>Hold To Use Tilt</div>
         </button>
       </div>
