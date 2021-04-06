@@ -37,7 +37,7 @@ export default class ControllerConsole extends React.Component {
         </div>
         <button
           className="Button"
-          style={{ marginTop: 10, fontSize: "1.25em" }}
+          style={{ marginTop: 15, fontSize: "1.25em" }}
           onMouseDown={this.props.tiltModeStart}
           onMouseUp={this.props.tiltModeEnd}
           onTouchStart={this.props.tiltModeStart}
