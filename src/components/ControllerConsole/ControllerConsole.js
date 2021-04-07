@@ -14,7 +14,12 @@ export default class ControllerConsole extends React.Component {
     return (
       <div
         className={style.container}
-        style={{ marginTop: Math.max(this.props.size - 275, 0) }}
+        style={{
+          fontSize:
+            this.props.size > 150 && window.innerWidth > window.innerHeight
+              ? "1em"
+              : ".75em",
+        }}
       >
         <ControllerConsoleSpeech
           handleDirectionCommands={this.props.handleDirectionCommands}
@@ -47,7 +52,7 @@ export default class ControllerConsole extends React.Component {
           onTouchCancel={this.props.tiltModeEnd}
         >
           <TiltIcon className={style.icon} />
-          <div className={style.tiltButtonText}>Hold To Use Tilt</div>
+          <div className={style.tiltButtonText}>Hold For Tilt</div>
         </button>
       </div>
     );

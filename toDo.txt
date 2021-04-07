@@ -4,7 +4,7 @@ https://www.amazon.com/Tolako-Arduino-Indicator-Channel-Official/dp/B00VRUAHLE
 
 Use chrome dev tools sensors tab to simulate Use Tilt (will probably need to serve https)
 
-Voice Control!!!
+Debug voice control. Add more recognizable direction words.
 
 Make Controller playback path plannings.
 

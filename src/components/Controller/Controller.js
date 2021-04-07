@@ -401,12 +401,14 @@ export default class Controller extends React.Component {
         default:
           break;
       }
-      const durationCounterCurrent = durationCounter;
+
+      const yVelConst = yVel;
+      const xVelConst = xVel;
 
       this.handleDirectionCommands_timeouts[i] = setTimeout(() => {
         this.setState({
-          joystickY: this.yVel_to_joystickY(yVel),
-          joystickX: this.xVel_to_joystickX(xVel),
+          joystickY: this.yVel_to_joystickY(yVelConst),
+          joystickX: this.xVel_to_joystickX(xVelConst),
         });
       }, durationCounter * 1000);
 
@@ -428,7 +430,7 @@ export default class Controller extends React.Component {
       <div
         className={style.container}
         style={{
-          marginTop: window.innerWidth > 800 ? this.state.size / 3 : 0,
+          marginTop: window.innerWidth > 900 ? this.state.size / 3 : 0,
         }}
         data-test="Controller"
       >

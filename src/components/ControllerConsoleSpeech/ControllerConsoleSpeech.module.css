@@ -9,10 +9,26 @@
   display: inline-block;
   vertical-align: top;
   margin-top: 5px;
-  padding-top: 15px;
+  padding-top: 10px;
   padding-bottom: 15px;
 }
 
 .container {
   margin-bottom: 15px;
+}
+
+.message {
+  height: 60px;
+  width: 175px;
+  text-align: center;
+  animation: fadeIn 0.5s;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
 }
