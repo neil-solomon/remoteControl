@@ -178,7 +178,7 @@ const ControllerConsoleSpeech = (props) => {
     }
 
     if (commandsWords.length === 0) {
-      setMessage('Try saying "up 1, down 1, left 1, right 1"');
+      setMessage('Try "up 1, down 1, left 1, right 1"');
       setMessageColor("rgb(33, 33, 33)");
       setMessageSize("1.25em");
       return;
@@ -222,6 +222,9 @@ const ControllerConsoleSpeech = (props) => {
         style={{ fontSize: "1.25em" }}
         onMouseDown={startListening}
         onMouseUp={stopListening}
+        onTouchStart={startListening}
+        onTouchEnd={stopListening}
+        onTouchCancel={stopListening}
         id="speechButton"
       >
         <MicrophoneIcon className={style.icon} />{" "}

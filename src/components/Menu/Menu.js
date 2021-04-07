@@ -18,13 +18,17 @@ export default class Menu extends React.Component {
       <div className={style.container}>
         <div
           className={style.title}
+          style={{ marginLeft: window.innerWidth > 350 ? 20 : 5 }}
           onClick={() => this.props.changeMenu(0)}
           data-test="Menu_title"
           tabIndex="0"
         >
           FROG
         </div>
-        <div className={style.menuIcons}>
+        <div
+          className={style.menuIcons}
+          style={{ marginLeft: Math.max(0, window.innerWidth - 335) }}
+        >
           <ConnectIcon
             className={style.icon}
             onClick={() => this.props.changeMenu(1)}

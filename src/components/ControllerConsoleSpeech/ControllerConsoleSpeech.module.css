@@ -20,6 +20,7 @@
 .message {
   height: 60px;
   width: 175px;
+  margin-left: 20px;
   text-align: center;
   animation: fadeIn 0.5s;
 }

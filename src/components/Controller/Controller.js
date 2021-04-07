@@ -438,7 +438,16 @@ export default class Controller extends React.Component {
           className={style.controlsContainer}
           style={{ height: this.state.size + 100 }}
         >
-          <div className={style.sliderContainer}>
+          <div
+            className={style.sliderContainer}
+            style={{
+              marginTop:
+                window.innerWidth < 900 &&
+                window.innerWidth > window.innerHeight
+                  ? (window.innerHeight - this.state.size - 100) / 2
+                  : 0,
+            }}
+          >
             <ControllerSlider
               height={this.state.size}
               updateSliderValue={this.updateSliderValue}
@@ -448,10 +457,12 @@ export default class Controller extends React.Component {
               updateSliderPosition={this.updateSliderPosition}
               ref={this.sliderRef}
             />
-            <KeyboardIcon
-              className={style.keyboardIcon}
-              style={{ marginTop: (this.state.size - 40) / 2 }}
-            />
+            {window.innerWidth > 500 && (
+              <KeyboardIcon
+                className={style.keyboardIcon}
+                style={{ marginTop: (this.state.size - 40) / 2 }}
+              />
+            )}
           </div>
           <div className={style.consoleContainer}>
             <ControllerConsole
@@ -466,11 +477,22 @@ export default class Controller extends React.Component {
               handleDirectionCommands={this.handleDirectionCommands}
             />
           </div>
-          <div className={style.joystickContainer}>
-            <MouseIcon
-              className={style.mouseIcon}
-              style={{ marginTop: (this.state.size - 30) / 2 }}
-            />
+          <div
+            className={style.joystickContainer}
+            style={{
+              marginTop:
+                window.innerWidth < 900 &&
+                window.innerWidth > window.innerHeight
+                  ? (window.innerHeight - this.state.size - 100) / 2
+                  : 0,
+            }}
+          >
+            {window.innerWidth > 500 && (
+              <MouseIcon
+                className={style.mouseIcon}
+                style={{ marginTop: (this.state.size - 30) / 2 }}
+              />
+            )}
             <ControllerJoystick
               baseSize={this.state.size}
               stickToBaseRatio={this.stickToBaseRatio}
