@@ -17,6 +17,7 @@
   font-size: 2em;
   cursor: pointer;
   margin-top: 2px;
+  margin-left: 20px;
   color: rgb(76, 175, 80);
   /* color: rgb(96, 125, 139); */
   /* color: white; */
@@ -34,6 +35,15 @@
   display: inline-block;
   margin-top: 7px;
   margin-left: calc(100vw - 335px);
+}
+
+@media screen and (max-width: 335px) {
+  .title {
+    margin-left: 5px;
+  }
+  .menuIcons {
+    margin-left: 0px;
+  }
 }
 
 .icon {

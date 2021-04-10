@@ -215,6 +215,7 @@ export default class Main extends React.Component {
               connectBluetooth={this.connectBluetooth}
               bluetoothCharacteristic={this.state.bluetoothCharacteristic}
               bluetoothDevice={this.state.bluetoothDevice}
+              savedMatrices={this.state.savedMatrices}
             />
           )}
           {this.state.pageView[3] && (

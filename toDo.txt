@@ -5,13 +5,18 @@ https://www.amazon.com/Tolako-Arduino-Indicator-Channel-Official/dp/B00VRUAHLE
 Make Controller playback path plannings. Add this to the controller console.
 Have the console only display velocities if the screen is big.
 
+The motors of the test bot don't move if -100<pwm<100, so I programmed the UNO to output 100 if 0<pwm<100 and -100 if -100<pwm<0.
+Figure out a good system for dealing with this. 
+Perhaps use EEPROM of MEGA to store this limit variable and make it adjustable from the app.
+https://www.arduino.cc/en/Reference/EEPROM
+
 Use chrome dev tools sensors tab to simulate Use Tilt (will probably need to serve https)
 
 Debug voice control. Add more recognizable direction words.
 
 Make sure localstorage can be used to manage path-plannings during offline use.
 
-Implement some kind of bug-tracker or crash reporting system. See if the Arduino can have an error log.
+Implement some kind of bug-tracker or crash reporting system.
 
 See if PWA Workbox can do anything cool.
 https://medium.com/la-creativer%C3%ADa/using-workbox-with-create-react-app-without-ejecting-b02b804854b
