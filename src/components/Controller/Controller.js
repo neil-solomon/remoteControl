@@ -426,6 +426,7 @@ export default class Controller extends React.Component {
   };
 
   render() {
+    console.log(this.props.savedMatrices);
     return (
       <div
         className={style.container}
@@ -475,6 +476,7 @@ export default class Controller extends React.Component {
               tiltModeEnd={this.tiltModeEnd}
               size={this.state.size}
               handleDirectionCommands={this.handleDirectionCommands}
+              savedMatrices={this.props.savedMatrices}
             />
           </div>
           <div

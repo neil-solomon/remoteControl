@@ -34,11 +34,7 @@ export default class PathPlanningMatrix extends React.Component {
       shortPath: null,
       startCell: null,
       endCell: null,
-      matrix: new Array(this.matrixHeight).fill(
-        new Array(this.matrixWidth).fill({
-          type: null, // start, end, barrier
-        })
-      ),
+      matrix: this.initializeMatrix(this.matrixHeight, this.matrixWidth),
       matrixName: "",
     };
   }
@@ -69,6 +65,24 @@ export default class PathPlanningMatrix extends React.Component {
     clearTimeout(this.mouseDragDebounce_timeout);
     clearTimeout(this.touchDragDebounce_timeout);
   }
+
+  initializeMatrix = (height, width) => {
+    var matrix = [];
+    var row;
+
+    for (let i = 0; i < height; i++) {
+      row = [];
+      for (let j = 0; j < width; j++) {
+        row.push({
+          type: null,
+          // key: i.toString() + "_" + j.toString(),
+        });
+      }
+      matrix.push(row);
+    }
+    console.log(matrix);
+    return matrix;
+  };
 
   getCellSize = () => {
     return window.innerWidth / this.matrixWidth - 6;
@@ -571,10 +585,9 @@ export default class PathPlanningMatrix extends React.Component {
   setNewMatrix = (matrixName, matrixData) => {
     if (!matrixData) {
       matrixData = {};
-      matrixData.matrix = new Array(this.matrixHeight).fill(
-        new Array(this.matrixWidth).fill({
-          type: null, // start, end, barrier
-        })
+      matrixData.matrix = this.initializeMatrix(
+        this.matrixHeight,
+        this.matrixWidth
       );
     } else {
       this.matrixHeight = matrixData.matrix.length;
