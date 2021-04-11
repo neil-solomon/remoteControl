@@ -45,6 +45,7 @@ export default class Controller extends React.Component {
       yawOffset: null,
       size: this.getControllerSize(),
       tiltMode: false,
+      runningDirectionCommands: false,
     };
   }
 
@@ -366,6 +367,8 @@ export default class Controller extends React.Component {
     /**
      * commands is an array where each entry is a 2-element array.
      * commands[i][0] is direction, commands[i][1] is duration.
+     * directions: 1=up , 2=down , 3=left , 4=right
+     * duration is in seconds
      */
     if (!(commands instanceof Array) || commands.length === 0) {
       return;
@@ -375,6 +378,8 @@ export default class Controller extends React.Component {
     var durationCounter = 0;
     var yVel = 0;
     var xVel = 0;
+
+    this.setState({ runningDirectionCommands: true });
 
     for (let i = 0; i < commands.length; i++) {
       if (!commands[i][0] || !commands[i][1]) {
@@ -422,11 +427,23 @@ export default class Controller extends React.Component {
         this.xVel_to_joystickX(xVel),
         this.yVel_to_joystickY(yVel)
       );
+      this.setState({ runningDirectionCommands: false });
     }, durationCounter * 1000);
   };
 
+  stopRunningDirectionCommands = () => {
+    console.log(this.handleDirectionCommands_timeouts);
+    for (const timeout of this.handleDirectionCommands_timeouts) {
+      clearTimeout(timeout);
+    }
+    this.setState({
+      joystickY: this.yVel_to_joystickY(0),
+      joystickX: this.xVel_to_joystickX(0),
+      runningDirectionCommands: false,
+    });
+  };
+
   render() {
-    console.log(this.props.savedMatrices);
     return (
       <div
         className={style.container}
@@ -458,7 +475,7 @@ export default class Controller extends React.Component {
               updateSliderPosition={this.updateSliderPosition}
               ref={this.sliderRef}
             />
-            {window.innerWidth > 500 && (
+            {window.innerWidth > 900 && (
               <KeyboardIcon
                 className={style.keyboardIcon}
                 style={{ marginTop: (this.state.size - 40) / 2 }}
@@ -477,6 +494,8 @@ export default class Controller extends React.Component {
               size={this.state.size}
               handleDirectionCommands={this.handleDirectionCommands}
               savedMatrices={this.props.savedMatrices}
+              runningDirectionCommands={this.state.runningDirectionCommands}
+              stopRunningDirectionCommands={this.stopRunningDirectionCommands}
             />
           </div>
           <div
@@ -486,10 +505,10 @@ export default class Controller extends React.Component {
                 window.innerWidth < 900 &&
                 window.innerWidth > window.innerHeight
                   ? (window.innerHeight - this.state.size - 100) / 2
-                  : 0,
+                  : -20,
             }}
           >
-            {window.innerWidth > 500 && (
+            {window.innerWidth > 900 && (
               <MouseIcon
                 className={style.mouseIcon}
                 style={{ marginTop: (this.state.size - 30) / 2 }}

@@ -21,6 +21,7 @@ export default class PathPlanningFileMenu extends React.Component {
             value={this.props.saveMatrixName}
             onChange={this.props.changeSaveMatrixName}
             disabled={this.props.matrixGeneratingPath}
+            className={style.input}
           />
         </div>
         <div className={style.saveButton}>
@@ -38,7 +39,7 @@ export default class PathPlanningFileMenu extends React.Component {
             onChange={this.props.changeSavedMatricesSelect}
             value={this.props.savedMatricesSelectValue}
             disabled={this.props.matrixGeneratingPath}
-            style={{ width: 100 }}
+            className={style.pathSelect}
           >
             {Object.keys(this.props.savedMatrices).map((matrixName) => (
               <option key={matrixName} value={matrixName}>

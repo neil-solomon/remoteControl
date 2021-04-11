@@ -32,3 +32,52 @@
   height: 35px;
   fill: rgb(69, 90, 100);
 }
+
+.runPathButtonContent {
+  animation: fadeIn 0.25s;
+}
+
+.runPathButtonIcon {
+  margin-top: 2px;
+  margin-bottom: -3px;
+  margin-left: -5px;
+  margin-right: -10px;
+  width: 35px;
+  height: 35px;
+  fill: rgb(69, 90, 100);
+}
+
+.runPathButtonText {
+  display: inline-block;
+  vertical-align: top;
+  margin-top: 6px;
+  margin-left: 5px;
+  user-select: none;
+  animation: fadeIn 0.5s;
+}
+
+.runPathSelect {
+  margin-top: 10px;
+  margin-right: 5px;
+  vertical-align: top;
+  width: 75px;
+  height: 30px;
+}
+
+.pathSelectContainer {
+  /* margin-top: 15px; */
+}
+
+.runPathWarning {
+  height: 20px;
+  animation: fadeIn 0.5s;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}

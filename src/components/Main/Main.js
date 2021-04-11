@@ -18,7 +18,7 @@ export default class Main extends React.Component {
       bluetoothDevice: null,
       bluetoothCharacteristic: null,
       batteryLevel: null,
-      savedMatrices: [],
+      savedMatrices: {},
       uvLight: false,
       doorClosed: false,
     };
@@ -53,6 +53,11 @@ export default class Main extends React.Component {
   };
 
   changeMenu = (menu) => {
+    if (this.state.pageView[menu]) {
+      // current page
+      return;
+    }
+
     var pageView = new Array(this.state.pageView.length).fill(false);
 
     pageView[menu] = true;

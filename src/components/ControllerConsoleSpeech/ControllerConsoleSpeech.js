@@ -178,9 +178,26 @@ const ControllerConsoleSpeech = (props) => {
     }
 
     if (commandsWords.length === 0) {
-      setMessage('Try "up 1, down 1, left 1, right 1"');
       setMessageColor("rgb(33, 33, 33)");
       setMessageSize("1.25em");
+      displayCommandsWords_timeouts = new Array(5);
+
+      displayCommandsWords_timeouts[0] = setTimeout(() => {
+        setMessage("Say 'forward one'");
+      }, 0);
+      displayCommandsWords_timeouts[1] = setTimeout(() => {
+        setMessage("Say 'back two'");
+      }, 1000);
+      displayCommandsWords_timeouts[2] = setTimeout(() => {
+        setMessage("Say 'left three'");
+      }, 2000);
+      displayCommandsWords_timeouts[3] = setTimeout(() => {
+        setMessage("Say 'right two'");
+      }, 3000);
+      displayCommandsWords_timeouts[4] = setTimeout(() => {
+        setMessage("");
+      }, 4000);
+
       return;
     }
 
