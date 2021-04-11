@@ -61,6 +61,10 @@ export default class ControllerSlider extends React.Component {
   car_touchstart = (event) => {
     event.preventDefault();
 
+    if (this.props.noUserControl) {
+      return;
+    }
+
     var touchToSliderPositionOffset;
     for (const touch of event.touches) {
       if (touch.target.id === this.carElement.id) {
@@ -112,6 +116,9 @@ export default class ControllerSlider extends React.Component {
   handleKeydown = (event) => {
     if (this.state.keyPressDebounce) return;
     // console.log(event.keyCode);
+    if (this.props.noUserControl) {
+      return;
+    }
 
     var passwordInput = document.getElementById("BluetoothConnect_input");
     if (passwordInput === document.activeElement) return;

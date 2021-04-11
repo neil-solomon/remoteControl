@@ -68,6 +68,10 @@ export default class ControllerJoystick extends React.Component {
   stick_touchstart = (event) => {
     event.preventDefault();
 
+    if (this.props.noUserControl) {
+      return;
+    }
+
     var mouseToStickOffsetTop;
     var mouseToStickOffsetLeft;
 
@@ -95,12 +99,19 @@ export default class ControllerJoystick extends React.Component {
 
   stick_touchend = (event) => {
     event.preventDefault();
+    if (!this.state.stickMotionEnabled) {
+      return;
+    }
     this.stickToCenter();
     this.setState({ stickMotionEnabled: false });
   };
 
   enableStickMotion = (event) => {
     if (this.state.stickToCenterDebounce) return;
+
+    if (this.props.noUserControl) {
+      return;
+    }
 
     this.setState({
       stickMotionEnabled: true,

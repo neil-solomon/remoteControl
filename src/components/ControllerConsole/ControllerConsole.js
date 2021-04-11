@@ -107,9 +107,6 @@ export default class ControllerConsole extends React.Component {
               : ".75em",
         }}
       >
-        <ControllerConsoleSpeech
-          handleDirectionCommands={this.props.handleDirectionCommands}
-        />
         {window.innerWidth > window.innerHeight && window.innerHeight > 500 && (
           <>
             <div className={style.valueContainer}>
@@ -139,7 +136,9 @@ export default class ControllerConsole extends React.Component {
           <select
             onChange={this.changeSavedMatricesSelect}
             value={this.state.savedMatricesSelectValue}
-            disabled={this.props.runningDirectionCommands}
+            disabled={
+              this.props.runningDirectionCommands || this.props.tiltMode
+            }
             className={style.runPathSelect}
           >
             <option value={this.savedMatricesSelectDefault}>
@@ -154,7 +153,9 @@ export default class ControllerConsole extends React.Component {
           <select
             onChange={this.changeRunPathSpeedSelect}
             value={this.state.runPathSpeedSelect}
-            disabled={this.props.runningDirectionCommands}
+            disabled={
+              this.props.runningDirectionCommands || this.props.tiltMode
+            }
             className={style.runPathSelect}
           >
             <option value={this.runPathSpeedSelectDefault}>
@@ -172,7 +173,9 @@ export default class ControllerConsole extends React.Component {
             disabled={
               this.state.savedMatricesSelect ===
                 this.savedMatricesSelectDefault ||
-              this.state.runPathSpeedSelect === this.runPathSpeedSelectDefault
+              this.state.runPathSpeedSelect ===
+                this.runPathSpeedSelectDefault ||
+              this.props.tiltMode
             }
             onClick={
               this.props.runningDirectionCommands
@@ -209,6 +212,12 @@ export default class ControllerConsole extends React.Component {
             </div>
           </button>
         </div>
+        <ControllerConsoleSpeech
+          handleDirectionCommands={this.props.handleDirectionCommands}
+          buttonDisabled={
+            this.props.runningDirectionCommands || this.props.tiltMode
+          }
+        />
         <button
           className="Button"
           style={{ marginTop: 15, fontSize: "1.25em" }}
@@ -217,6 +226,7 @@ export default class ControllerConsole extends React.Component {
           onTouchStart={this.props.tiltModeStart}
           onTouchEnd={this.props.tiltModeEnd}
           onTouchCancel={this.props.tiltModeEnd}
+          disabled={this.props.runningDirectionCommands}
         >
           <TiltIcon className={style.icon} />
           <div className={style.tiltButtonText}>Hold For Tilt</div>

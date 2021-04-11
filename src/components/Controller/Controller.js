@@ -474,6 +474,9 @@ export default class Controller extends React.Component {
               sliderPosition={this.state.sliderPosition}
               updateSliderPosition={this.updateSliderPosition}
               ref={this.sliderRef}
+              noUserControl={
+                this.state.tiltMode || this.state.runningDirectionCommands
+              }
             />
             {window.innerWidth > 900 && (
               <KeyboardIcon
@@ -491,6 +494,7 @@ export default class Controller extends React.Component {
               )}
               tiltModeStart={this.tiltModeStart}
               tiltModeEnd={this.tiltModeEnd}
+              tiltMode={this.state.tiltMode}
               size={this.state.size}
               handleDirectionCommands={this.handleDirectionCommands}
               savedMatrices={this.props.savedMatrices}
@@ -524,6 +528,9 @@ export default class Controller extends React.Component {
               debounceTime={this.controlsDebounceTime}
               toZeroTime={this.controlsToZeroTime}
               ref={this.joystickRef}
+              noUserControl={
+                this.state.tiltMode || this.state.runningDirectionCommands
+              }
             />
           </div>
         </div>

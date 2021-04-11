@@ -243,6 +243,7 @@ const ControllerConsoleSpeech = (props) => {
         onTouchEnd={stopListening}
         onTouchCancel={stopListening}
         id="speechButton"
+        disabled={props.buttonDisabled}
       >
         <MicrophoneIcon className={style.icon} />{" "}
         <div className={style.speechText}>Hold For Speech</div>
