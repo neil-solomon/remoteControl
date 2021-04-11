@@ -198,7 +198,7 @@ export default class Main extends React.Component {
         />
         <div
           className={
-            style.contentContainer + " " + this.state.contentContainerClassName
+            style.contentContainer + "  " + this.state.contentContainerClassName
           }
         >
           {this.state.pageView[0] && <Home />}
