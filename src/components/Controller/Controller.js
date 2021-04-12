@@ -13,8 +13,8 @@ export default class Controller extends React.Component {
     this.joystickRef = React.createRef();
     this.sliderRef = React.createRef();
 
-    this.controlsDebounceTime = 5; // millisecondss
-    this.controlsToZeroTime = 50;
+    this.controlsDebounceTime = 10; // milliseconds
+    this.controlsToZeroTime = 50; // millisecondss
     this.stickToBaseRatio = 4 / 5;
     this.validRadiusToBaseRatio = 1 / 4;
 
@@ -509,7 +509,7 @@ export default class Controller extends React.Component {
                 window.innerWidth < 900 &&
                 window.innerWidth > window.innerHeight
                   ? (window.innerHeight - this.state.size - 100) / 2
-                  : -20,
+                  : 0,
             }}
           >
             {window.innerWidth > 900 && (
