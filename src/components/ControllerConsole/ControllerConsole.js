@@ -15,7 +15,15 @@ export default class ControllerConsole extends React.Component {
     const numRunPathSpeedOptions = 10;
     this.runPathSpeedOptions = new Array(numRunPathSpeedOptions);
     for (let i = 1; i <= numRunPathSpeedOptions; i++) {
-      this.runPathSpeedOptions[i] = i / 2;
+      this.runPathSpeedOptions[i - 1] = i / 2;
+    }
+
+    const numMotorSpeedCompressionOptions = 10;
+    this.motorSpeedCompressionOptions = new Array(
+      numMotorSpeedCompressionOptions
+    );
+    for (let i = 0; i < numMotorSpeedCompressionOptions; i++) {
+      this.motorSpeedCompressionOptions[i] = i;
     }
 
     this.state = {
@@ -107,28 +115,43 @@ export default class ControllerConsole extends React.Component {
               : ".75em",
         }}
       >
-        {window.innerWidth > window.innerHeight && window.innerHeight > 500 && (
-          <>
-            <div className={style.valueContainer}>
-              X-Vel:
-              <div className={style.value} data-test="Console_xvel">
-                {this.props.xVel}
-              </div>
+        <div>
+          <div className={style.valueContainer}>
+            X:
+            <div className={style.value} data-test="Console_xvel">
+              {this.props.xVel}
             </div>
-            <div className={style.valueContainer}>
-              Y-Vel:
-              <div className={style.value} data-test="Console_yvel">
-                {this.props.yVel}
-              </div>
+          </div>
+          <div className={style.valueContainer}>
+            Y:
+            <div className={style.value} data-test="Console_yvel">
+              {this.props.yVel}
             </div>
-            <div className={style.valueContainer}>
-              Z-Vel:
-              <div className={style.value} data-test="Console_zVel">
-                {this.props.zVel}
-              </div>
+          </div>
+          <div className={style.valueContainer}>
+            Z:
+            <div className={style.value} data-test="Console_zVel">
+              {this.props.zVel}
             </div>
-          </>
-        )}
+          </div>
+        </div>
+        <div className={style.motorSpeedCompression}>
+          Motor Speed Compression:
+          <select
+            value={this.props.motorSpeedCompression}
+            onChange={this.props.updateMotorSpeedCompression}
+            style={{ marginLeft: 5 }}
+          >
+            {this.motorSpeedCompressionOptions.map((option) => (
+              <option
+                key={"motorSpeedCompressionOption" + option}
+                value={option}
+              >
+                {option}
+              </option>
+            ))}
+          </select>
+        </div>
         <div className={style.pathSelectContainer}>
           <div className={style.runPathWarning} key={this.state.runPathWarning}>
             {this.state.runPathWarning}
@@ -220,7 +243,7 @@ export default class ControllerConsole extends React.Component {
         />
         <button
           className="Button"
-          style={{ marginTop: 15, fontSize: "1.25em" }}
+          style={{ fontSize: "1.25em" }}
           onMouseDown={this.props.tiltModeStart}
           onMouseUp={this.props.tiltModeEnd}
           onTouchStart={this.props.tiltModeStart}

@@ -46,6 +46,7 @@ export default class Controller extends React.Component {
       size: this.getControllerSize(),
       tiltMode: false,
       runningDirectionCommands: false,
+      motorSpeedCompression: 0,
     };
   }
 
@@ -97,7 +98,7 @@ export default class Controller extends React.Component {
 
       data = [
         36, // motor command
-        parseInt(this.joystickX_to_xVel(this.state.joystickX)) + 150, // ensure that all values are between 50 and 250
+        parseInt(this.joystickX_to_xVel(this.state.joystickX)) + 150, // bias so the speed is between [50, 250] because the bluetooth module won't send 0
         parseInt(this.joystickY_to_yVel(this.state.joystickY)) + 150,
         parseInt(this.sliderPosition_to_zVel(this.state.sliderPosition)) + 150,
       ];
@@ -118,6 +119,17 @@ export default class Controller extends React.Component {
         );
       }
     }
+  };
+
+  updateMotorSpeedCompression = (event) => {
+    // send the new value to the bluetooth module twice to be sure it is received
+    const data = [41, parseInt(event.target.value) + 1]; // bias because the ble module can't send 0
+    this.props.sendToBluetooth(data);
+    this.updateMotorSpeedCompression_timeout = setTimeout(() => {
+      this.props.sendToBluetooth(data);
+    }, 1000);
+
+    this.setState({ motorSpeedCompression: event.target.value });
   };
 
   updateSize = () => {
@@ -500,6 +512,8 @@ export default class Controller extends React.Component {
               savedMatrices={this.props.savedMatrices}
               runningDirectionCommands={this.state.runningDirectionCommands}
               stopRunningDirectionCommands={this.stopRunningDirectionCommands}
+              motorSpeedCompression={this.state.motorSpeedCompression}
+              updateMotorSpeedCompression={this.updateMotorSpeedCompression}
             />
           </div>
           <div

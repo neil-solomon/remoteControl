@@ -30,6 +30,7 @@ int doorOutPin = 27;
 int doorInPin = A0;
 int batteryInPin = A1;
 unsigned long millisNow; // use to capture the time at the beginning of each main loop
+int motorSpeedCompression = 0; // Compress the pmw signal to the motors. Increase if a low pwm value doesn't move the motors at all.
 
 void setup() {
   /* this function is called once when the Arduino boots up */
@@ -66,10 +67,17 @@ void loop() {
     else if (bluetoothReceiveBuffer[0] == 39 && bluetoothReceiveBuffer[1] == bluetoothReceiveBuffer[2] && bluetoothReceiveBuffer[2] == bluetoothReceiveBuffer[3]) {
       setUvLight(bluetoothReceiveBuffer[1]);  
     }
+    else if (bluetoothReceiveBuffer[0] == 41) {
+      motorSpeedCompression = (int)bluetoothReceiveBuffer[1] - 1;  
+    }
     else if (bluetoothReceiveBuffer[2] == 43) {
       handleBluetoothNotification();  
     }
   } 
+
+  if (analogRead(doorInPin) < 1000 && uvLight) { // door is open and UV is on
+    setUvLight(1); // turn off UV
+  }
   
   millisNow = millis();
   
@@ -253,6 +261,8 @@ void checkPassword() {
 }
 
 void sendMotorVelocities(int xVel, int yVel, int rotVel) {
+  Serial.print("motorSpeedCompression: ");
+  Serial.println(motorSpeedCompression);
   int motorVelocity = 0;
   Serial.println("motors:");
   for (int i = 0; i < 4; i++) {
@@ -287,8 +297,17 @@ double calculateMotorVelocity(int motorNumber, int xVel, int yVel, int rotVel) {
       break;
   }
   
-  int normalizedMotorVelocity = floor(motorVelocity / 10);
-  return normalizedMotorVelocity;
+  // normalize the value, this keeps the values roughly between 0 and 255
+  motorVelocity /= 10;
+
+  // compress the value
+  if (motorVelocity > 0) {
+    motorVelocity = motorVelocity * (1 - .1*motorSpeedCompression) + 20*motorSpeedCompression;
+  } else if (motorVelocity < 0) {
+    motorVelocity = motorVelocity * (1 - .1*motorSpeedCompression) - 20*motorSpeedCompression;
+  }
+  
+  return (int)floor(motorVelocity);
 }
 
 void sendBatteryLevel() {
@@ -341,9 +360,8 @@ void setUvLight(unsigned char value) {
 }
 
 void sendDoorStatus() {
-  int reading = analogRead(doorInPin);
   char data [] = {40, 1};
-  if (reading > 1000) {
+  if (analogRead(doorInPin) > 1000) {
     data[1] = 2;
   }
   Serial1.write(data);

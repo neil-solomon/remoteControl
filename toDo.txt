@@ -1,11 +1,5 @@
-The motors of the test bot don't move if -100<pwm<100, so I programmed the UNO to output 100 if 0<pwm<100 and -100 if -100<pwm<0.
-Figure out a good system for dealing with this. 
-Perhaps use EEPROM of MEGA to store this limit variable and make it adjustable from the app.
+Perhaps use EEPROM of MEGA to remember motorSpeedCompression.
 https://www.arduino.cc/en/Reference/EEPROM
-
-Add motor sensitivity (the parameter from the above comment) to controller console.
-
-Make x,y,z vel in controller console all on one line.
 
 Implement some kind of bug-tracker or crash reporting system. Perhaps just a contact form.
 
@@ -49,6 +43,7 @@ commands to/from arduino starts with number
 	battery 38
 	uvLight 39
 	door 40
+	motorSpeedCompression 41
 
 Browser Compatibility:
 	Chrome:
