@@ -1,3 +1,6 @@
+Add code to reverse direction of wheels on one side of the robot. Motors on the left need to rotate oppositely
+of motors on right.
+
 Perhaps use EEPROM of MEGA to remember motorSpeedCompression.
 https://www.arduino.cc/en/Reference/EEPROM
 

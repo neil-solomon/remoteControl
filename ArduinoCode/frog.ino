@@ -1,6 +1,16 @@
 #include <CytronMotorDriver.h>
 
 /*
+To install the Cytron Motor Driver library:
+1. Open the Arduino IDE, select Sketch -> Include Library -> Manage Libraries....
+2. Search for Cytron Motor Drivers Library.
+3. Click Install to install the library.
+4. Restart the Arduino IDE.
+
+https://github.com/CytronTechnologies/CytronMotorDriver
+*/
+
+/*
 Serial uses rx0 (pin 0) and tx0(pin 1) of the Arduino Mega. This is used for Serial output that can be viewed in the Serial Monitor.
 Serial1 uses rx1 (pin 19) and tx1(pin 18) of the Arduino Mega. This is used to communicate with the HM-10 BLE module.
 */
@@ -14,11 +24,19 @@ const double wheelRadius = .05; // meters
 const double lambda = 1 / tan(wheelRollerAngle);
 const double beta = (chassisWidth * tan(wheelRollerAngle) + chassisLength) / tan(wheelRollerAngle);
 
-CytronMD motor1(PWM_DIR, 2, 22); // a motor driver uses to pins to communicate: 1 for motor velocity (pwm), 1 for motor direction (high/low)
-CytronMD motor2(PWM_DIR, 3, 23);
-CytronMD motor3(PWM_DIR, 4, 24);
-CytronMD motor4(PWM_DIR, 5, 25);
+// a motor driver uses two pins to communicate: 1 for motor velocity (pwm), 1 for motor direction (high/low)
+CytronMD motor1(PWM_DIR, 2, 22); // front-left
+CytronMD motor2(PWM_DIR, 3, 23); // front-right
+CytronMD motor3(PWM_DIR, 4, 24); // rear-left
+CytronMD motor4(PWM_DIR, 5, 25); // rear-right
 CytronMD motors [] = {motor1, motor2, motor3, motor4};
+
+/* 
+For example, to travel forward the left motors rotate counter-clockwise and the right motors rotate clockwise.
+So The motors on one side of the robot will need to rotate in the opposite direction. 
+ */
+bool reverseLeftMotors = false;
+bool reverseRightMotors = false;
 
 unsigned char bluetoothReceiveBuffer [128] = {NULL};
 int bluetoothReceiveBuffer_length = 0;
@@ -129,6 +147,10 @@ void motors_setup() {
   pinMode(3, OUTPUT);
   pinMode(4, OUTPUT);
   pinMode(5, OUTPUT);
+  pinMode(22, OUTPUT);
+  pinMode(23, OUTPUT);
+  pinMode(24, OUTPUT);
+  pinMode(25, OUTPUT);
   
   for (int i = 0; i < 4; i++) {
     motors[i].setSpeed(0);  
@@ -265,9 +287,9 @@ void sendMotorVelocities(int xVel, int yVel, int rotVel) {
   Serial.println(motorSpeedCompression);
   int motorVelocity = 0;
   Serial.println("motors:");
-  for (int i = 0; i < 4; i++) {
+  for (int i = 1; i <= 4; i++) {
     motorVelocity = calculateMotorVelocity(i, xVel, yVel, rotVel);
-    motors[i].setSpeed(motorVelocity);
+    motors[i-1].setSpeed(motorVelocity);
     Serial.print(motorVelocity);
     Serial.print("   ");
     if (i == 1 || i == 3) {
@@ -281,17 +303,33 @@ double calculateMotorVelocity(int motorNumber, int xVel, int yVel, int rotVel) {
   double motorVelocity = 0;
 
   switch(motorNumber) {
-    case 0:
-      motorVelocity = (1/wheelRadius) * (yVel + lambda * xVel - beta * rotVel);
-      break;
     case 1:
-      motorVelocity = (1/wheelRadius) * (yVel - lambda * xVel + beta * rotVel);
+      // front-left
+      motorVelocity = (1/wheelRadius) * (yVel + lambda * xVel - beta * rotVel);
+      if (reverseLeftMotors){
+        motorVelocity *= -1;
+      }
       break;
     case 2:
-      motorVelocity = (1/wheelRadius) * (yVel - lambda * xVel - beta * rotVel);
+      // front-right
+      motorVelocity = (1/wheelRadius) * (yVel - lambda * xVel + beta * rotVel);
+      if (reverseRightMotors){
+        motorVelocity *= -1;
+      }
       break;
     case 3:
+      // rear-left
+      motorVelocity = (1/wheelRadius) * (yVel - lambda * xVel - beta * rotVel);
+      if (reverseLeftMotors){
+        motorVelocity *= -1;
+      }
+      break;
+    case 4:
+      // rear-right
       motorVelocity = (1/wheelRadius) * (yVel + lambda * xVel + beta * rotVel);
+      if (reverseRightMotors){
+        motorVelocity *= -1;
+      }
       break;
     default:
       break;
