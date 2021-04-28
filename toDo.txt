@@ -1,7 +1,3 @@
-Increase the pwm frequency.
-https://www.etechnophiles.com/how-to-change-pwm-frequency-of-arduino-mega/#:~:text=The%20default%20frequency%20on%20respective,whose%20default%20frequency%20is%20980Hz.
-https://forum.arduino.cc/t/mega-2560-pwm-frequency/71434/19
-
 Perhaps use EEPROM of MEGA to remember motorSpeedCompression.
 https://www.arduino.cc/en/Reference/EEPROM
 
