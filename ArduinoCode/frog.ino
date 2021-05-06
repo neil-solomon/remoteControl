@@ -145,7 +145,7 @@ void motors_setup() {
   Serial.println("  motors_setup...");
   pinMode(2, OUTPUT);
   pinMode(3, OUTPUT);
-  pinMode(4, OUTPUT);
+  pinMode(6, OUTPUT);
   pinMode(5, OUTPUT);
   pinMode(22, OUTPUT);
   pinMode(23, OUTPUT);

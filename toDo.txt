@@ -1,3 +1,6 @@
+Read motor encoders to know the relationship between pwm and rpm
+https://dronebotworkshop.com/rotary-encoders-arduino/
+
 Perhaps use EEPROM of MEGA to remember motorSpeedCompression.
 https://www.arduino.cc/en/Reference/EEPROM
 
