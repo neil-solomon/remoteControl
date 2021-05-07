@@ -22,7 +22,7 @@ void loop() {
   int pwm_inc = 10;
   int delayTime = 1000; // milliseconds
 
-  for (int i = 0; i < 4; i++) { // test all 4 motors individually
+  for (int i = 3; i < 4; i++) { // test all 4 motors individually
     for (int j = pwm_min; j <= pwm_max; j += pwm_inc) { // run motor forward
       motors[i].setSpeed(j);
       Serial.print("motor ");
@@ -43,20 +43,20 @@ void loop() {
   }
 
   // run all 4 motors forward
-  for (int i = 0; i < 4; i++) {
-    motors[0].setSpeed(pwm_max);
-  }
-  Serial.print("all motors forward ");
-  Serial.println(pwm_max);
-  delay(delayTime);
-  
-  // run all 4 motors backward
-  for (int i = 0; i < 4; i++) {
-    motors[0].setSpeed(-1 * pwm_max);
-  }
-  Serial.print("all motors backward ");
-  Serial.println(pwm_max);
-  delay(delayTime);
+//  for (int i = 0; i < 4; i++) {
+//    motors[0].setSpeed(pwm_max);
+//  }
+//  Serial.print("all motors forward ");
+//  Serial.println(pwm_max);
+//  delay(delayTime);
+//  
+//  // run all 4 motors backward
+//  for (int i = 0; i < 4; i++) {
+//    motors[0].setSpeed(-1 * pwm_max);
+//  }
+//  Serial.print("all motors backward ");
+//  Serial.println(pwm_max);
+//  delay(delayTime);
 
   for (int i = 0; i < 4; i++) {
     motors[0].setSpeed(0);

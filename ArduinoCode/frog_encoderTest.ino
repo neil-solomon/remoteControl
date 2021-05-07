@@ -7,89 +7,79 @@ CytronMD motor3(PWM_DIR, 6, 24); // rear-left
 CytronMD motor4(PWM_DIR, 5, 25); // rear-right
 CytronMD motors [] = {motor1, motor2, motor3, motor4};
 
+#define motor4_encA_pin 30
+#define motor4_encB_pin 31
+
+int motor4_encA_state = 0;
+int motor4_encA_lastState = 0;
+
 // control the rate at which the serial ports communicate
 const int serialRate = 9600;
 
 void setup() {
   Serial.begin(serialRate);
   delay(100);
+  encoders_setup();
   motors_setup();
 }
 
 void loop() {
-  int pwm = 50;
+  int pwm_min = 5;
+  int pwm_max = 5;
+  int pwm_inc = 10;
   int delayTime = 2000; // milliseconds
-
-  Serial.print("Testing with pwm=");
-  Serial.println(pwm);
   
-  Serial.println("forward");
-  motors[0].setSpeed(pwm);
-  motors[1].setSpeed(-1 * pwm);
-  motors[2].setSpeed(pwm);
-  motors[3].setSpeed(-1 * pwm);
-  delay(delayTime);
-  for (int i = 0; i < 4; i++) {
-    motors[i].setSpeed(0);
-  }
-  delay(delayTime);
+  unsigned long int timer;
+  int numPulses;
 
-  Serial.println("backward");
-  motors[0].setSpeed(-1 * pwm);
-  motors[1].setSpeed(pwm);
-  motors[2].setSpeed(-1 * pwm);
-  motors[3].setSpeed(pwm);
-  delay(delayTime);
-  for (int i = 0; i < 4; i++) {
-    motors[i].setSpeed(0);
-  }
-  delay(delayTime);
+  for (int i = 3; i < 4; i++) { 
+    for (int j = pwm_min; j <= pwm_max; j += pwm_inc) { // run motor forward
+      motors[i].setSpeed(j);
+      Serial.print("motor ");
+      Serial.print(i);
+      Serial.print(" forward ");
+      Serial.print(j);
 
-  Serial.println("right");
-  motors[0].setSpeed(pwm);
-  motors[1].setSpeed(pwm);
-  motors[2].setSpeed(-1 * pwm);
-  motors[3].setSpeed(-1 * pwm);
-  delay(2 * delayTime);
-  for (int i = 0; i < 4; i++) {
-    motors[i].setSpeed(0);
+      numPulses = 0;
+      timer = millis();
+      while(millis() - timer < delayTime){
+        motor4_encA_state = digitalRead(motor4_encA_pin);
+        if (motor4_encA_state == 1 && motor4_encA_lastState == 0){
+          numPulses++;
+        }
+        motor4_encA_lastState = motor4_encA_state;
+      }
+      Serial.print("    numPulses: ");
+      Serial.println(numPulses);
+    }
+    for (int j = -1 * pwm_min; j >= -1 * pwm_max; j -= pwm_inc) { // run motor backward
+      motors[i].setSpeed(j);
+      Serial.print("motor ");
+      Serial.print(i);
+      Serial.print(" backward ");
+      Serial.print(j);
+      
+      numPulses = 0;
+      timer = millis();
+      while(millis() - timer < delayTime){
+        motor4_encA_state = digitalRead(motor4_encA_pin);
+        if (motor4_encA_state != motor4_encA_lastState){
+          numPulses++;
+        }
+        motor4_encA_lastState = motor4_encA_state;
+      }
+      Serial.print("    numPulses: ");
+      Serial.println(numPulses);
+    }
   }
-  delay(delayTime);
-
-  Serial.println("left");
-  motors[0].setSpeed(-1 * pwm);
-  motors[1].setSpeed(-1 * pwm);
-  motors[2].setSpeed(pwm);
-  motors[3].setSpeed(pwm);
-  delay(2 * delayTime);
-  for (int i = 0; i < 4; i++) {
-    motors[i].setSpeed(0);
-  }
-  delay(delayTime);
-
-  Serial.println("rotate right");
-  motors[0].setSpeed(pwm);
-  motors[1].setSpeed(pwm);
-  motors[2].setSpeed(pwm);
-  motors[3].setSpeed(pwm);
-  delay(2 * delayTime);
-  for (int i = 0; i < 4; i++) {
-    motors[i].setSpeed(0);
-  }
-  delay(delayTime);
-
-  Serial.println("rotate left");
-  motors[0].setSpeed(-1 * pwm);
-  motors[1].setSpeed(-1 * pwm);
-  motors[2].setSpeed(-1 * pwm);
-  motors[3].setSpeed(-1 * pwm);
-  delay(2 * delayTime);
-  for (int i = 0; i < 4; i++) {
-    motors[i].setSpeed(0);
-  }
-  delay(delayTime);
-
 }
+
+void encoders_setup() {
+  pinMode(motor4_encA_pin, INPUT);
+  pinMode(motor4_encB_pin, INPUT);
+  motor4_encA_lastState = digitalRead(motor4_encA_pin);
+}
+
 void motors_setup() {
   /* 
   This tests to ensure the motors are set up properly. Each motor is run forward then backwards.

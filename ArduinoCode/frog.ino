@@ -15,6 +15,47 @@ Serial uses rx0 (pin 0) and tx0(pin 1) of the Arduino Mega. This is used for Ser
 Serial1 uses rx1 (pin 19) and tx1(pin 18) of the Arduino Mega. This is used to communicate with the HM-10 BLE module.
 */
 
+#define uvLightPin 26
+#define doorOutPin 27
+#define doorInPin A0
+#define batteryInPin A1
+
+// motor1 front-left
+#define motor1_pwmPin 2
+#define motor1_dirPin 22
+#define motor1_encA_pin 30
+#define motor1_encB_pin 31
+
+// motor2 front-right 
+#define motor2_pwmPin 3 
+#define motor2_dirPin 23
+#define motor2_encA_pin 32
+#define motor2_encB_pin 33
+
+// motor3 back-left
+#define motor3_pwmPin 6
+#define motor3_dirPin 24
+#define motor3_encA_pin 34
+#define motor3_encB_pin 35 
+
+// motor4 rear-right
+#define motor4_pwmPin 5
+#define motor4_dirPin 25
+#define motor4_encA_pin 36
+#define motor4_encB_pin 37
+
+int motor_encA_pins [] = {motor1_encA_pin, motor2_encA_pin, motor3_encA_pin, motor4_encA_pin};
+int motor_encB_pins [] = {motor1_encB_pin, motor2_encB_pin, motor3_encB_pin, motor4_encB_pin};
+
+double motorCalibrationRatio [] = {1, 1, 1, 1}; // scale the values sent to each motor according to how reponsive that motor is
+
+// a motor driver uses two pins to communicate: 1 for motor velocity (pwm), 1 for motor direction (high/low)
+CytronMD motor1(PWM_DIR, motor1_pwmPin, motor1_dirPin);
+CytronMD motor2(PWM_DIR, motor2_pwmPin, motor2_dirPin);
+CytronMD motor3(PWM_DIR, motor3_pwmPin, motor3_dirPin);
+CytronMD motor4(PWM_DIR, motor4_pwmPin, motor4_dirPin);
+CytronMD motors [] = {motor1, motor2, motor3, motor4};
+
 const int serialRate = 9600; // control the rate at which the serial ports communicate
 const double chassisLength = .4; // meters
 const double chassisWidth = .2; // meters
@@ -24,29 +65,18 @@ const double wheelRadius = .05; // meters
 const double lambda = 1 / tan(wheelRollerAngle);
 const double beta = (chassisWidth * tan(wheelRollerAngle) + chassisLength) / tan(wheelRollerAngle);
 
-// a motor driver uses two pins to communicate: 1 for motor velocity (pwm), 1 for motor direction (high/low)
-CytronMD motor1(PWM_DIR, 2, 22); // front-left
-CytronMD motor2(PWM_DIR, 3, 23); // front-right
-CytronMD motor3(PWM_DIR, 6, 24); // rear-left
-CytronMD motor4(PWM_DIR, 5, 25); // rear-right
-CytronMD motors [] = {motor1, motor2, motor3, motor4};
-
 /* 
 For example, to travel forward the left motors rotate counter-clockwise and the right motors rotate clockwise.
 So The motors on one side of the robot will need to rotate in the opposite direction. 
  */
 bool reverseLeftMotors = false;
-bool reverseRightMotors = false;
+bool reverseRightMotors = true;
 
 unsigned char bluetoothReceiveBuffer [128] = {NULL};
 int bluetoothReceiveBuffer_length = 0;
 unsigned long bluetoothConnectionTimer = 0;
 bool passwordReceived = false;
 bool uvLight = false; // false is off, true is on
-int uvLightPin = 26;
-int doorOutPin = 27;
-int doorInPin = A0;
-int batteryInPin = A1;
 unsigned long millisNow; // use to capture the time at the beginning of each main loop
 int motorSpeedCompression = 0; // Compress the pmw signal to the motors. Increase if a low pwm value doesn't move the motors at all.
 
@@ -143,14 +173,14 @@ void motors_setup() {
   This tests to ensure the motors are set up properly. Each motor is run forward then backwards.
 */
   Serial.println("  motors_setup...");
-  pinMode(2, OUTPUT);
-  pinMode(3, OUTPUT);
-  pinMode(6, OUTPUT);
-  pinMode(5, OUTPUT);
-  pinMode(22, OUTPUT);
-  pinMode(23, OUTPUT);
-  pinMode(24, OUTPUT);
-  pinMode(25, OUTPUT);
+  pinMode(motor1_pwmPin, OUTPUT);
+  pinMode(motor1_dirPin, OUTPUT);
+  pinMode(motor2_pwmPin, OUTPUT);
+  pinMode(motor2_dirPin, OUTPUT);
+  pinMode(motor3_pwmPin, OUTPUT);
+  pinMode(motor3_dirPin, OUTPUT);
+  pinMode(motor4_pwmPin, OUTPUT);
+  pinMode(motor4_dirPin, OUTPUT);
 
   /* Set pwm pins to maximum frequency https://forum.arduino.cc/t/mega-2560-pwm-frequency/71434/19 
    The 3 LSB of registers TCCRnB contain the prescale value of the frequency. The frequeny used on the pins
@@ -174,31 +204,38 @@ void motors_setup() {
   }
 
   return;
+
+  /* Calibrate Motors
+  Read the motor encoders to see how much each motor rotates. Adjust the pwm value sent to each motor so that
+  all motors rotate the same amount for a given pwm value. The test motion is counter-clockwise rotation during
+  which the encoder pulses for each motor are counted. Each motor is then calibrated relative to motor1. */
+  int pwm = 100;
+  int calibrationTime = 5000;
+  unsigned long int timer;
+  double numPulses[] = {0,0,0,0};
+  int motor_enc_states[] = {0,0,0,0};
+  int motor_enc_lastStates[] = {0,0,0,0};
   
-  // test motors
-  for (int i = 0; i < 4; i++) { // each motor
-    Serial.print("    motor ");
-    Serial.print(i+1);
-    Serial.println(" forwards");
-    for (int j = 0; j < 256; j++) {
-      motors[i].setSpeed(j);
-      delay(1);
+  Serial.print("    calibrate motors: pwm=");
+  Serial.println(pwm);
+  motors[0].setSpeed(-1 * pwm);
+  motors[1].setSpeed(pwm);
+  motors[2].setSpeed(-1 * pwm);
+  motors[3].setSpeed(pwm);
+  timer = millis();
+  
+  while(millis() - timer < calibrationTime) {
+    for (int i = 0; i < 4; i++) {
+      motor_enc_states[i] = digitalRead(motor_encA_pins[i]);
+      if (motor_enc_states[i] == 1 && motor_enc_lastStates[i] == 0){
+          numPulses[i]++;
+      }
+      motor_enc_states[i] = motor_enc_lastStates[i];
     }
-    for (int j = 255; j >= 0; j--) {
-      motors[i].setSpeed(j);
-      delay(1);
-    }
-    Serial.print("    motor ");
-    Serial.print(i+1);
-    Serial.println(" backwards");
-    for (int j = 0; j < 256; j++) {
-      motors[i].setSpeed(-1 * j);
-      delay(1);
-    }
-    for (int j = 255; j >= 0; j--) {
-      motors[i].setSpeed(-1 * j);
-      delay(1);
-    }
+  }
+
+  for (int i = 1; i < 4; i++) {
+    motorCalibrationRatio[i] = numPulses[0] / numPulses[i];
   }
 }
 
@@ -354,6 +391,9 @@ double calculateMotorVelocity(int motorNumber, int xVel, int yVel, int rotVel) {
     default:
       break;
   }
+
+  // adjust the value according to motorCalibration
+  motorVelocity *= motorCalibrationRatio[motorNumber - 1];
   
   // normalize the value, this keeps the values roughly between 0 and 255
   motorVelocity /= 10;
