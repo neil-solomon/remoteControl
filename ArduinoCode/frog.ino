@@ -203,11 +203,9 @@ void motors_setup() {
     motors[i].setSpeed(0);  
   }
 
-  return;
-
   /* Calibrate Motors
   Read the motor encoders to see how much each motor rotates. Adjust the pwm value sent to each motor so that
-  all motors rotate the same amount for a given pwm value. The test motion is counter-clockwise rotation during
+  all motors rotate the same amount for a given pwm value. The test motion is clockwise rotation during
   which the encoder pulses for each motor are counted. Each motor is then calibrated relative to motor1. */
   int pwm = 100;
   int calibrationTime = 5000;
@@ -218,9 +216,9 @@ void motors_setup() {
   
   Serial.print("    calibrate motors: pwm=");
   Serial.println(pwm);
-  motors[0].setSpeed(-1 * pwm);
+  motors[0].setSpeed(pwm);
   motors[1].setSpeed(pwm);
-  motors[2].setSpeed(-1 * pwm);
+  motors[2].setSpeed(pwm);
   motors[3].setSpeed(pwm);
   timer = millis();
   
@@ -236,6 +234,16 @@ void motors_setup() {
 
   for (int i = 1; i < 4; i++) {
     motorCalibrationRatio[i] = numPulses[0] / numPulses[i];
+  }
+
+  for (int i = 0; i < 4; i++){
+    motors[i].setSpeed(0);
+    Serial.print("    motor ");
+    Serial.print(i+1);
+    Serial.print("    numPulses: ");
+    Serial.print(numPulses[i]);
+    Serial.print("    ratio: ");
+    Serial.println(motorCalibrationRatio[i]);
   }
 }
 
