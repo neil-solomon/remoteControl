@@ -233,7 +233,9 @@ void motors_setup() {
   }
 
   for (int i = 1; i < 4; i++) {
-    motorCalibrationRatio[i] = numPulses[0] / numPulses[i];
+    if (numPulses[i] != 0) {
+      motorCalibrationRatio[i] = numPulses[0] / numPulses[i];
+    }
   }
 
   for (int i = 0; i < 4; i++){
