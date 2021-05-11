@@ -203,6 +203,8 @@ void motors_setup() {
     motors[i].setSpeed(0);  
   }
 
+  return;
+
   /* Calibrate Motors
   Read the motor encoders to see how much each motor rotates. Adjust the pwm value sent to each motor so that
   all motors rotate the same amount for a given pwm value. The test motion is clockwise rotation during
@@ -359,7 +361,7 @@ void sendMotorVelocities(int xVel, int yVel, int rotVel) {
     motors[i-1].setSpeed(motorVelocity);
     Serial.print(motorVelocity);
     Serial.print("   ");
-    if (i == 1 || i == 3) {
+    if (i == 2 || i == 4) {
       Serial.println();
     }
   }
