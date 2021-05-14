@@ -57,11 +57,11 @@ CytronMD motor4(PWM_DIR, motor4_pwmPin, motor4_dirPin);
 CytronMD motors [] = {motor1, motor2, motor3, motor4};
 
 const int serialRate = 9600; // control the rate at which the serial ports communicate
-const double chassisLength = .4; // meters
-const double chassisWidth = .2; // meters
+const double chassisLength = .27; // meters
+const double chassisWidth = .27; // meters
+const double wheelRadius = .1; // meters
 const double pi = 3.141593;
 const double wheelRollerAngle = pi/4; // radians 
-const double wheelRadius = .05; // meters
 const double lambda = 1 / tan(wheelRollerAngle);
 const double beta = (chassisWidth * tan(wheelRollerAngle) + chassisLength) / tan(wheelRollerAngle);
 
@@ -202,8 +202,6 @@ void motors_setup() {
   for (int i = 0; i < 4; i++) {
     motors[i].setSpeed(0);  
   }
-
-  return;
 
   /* Calibrate Motors
   Read the motor encoders to see how much each motor rotates. Adjust the pwm value sent to each motor so that
@@ -404,11 +402,16 @@ double calculateMotorVelocity(int motorNumber, int xVel, int yVel, int rotVel) {
       break;
   }
 
+  if (xVel == 0 && yVel == 0 && rotVel != 0){
+    /* increase the motor velocity if we're only rotating */
+    motorVelocity *= 2;
+  }
+
   // adjust the value according to motorCalibration
   motorVelocity *= motorCalibrationRatio[motorNumber - 1];
   
   // normalize the value, this keeps the values roughly between 0 and 255
-  motorVelocity /= 10;
+  motorVelocity /= 7;
 
   // compress the value
   if (motorVelocity > 0) {
