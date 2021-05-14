@@ -197,7 +197,7 @@ export default class Controller extends React.Component {
   };
 
   setNewControllerVals = (roll, pitch, yaw) => {
-    const threshold = 0.25;
+    const threshold = 0.2; // the minimum amount of tilt necessary to illicit motion
 
     if (Math.abs(roll) < threshold) {
       roll = 0;
