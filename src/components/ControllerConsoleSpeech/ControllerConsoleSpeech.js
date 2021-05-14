@@ -14,10 +14,14 @@ const ControllerConsoleSpeech = (props) => {
   const [messageColor, setMessageColor] = useState("rgb(33, 33, 33)");
   const [messageSize, setMessageSize] = useState("1.25em");
   var displayCommandsWords_timeouts = [];
+  var resetTranscript_timeouts = new Array(10).fill(null); // resetTranscript() needs to be called multiple times to work
 
   useEffect(() => {
     return () => {
       for (const timeout of displayCommandsWords_timeouts) {
+        clearTimeout(timeout);
+      }
+      for (const timeout of resetTranscript_timeouts) {
         clearTimeout(timeout);
       }
     };
@@ -41,9 +45,10 @@ const ControllerConsoleSpeech = (props) => {
     const { commands, commandsWords } = getCommands(transcript);
     props.handleDirectionCommands(commands);
     displayCommandsWords(commands, commandsWords);
-    resetTranscript();
-    setTimeout(() => resetTranscript(), 100); // sometimes this needs to be called multiple times to actually work
-    setTimeout(() => resetTranscript(), 200);
+
+    for (let i = 0; i < resetTranscript_timeouts.length; i++) {
+      resetTranscript_timeouts[i] = setTimeout(() => resetTranscript(), i * 50);
+    }
   };
 
   const getCommands = (transcript) => {
@@ -78,12 +83,16 @@ const ControllerConsoleSpeech = (props) => {
           break;
         case "left":
         case "east":
+        case "lift":
+        case "Lyft":
+        case "list":
           commandDirection = 3;
           commandDuration = null;
           commandWordDirection = word;
           commandWordDuration = null;
           break;
         case "right":
+        case "write":
         case "west":
           commandDirection = 4;
           commandDuration = null;
@@ -101,40 +110,34 @@ const ControllerConsoleSpeech = (props) => {
         case "2":
           commandDuration = 2;
           commandWordDuration = word;
-
           break;
         case "three":
         case "tree":
         case "3":
           commandDuration = 3;
           commandWordDuration = word;
-
           break;
         case "four":
         case "for":
         case "4":
           commandDuration = 4;
           commandWordDuration = word;
-
           break;
         case "five":
         case "5":
           commandDuration = 5;
           commandWordDuration = word;
-
           break;
         case "six":
         case "sex":
         case "6":
           commandDuration = 6;
           commandWordDuration = word;
-
           break;
         case "seven":
         case "7":
           commandDuration = 7;
           commandWordDuration = word;
-
           break;
         case "eight":
         case "ate":
@@ -146,7 +149,6 @@ const ControllerConsoleSpeech = (props) => {
         case "9":
           commandDuration = 9;
           commandWordDuration = word;
-
           break;
         default:
           break;
@@ -218,11 +220,10 @@ const ControllerConsoleSpeech = (props) => {
       durationCounter += commands[i][1];
     }
 
-    displayCommandsWords_timeouts[
-      displayCommandsWords_timeouts.length - 1
-    ] = setTimeout(() => {
-      setMessage("");
-    }, durationCounter * 1000);
+    displayCommandsWords_timeouts[displayCommandsWords_timeouts.length - 1] =
+      setTimeout(() => {
+        setMessage("");
+      }, durationCounter * 1000);
   };
 
   return (
