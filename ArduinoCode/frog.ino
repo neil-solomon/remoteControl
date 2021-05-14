@@ -64,13 +64,13 @@ const double pi = 3.141593;
 const double wheelRollerAngle = pi/4; // radians 
 const double lambda = 1 / tan(wheelRollerAngle);
 const double beta = (chassisWidth * tan(wheelRollerAngle) + chassisLength) / tan(wheelRollerAngle);
-
+const bool reverseLeftMotors = false;
+const bool reverseRightMotors = true;
 /* 
 For example, to travel forward the left motors rotate counter-clockwise and the right motors rotate clockwise.
 So The motors on one side of the robot will need to rotate in the opposite direction. 
- */
-bool reverseLeftMotors = false;
-bool reverseRightMotors = true;
+*/
+
 
 unsigned char bluetoothReceiveBuffer [128] = {NULL};
 int bluetoothReceiveBuffer_length = 0;
@@ -207,8 +207,13 @@ void motors_setup() {
   Read the motor encoders to see how much each motor rotates. Adjust the pwm value sent to each motor so that
   all motors rotate the same amount for a given pwm value. The test motion is clockwise rotation during
   which the encoder pulses for each motor are counted. Each motor is then calibrated relative to motor1. */
-  int pwm = 100;
-  int calibrationTime = 5000;
+  for (int i = 0; i < 4; i++) {
+    pinMode(motor_encA_pins[i], INPUT);
+    pinMode(motor_encB_pins[i], INPUT); 
+  }
+  
+  int pwm = 255;
+  int calibrationTime = 1000;
   unsigned long int timer;
   double numPulses[] = {0,0,0,0};
   int motor_enc_states[] = {0,0,0,0};
@@ -216,10 +221,29 @@ void motors_setup() {
   
   Serial.print("    calibrate motors: pwm=");
   Serial.println(pwm);
+
+  // rotate left
   motors[0].setSpeed(pwm);
   motors[1].setSpeed(pwm);
   motors[2].setSpeed(pwm);
   motors[3].setSpeed(pwm);
+  timer = millis();
+  
+  while(millis() - timer < calibrationTime) {
+    for (int i = 0; i < 4; i++) {
+      motor_enc_states[i] = digitalRead(motor_encA_pins[i]);
+      if (motor_enc_states[i] == 1 && motor_enc_lastStates[i] == 0){
+          numPulses[i]++;
+      }
+      motor_enc_states[i] = motor_enc_lastStates[i];
+    }
+  }
+
+  // rotate right
+  motors[0].setSpeed(-1 * pwm);
+  motors[1].setSpeed(-1 * pwm);
+  motors[2].setSpeed(-1 * pwm);
+  motors[3].setSpeed(-1 * pwm);
   timer = millis();
   
   while(millis() - timer < calibrationTime) {
