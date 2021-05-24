@@ -76,7 +76,7 @@ unsigned char bluetoothReceiveBuffer [128] = {NULL};
 int bluetoothReceiveBuffer_length = 0;
 unsigned long bluetoothConnectionTimer = 0;
 bool passwordReceived = false;
-bool uvLight = false; // false is off, true is on
+bool uvLightOn = false; // false is off, true is on
 unsigned long millisNow; // use to capture the time at the beginning of each main loop
 int motorSpeedCompression = 0; // Compress the pmw signal to the motors. Increase if a low pwm value doesn't move the motors at all.
 
@@ -123,7 +123,7 @@ void loop() {
     }
   } 
 
-  if (analogRead(doorInPin) < 1000 && uvLight) { // door is open and UV is on
+  if (!is_doorClosed() && uvLightOn) { // door is open and UV is on
     setUvLight(1); // turn off UV
   }
   
@@ -475,9 +475,9 @@ dischargeCurve[0] is the voltage corresponding to the battery being 0% charged, 
 
 void sendUvLight() {
 //  Serial.print("sendUvLight ");
-//  Serial.println(uvLight);
+//  Serial.println(uvLightOn);
   char data [] = {39, 1};
-  if (uvLight) {
+  if (uvLightOn) {
     data[1] = 2;  
   }
   Serial1.write(data);
@@ -486,14 +486,18 @@ void sendUvLight() {
 void setUvLight(unsigned char value) {
   if (value == 1) {
     Serial.println("setUvLight OFF");
-    uvLight = false;
+    uvLightOn = false;
     digitalWrite(uvLightPin, LOW);
   }
-  else {
+  else if (is_doorClosed()) {
     Serial.println("setUvLight ON");
-    uvLight = true;
+    uvLightOn = true;
     digitalWrite(uvLightPin, HIGH);
   }
+}
+
+bool is_doorClosed() {
+  return analogRead(doorInPin) >= 1000;
 }
 
 void sendDoorStatus() {
