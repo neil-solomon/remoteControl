@@ -15,8 +15,8 @@ Serial uses rx0 (pin 0) and tx0(pin 1) of the Arduino Mega. This is used for Ser
 Serial1 uses rx1 (pin 19) and tx1(pin 18) of the Arduino Mega. This is used to communicate with the HM-10 BLE module.
 */
 
-#define uvLightPin 26
-#define doorOutPin 27
+#define uvLightPin 45
+#define doorOutPin 44
 #define doorInPin A0
 #define batteryInPin A1
 
@@ -79,6 +79,9 @@ bool passwordReceived = false;
 bool uvLightOn = false; // false is off, true is on
 unsigned long millisNow; // use to capture the time at the beginning of each main loop
 int motorSpeedCompression = 0; // Compress the pmw signal to the motors. Increase if a low pwm value doesn't move the motors at all.
+unsigned long checkDoorTimer = 0;
+unsigned long sendUvLightTimer = 0;
+unsigned long sendDoorStatusTimer = 0;
 
 void setup() {
   /* this function is called once when the Arduino boots up */
@@ -123,8 +126,9 @@ void loop() {
     }
   } 
 
-  if (!is_doorClosed() && uvLightOn) { // door is open and UV is on
+  if (millis() - checkDoorTimer > 250 && !is_doorClosed() && uvLightOn) {
     setUvLight(1); // turn off UV
+    checkDoorTimer = millis();
   }
   
   millisNow = millis();
@@ -139,16 +143,14 @@ void loop() {
       }
     } 
     else {
-      if (millisNow % 10000 == 0) {
-        sendBatteryLevel();
-        delay(1);
-      }
-      else if (millisNow % 2000 == 0) {
+      if (millisNow - sendDoorStatusTimer > 2000) {
         sendDoorStatus();
+        sendDoorStatusTimer = millis();
         delay(1);
       }
-      else if (millisNow % 1000 == 0) {
+      else if (millisNow - sendUvLightTimer > 1000) {
         sendUvLight();
+        sendUvLightTimer = millis();
         delay(1);
       }
     }
@@ -202,6 +204,8 @@ void motors_setup() {
   for (int i = 0; i < 4; i++) {
     motors[i].setSpeed(0);  
   }
+
+  return;
 
   /* Calibrate Motors
   Read the motor encoders to see how much each motor rotates. Adjust the pwm value sent to each motor so that
@@ -487,17 +491,27 @@ void setUvLight(unsigned char value) {
   if (value == 1) {
     Serial.println("setUvLight OFF");
     uvLightOn = false;
-    digitalWrite(uvLightPin, LOW);
+    digitalWrite(uvLightPin, HIGH);
   }
-  else if (is_doorClosed()) {
+  else if (value == 2 && is_doorClosed()) {
     Serial.println("setUvLight ON");
     uvLightOn = true;
-    digitalWrite(uvLightPin, HIGH);
+    digitalWrite(uvLightPin, LOW);
   }
 }
 
 bool is_doorClosed() {
-  return analogRead(doorInPin) >= 1000;
+  /* read multiple times to minimize the chance of a mis-read */
+//  bool doorIsClosed = false;
+//  int threshold = 1000;
+//
+//  for (int i = 0; i < 3; i++) {
+//    doorIsClosed |= analogRead(doorInPin) >= threshold;
+//    delay(1);
+//  }
+//  
+//  return doorIsClosed;
+  return analogRead(doorInPin) > 1000;
 }
 
 void sendDoorStatus() {

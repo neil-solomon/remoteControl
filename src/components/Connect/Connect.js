@@ -151,7 +151,7 @@ export default class Connect extends React.Component {
                       {!this.props.doorClosed && "Door Is Open"}
                     </div>
                   </button>
-                  <div className={style.batteryContainer}>
+                  {/* <div className={style.batteryContainer}>
                     <div className={style.batteryOuter} />
                     <div
                       className={style.batteryInner}
@@ -173,7 +173,7 @@ export default class Connect extends React.Component {
                         : "90%"}
                     </div>
                     <div className={style.batteryTip}></div>
-                  </div>
+                  </div> */}
                 </>
               )}
             </div>
